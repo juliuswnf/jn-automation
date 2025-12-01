@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { API_URL } from '../../utils/api';
+import { paymentAPI, formatError } from '../../utils/api';
+import { useNotification } from '../../hooks/useNotification';
 
 /**
  * Checkout Component - Mock payment form
@@ -24,39 +25,32 @@ const Checkout = ({ onPaymentStart, onPaymentSuccess, onPaymentError }) => {
     }));
   };
 
+  const { success, error } = useNotification();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Start payment
       onPaymentStart(formData.amount, `ORD-${Date.now()}`);
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Send to backend
-      const response = await fetch(`${API_URL}/payments/process`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          amount: formData.amount,
-          cardName: formData.cardName,
-          cardEmail: formData.cardEmail,
-          serviceType: formData.serviceType,
-        }),
+      // Use centralized paymentAPI
+      await paymentAPI.process({
+        amount: formData.amount,
+        cardName: formData.cardName,
+        cardEmail: formData.cardEmail,
+        serviceType: formData.serviceType,
       });
 
-      if (!response.ok) {
-        throw new Error('Payment processing failed');
-      }
-
       onPaymentSuccess();
+      success('Payment processed successfully');
     } catch (error) {
-      onPaymentError(error.message || 'Payment failed. Please try again.');
+      const msg = formatError(error);
+      onPaymentError(msg);
+      error(msg);
     } finally {
       setIsSubmitting(false);
     }

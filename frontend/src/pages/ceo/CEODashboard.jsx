@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BuildingStorefrontIcon, UsersIcon, CurrencyEuroIcon, ChartBarIcon } from '@heroicons/react/24/outline';
-import { API_URL } from '../../utils/api';
+import { ceoAPI, formatError } from '../../utils/api';
+import { useNotification } from '../../hooks/useNotification';
 
 const CEODashboard = () => {
   const [stats, setStats] = useState({
@@ -11,25 +12,19 @@ const CEODashboard = () => {
   });
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
+  const { error } = useNotification();
+
   useEffect(() => {
     fetchCEOStats();
   }, []);
 
   const fetchCEOStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/ceo/stats`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.stats || stats);
-      }
+      const data = await ceoAPI.getStats();
+      setStats(data.stats || stats);
     } catch (error) {
       if (import.meta.env.DEV) console.error('Error fetching CEO stats:', error);
+      error(formatError(error));
       // Mock data for development
       setStats({
         totalSalons: 12,

@@ -29,6 +29,7 @@ export const useNotification = () => {
     error,
     warning,
     info,
+    showNotification: (message, type = 'info', duration = 5000) => addNotification(message, type, duration),
     addNotification,
     removeNotification,
     clearAllNotifications,

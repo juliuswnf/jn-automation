@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { API_URL } from '../../utils/api';
+import { bookingAPI, formatError } from '../../utils/api';
+import { useNotification } from '../../hooks/useNotification';
 import { CalendarIcon, ClockIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 const CustomerDashboard = () => {
@@ -9,21 +10,17 @@ const CustomerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
+  const { success, error } = useNotification();
+
   useEffect(() => {
     fetchBookings();
   }, []);
 
   const fetchBookings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/bookings`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      
-      if (data.success) {
+      const data = await bookingAPI.getMine();
+
+      if (data?.success) {
         const now = new Date();
         const upcoming = data.bookings.filter(b => new Date(b.date) >= now);
         const past = data.bookings.filter(b => new Date(b.date) < now);
@@ -32,6 +29,7 @@ const CustomerDashboard = () => {
       }
     } catch (error) {
       if (import.meta.env.DEV) console.error('Error fetching bookings:', error);
+      error(formatError(error));
     } finally {
       setLoading(false);
     }
@@ -41,19 +39,12 @@ const CustomerDashboard = () => {
     if (!confirm('Möchten Sie diesen Termin wirklich absagen?')) return;
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        fetchBookings();
-      }
+      await bookingAPI.cancel(bookingId);
+      success('Termin erfolgreich abgesagt');
+      fetchBookings();
     } catch (error) {
       if (import.meta.env.DEV) console.error('Error cancelling booking:', error);
+      error(formatError(error));
     }
   };
 

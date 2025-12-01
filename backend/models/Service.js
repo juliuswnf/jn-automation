@@ -296,10 +296,10 @@ const serviceSchema = new mongoose.Schema(
       index: true  // ✅ Added
     },
 
-    isNew: {
+    isNewService: {
       type: Boolean,
       default: true,
-      index: true  // ✅ Added
+      index: true  // renamed from isNew to avoid conflict with mongoose.isNew
     },
 
     newUntil: {
@@ -352,7 +352,7 @@ serviceSchema.index({ category: 1, isAvailable: 1, rating: -1 });
 serviceSchema.index({ isFeatured: 1, rating: -1, createdAt: -1 });
 serviceSchema.index({ companyId: 1, price: 1 });
 serviceSchema.index({ isBestseller: 1, totalBookings: -1 });
-serviceSchema.index({ isNew: 1, newUntil: -1 });
+serviceSchema.index({ isNewService: 1, newUntil: -1 });
 
 
 // ==================== VIRTUALS ====================
@@ -517,7 +517,7 @@ serviceSchema.methods.markAsBestseller = async function() {
 
 serviceSchema.methods.markAsNew = async function(daysValid = 30) {
   try {
-    this.isNew = true;
+    this.isNewService = true;
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysValid);
     this.newUntil = futureDate;
@@ -714,7 +714,7 @@ serviceSchema.statics.getRecentlyAdded = function(companyId, limit = 5) {
     return this.find({
       companyId,
       status: 'active',
-      isNew: true,
+      isNewService: true,
       newUntil: { $gte: new Date() }
     })
       .sort({ createdAt: -1 })
@@ -831,7 +831,7 @@ serviceSchema.pre('save', async function(next) {
 
     // Auto-mark as not new if expired
     if (this.newUntil && this.newUntil < new Date()) {
-      this.isNew = false;
+      this.isNewService = false;
     }
 
     // Auto-remove discount if expired

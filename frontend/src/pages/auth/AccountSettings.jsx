@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authAPI, formatError } from '../../utils/api';
 import { useNotification } from '../../hooks/useNotification';
 
 const AccountSettings = () => {
-  const { showNotification } = useNotification();
+  const { error, info } = useNotification();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
@@ -16,7 +17,7 @@ const AccountSettings = () => {
         setUser(storedUser);
         setTwoFAEnabled(storedUser.twoFAEnabled || false);
       } catch (error) {
-        showNotification(formatError(error), 'error');
+        error(formatError(error));
       } finally {
         setLoading(false);
       }
@@ -29,18 +30,9 @@ const AccountSettings = () => {
     const confirmed = window.confirm('Are you sure? You will need to set up 2FA again to enable it.');
     if (!confirmed) return;
 
-    try {
-      const response = await authAPI.disable2FA({
-        password: prompt('Enter your password to disable 2FA:'),
-      });
-
-      if (response.data.success) {
-        setTwoFAEnabled(false);
-        showNotification('2FA disabled successfully', 'success');
-      }
-    } catch (error) {
-      showNotification(formatError(error), 'error');
-    }
+    // Replace browser prompt with a guided flow: require the user to confirm password on the Change Password page
+    info('To disable 2FA, please confirm your password on the Change Password page and then disable 2FA from there.');
+    navigate('/change-password');
   };
 
   if (loading) {
