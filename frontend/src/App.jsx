@@ -8,10 +8,23 @@ import CustomerLogin from './pages/auth/CustomerLogin';
 import BusinessLogin from './pages/auth/BusinessLogin';
 import CEOLogin from './pages/auth/CEOLogin';
 
+// Layouts
+import AppLayout from './layouts/AppLayout';
+import DashboardLayout from './layouts/DashboardLayout';
+
+// Public pages
+import Pricing from './pages/Pricing';
+import Impressum from './pages/legal/Impressum';
+import Datenschutz from './pages/legal/Datenschutz';
+import AGB from './pages/legal/AGB';
+
 // Dashboards
-import CustomerDashboard from './pages/customer/CustomerDashboard';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import CEODashboard from './pages/ceo/CEODashboard';
+// Dashboard pages (placeholders)
+import StudioDashboard from './pages/dashboard/StudioDashboard';
+import Bookings from './pages/dashboard/Bookings';
+import Services from './pages/dashboard/Services';
+import WidgetSetup from './pages/dashboard/WidgetSetup';
+import Settings from './pages/dashboard/Settings';
 
 // Error Pages
 import NotFound from './pages/NotFound';
@@ -79,11 +92,15 @@ function App() {
     <Router>
       <KeyboardShortcuts />
       <Routes>
-        {/* ==================== PUBLIC ROUTES ==================== */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginSelection />} />
-        <Route path="/login/customer" element={<CustomerLogin />} />
-        <Route path="/login/business" element={<BusinessLogin />} />
+        {/* ==================== PUBLIC ROUTES (wrapped in AppLayout) ==================== */}
+        <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+        <Route path="/pricing" element={<AppLayout><Pricing /></AppLayout>} />
+        <Route path="/login" element={<AppLayout><LoginSelection /></AppLayout>} />
+        <Route path="/login/customer" element={<AppLayout><CustomerLogin /></AppLayout>} />
+        <Route path="/login/business" element={<AppLayout><BusinessLogin /></AppLayout>} />
+        <Route path="/impressum" element={<AppLayout><Impressum /></AppLayout>} />
+        <Route path="/datenschutz" element={<AppLayout><Datenschutz /></AppLayout>} />
+        <Route path="/agb" element={<AppLayout><AGB /></AppLayout>} />
         
         {/* ==================== HIDDEN CEO LOGIN ==================== */}
         {/* Access via: /system/admin OR Ctrl+Shift+C */}
@@ -91,13 +108,56 @@ function App() {
         <Route path="/_.admin" element={<CEOLogin />} />
         
         {/* ==================== CUSTOMER ROUTES ==================== */}
-        <Route 
-          path="/customer/dashboard" 
+        {/* ==================== STUDIO DASHBOARD (protected) ==================== */}
+        <Route
+          path="/dashboard"
           element={
-            <ProtectedRoute requiredRole="customer">
-              <CustomerDashboard />
+            <ProtectedRoute>
+              <DashboardLayout>
+                <StudioDashboard />
+              </DashboardLayout>
             </ProtectedRoute>
-          } 
+          }
+        />
+        <Route
+          path="/dashboard/bookings"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Bookings />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/services"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Services />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/widget"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <WidgetSetup />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/settings"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Settings />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
         />
         
         {/* ==================== BUSINESS ROUTES ==================== */}
