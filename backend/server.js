@@ -308,8 +308,6 @@ process.on('SIGTERM', async () => {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
   server.close(async () => {
-  
-  server.close(async () => {
     logger.info('✅ HTTP server closed');
     await mongoose.connection.close();
     logger.info('✅ MongoDB connection closed');
@@ -322,8 +320,6 @@ process.on('SIGINT', async () => {
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
-  server.close(async () => {
-  
   server.close(async () => {
     logger.info('✅ HTTP server closed');
     await mongoose.connection.close();
