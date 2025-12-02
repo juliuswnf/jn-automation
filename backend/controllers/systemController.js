@@ -57,7 +57,12 @@ const checkPortInUse = async (port) => {
   try {
     const isWindows = process.platform === 'win32';
     if (isWindows) {
-      const { stdout } = await execAsync(`netstat -ano | findstr ":${port}" | findstr "LISTENING"`, { timeout: 5000 });
+      // Use PowerShell for language-independent check (works on German/English Windows)
+      // Check for both LISTENING (English) and ABHÖREN (German)
+      const { stdout } = await execAsync(
+        `powershell -Command "netstat -ano | Select-String ':${port}' | Select-String 'LISTENING|ABHÖREN'"`,
+        { timeout: 5000 }
+      );
       return stdout.trim().length > 0;
     } else {
       const { stdout } = await execAsync(`lsof -i:${port} -t 2>/dev/null`, { timeout: 5000 });
@@ -181,9 +186,12 @@ const stopNodeService = async (port) => {
 
   try {
     if (isWindows) {
-      // Windows: Find all PIDs on this port and kill them
+      // Windows: Find all PIDs on this port and kill them (works on German/English Windows)
       try {
-        const { stdout } = await execAsync(`netstat -ano | findstr ":${port}" | findstr "LISTENING"`, { timeout: 5000 });
+        const { stdout } = await execAsync(
+          `powershell -Command "netstat -ano | Select-String ':${port}' | Select-String 'LISTENING|ABHÖREN'"`,
+          { timeout: 5000 }
+        );
         const lines = stdout.trim().split('\n');
 
         const pidsKilled = new Set();
