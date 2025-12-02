@@ -40,7 +40,7 @@ files.forEach(file => {
     if (!importLoggerRegex.test(newContent)) {
       // compute relative path from file to logger
       let rel = path.relative(path.dirname(file), loggerPath).split(path.sep).join('/');
-      if (!rel.startsWith('.')) rel = './' + rel;
+      if (!rel.startsWith('.')) { rel = './' + rel; }
       const importStmt = `import logger from '${rel}';\n`;
 
       // insert after last import block if present
