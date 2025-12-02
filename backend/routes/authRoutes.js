@@ -23,6 +23,9 @@ router.post('/employee-login', authController.employeeLogin);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 
+// Refresh Token (public - accepts expired token)
+router.post('/refresh-token', authController.refreshToken);
+
 // Email Verification (public - token in body)
 router.post('/verify-email', authController.verifyEmail);
 
@@ -46,6 +49,23 @@ router.get('/verify-token', authMiddleware.protect, authController.verifyToken);
 
 // Email Verification Request (protected - requires login)
 router.post('/send-verification-email', authMiddleware.protect, authController.sendVerificationEmail);
+
+// ==================== 2FA ROUTES (Protected) ====================
+
+// Enable 2FA - Returns QR code and secret
+router.post('/2fa/enable', authMiddleware.protect, authController.enable2FA);
+
+// Verify 2FA - Confirms setup or verifies login
+router.post('/2fa/verify', authMiddleware.protect, authController.verify2FA);
+
+// Disable 2FA - Requires password
+router.post('/2fa/disable', authMiddleware.protect, authController.disable2FA);
+
+// Get 2FA Status
+router.get('/2fa/status', authMiddleware.protect, authController.get2FAStatus);
+
+// Regenerate Backup Codes
+router.post('/2fa/regenerate-backup-codes', authMiddleware.protect, authController.regenerateBackupCodes);
 
 // ==================== CEO-ONLY ROUTES ====================
 

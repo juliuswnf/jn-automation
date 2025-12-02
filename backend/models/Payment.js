@@ -181,6 +181,20 @@ const paymentSchema = new mongoose.Schema(
       index: true
     },
 
+    // Partial refund tracking
+    refundedAmount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+
+    refundHistory: [{
+      refundId: String,
+      amount: Number,
+      reason: String,
+      createdAt: { type: Date, default: Date.now }
+    }],
+
     invoiceNumber: {
       type: String,
       unique: true,

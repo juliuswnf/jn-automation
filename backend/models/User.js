@@ -107,6 +107,11 @@ const userSchema = new mongoose.Schema(
       select: false
     },
 
+    twoFactorBackupCodes: [{
+      code: String,
+      used: { type: Boolean, default: false }
+    }],
+
     // ==================== User Preferences ====================
     language: {
       type: String,
@@ -275,6 +280,7 @@ userSchema.methods.toJSON = function() {
   delete obj.passwordResetToken;
   delete obj.emailVerificationToken;
   delete obj.twoFactorSecret;
+  delete obj.twoFactorBackupCodes;
   delete obj.lockUntil;
   delete obj.__v;
   return obj;

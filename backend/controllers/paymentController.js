@@ -186,11 +186,11 @@ export const getPaymentHistory = async (req, res) => {
   }
 };
 
-// ==================== REFUND PAYMENT ====================
+// ==================== REFUND PAYMENT (Full or Partial) ====================
 
 export const refundPayment = async (req, res) => {
   try {
-    const { paymentId, reason } = req.body;
+    const { paymentId, reason, amount } = req.body;
 
     if (!paymentId) {
       return res.status(400).json({
@@ -210,37 +210,99 @@ export const refundPayment = async (req, res) => {
     if (payment.status === 'refunded') {
       return res.status(400).json({
         success: false,
-        message: 'This payment has already been refunded'
+        message: 'This payment has already been fully refunded'
       });
     }
 
+    // Calculate refundable amount
+    const alreadyRefunded = payment.refundedAmount || 0;
+    const maxRefundable = payment.amount - alreadyRefunded;
+    
+    // Determine refund amount (partial or full)
+    let refundAmount;
+    const isPartialRefund = amount && amount < maxRefundable;
+    
+    if (amount) {
+      // Partial refund requested
+      if (!validateAmount(amount)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid refund amount'
+        });
+      }
+      if (amount > maxRefundable) {
+        return res.status(400).json({
+          success: false,
+          message: `Maximum refundable amount is ${maxRefundable.toFixed(2)} EUR`
+        });
+      }
+      refundAmount = amount;
+    } else {
+      // Full refund of remaining amount
+      refundAmount = maxRefundable;
+    }
+
+    // Create refund with Stripe
     const refund = await stripe.refunds.create({
       payment_intent: payment.stripePaymentIntentId,
+      amount: Math.round(refundAmount * 100), // Convert to cents
       reason: reason || 'requested_by_customer'
     });
 
+    // Calculate new totals
+    const newRefundedAmount = alreadyRefunded + refundAmount;
+    const isFullyRefunded = newRefundedAmount >= payment.amount;
+
+    // Update payment record
     const updatedPayment = await Payment.findByIdAndUpdate(
       paymentId,
       { 
-        status: 'refunded',
+        status: isFullyRefunded ? 'refunded' : 'partially_refunded',
         refundId: refund.id,
-        refundedAt: Date.now()
+        refundedAmount: newRefundedAmount,
+        refundedAt: Date.now(),
+        $push: {
+          refundHistory: {
+            refundId: refund.id,
+            amount: refundAmount,
+            reason: reason || 'requested_by_customer',
+            createdAt: new Date()
+          }
+        }
       },
       { new: true }
     );
 
-    await Booking.findByIdAndUpdate(
-      payment.bookingId,
-      { 
-        status: 'cancelled',
-        paymentStatus: 'refunded'
-      }
-    );
+    // Update booking status based on refund type
+    if (isFullyRefunded) {
+      await Booking.findByIdAndUpdate(
+        payment.bookingId,
+        { 
+          status: 'cancelled',
+          paymentStatus: 'refunded'
+        }
+      );
+    } else {
+      await Booking.findByIdAndUpdate(
+        payment.bookingId,
+        { 
+          paymentStatus: 'partially_refunded'
+        }
+      );
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Payment refunded successfully',
-      payment: updatedPayment
+      message: isPartialRefund 
+        ? `Partial refund of ${refundAmount.toFixed(2)} EUR processed successfully`
+        : 'Full refund processed successfully',
+      payment: updatedPayment,
+      refund: {
+        id: refund.id,
+        amount: refundAmount,
+        isPartial: isPartialRefund,
+        remainingRefundable: payment.amount - newRefundedAmount
+      }
     });
   } catch (error) {
     logger.error('RefundPayment Error:', error);
