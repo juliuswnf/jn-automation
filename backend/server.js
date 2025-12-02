@@ -304,10 +304,10 @@ process.on('uncaughtException', (error) => {
 // ==================== GRACEFUL SHUTDOWN ====================
 process.on('SIGTERM', async () => {
   logger.info('\n⚠️ SIGTERM signal received: Closing HTTP server');
-  
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
+  server.close(async () => {
   
   server.close(async () => {
     logger.info('✅ HTTP server closed');
@@ -319,10 +319,10 @@ process.on('SIGTERM', async () => {
 
 process.on('SIGINT', async () => {
   logger.info('\n⚠️ SIGINT signal received: Closing HTTP server');
-  
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
+  server.close(async () => {
   
   server.close(async () => {
     logger.info('✅ HTTP server closed');
