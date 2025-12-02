@@ -35,6 +35,7 @@ import stripeWebhookController from './controllers/stripeWebhookController.js';
 // Import Services
 import { initializeCronJobs } from './services/cronService.js';
 import emailQueueWorker from './workers/emailQueueWorker.js';
+import logger from './utils/logger.js';
 
 // Initialize Express App
 const app = express();
@@ -56,9 +57,9 @@ const io = new SocketIOServer(server, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
+    credentials: true
   },
-  transports: ['websocket', 'polling'],
+  transports: ['websocket', 'polling']
 });
 
 // Attach io to app for use in routes/controllers
@@ -81,6 +82,8 @@ app.post('/api/rate-limit/reset', resetRateLimiter);
 app.use(helmet());
 app.use(mongoSanitize());
 app.use(hpp());
+// Compression should be applied after security middleware
+app.use(compression());
 
 // 2️⃣ STRIPE WEBHOOKS (MUST BE BEFORE JSON PARSING!)
 app.post('/api/webhooks/stripe', webhookMiddleware, stripeWebhookController.handleStripeWebhook);
@@ -129,7 +132,7 @@ app.get('/', (req, res) => {
       widget: '/api/widget',
       payments: '/api/payments',
       webhooks: '/api/webhooks/stripe'
-    },
+    }
   });
 });
 
@@ -147,12 +150,12 @@ app.use('/api/payments', authMiddleware.protect, paymentRoutes);
 app.use('/api/ceo', authMiddleware.protect, ceoMiddleware.verifyCEOAuth, ceoRoutes);
 
 // ==================== 404 HANDLER (BEFORE ERROR HANDLER) ====================
-app.use('*', (req, res, next) => {
+app.use('*', (req, res, _next) => {
   res.status(404).json({
     success: false,
     message: 'Route not found',
     path: req.originalUrl,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -161,40 +164,40 @@ app.use(errorHandlerMiddleware.globalErrorHandler);
 
 // ==================== SOCKET.IO EVENTS ====================
 io.on('connection', (socket) => {
-  console.log(`✅ Client connected: ${socket.id}`);
+  logger.info(`✅ Client connected: ${socket.id}`);
 
   socket.on('bookingCreated', (data) => {
-    console.log('📬 Booking created:', data);
+    logger.info('📬 Booking created:', data);
     io.emit('bookingUpdate', { type: 'created', data });
   });
 
   socket.on('bookingUpdated', (data) => {
-    console.log('📬 Booking updated:', data);
+    logger.info('📬 Booking updated:', data);
     io.emit('bookingUpdate', { type: 'updated', data });
   });
 
   socket.on('bookingDeleted', (data) => {
-    console.log('📬 Booking deleted:', data);
+    logger.info('📬 Booking deleted:', data);
     io.emit('bookingUpdate', { type: 'deleted', data });
   });
 
   socket.on('paymentStarted', (data) => {
-    console.log('💳 Payment started:', data);
+    logger.info('💳 Payment started:', data);
     io.emit('paymentUpdate', { type: 'started', data });
   });
 
   socket.on('paymentCompleted', (data) => {
-    console.log('💳 Payment completed:', data);
+    logger.info('💳 Payment completed:', data);
     io.emit('paymentUpdate', { type: 'completed', data });
   });
 
   socket.on('paymentFailed', (data) => {
-    console.log('💳 Payment failed:', data);
+    logger.info('💳 Payment failed:', data);
     io.emit('paymentUpdate', { type: 'failed', data });
   });
 
   socket.on('disconnect', () => {
-    console.log(`❌ Client disconnected: ${socket.id}`);
+    logger.info(`❌ Client disconnected: ${socket.id}`);
   });
 });
 
@@ -213,13 +216,13 @@ const connectDatabase = async () => {
       retryWrites: true,
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
+      socketTimeoutMS: 45000
+      });
 
-    console.log('✅ MongoDB Connected Successfully');
+    logger.info('✅ MongoDB Connected Successfully');
     return true;
   } catch (error) {
-    console.error('❌ MongoDB Connection Error:', error.message);
+    logger.error('❌ MongoDB Connection Error:', error.message);
     setTimeout(connectDatabase, 5000);
     return false;
   }
@@ -229,9 +232,9 @@ const connectDatabase = async () => {
 const initializeCrons = async () => {
   try {
     await initializeCronJobs();
-    console.log('✅ Cron jobs initialized');
+    logger.info('✅ Cron jobs initialized');
   } catch (error) {
-    console.error('⚠️ Cron job initialization error:', error.message);
+    logger.error('⚠️ Cron job initialization error:', error.message);
   }
 };
 
@@ -239,9 +242,9 @@ const initializeCrons = async () => {
 const startEmailWorker = () => {
   try {
     emailWorkerIntervals = emailQueueWorker.startWorker();
-    console.log('✅ Email queue worker started');
+    logger.info('✅ Email queue worker started');
   } catch (error) {
-    console.error('⚠️ Email worker initialization error:', error.message);
+    logger.error('⚠️ Email worker initialization error:', error.message);
   }
 };
 
@@ -251,7 +254,7 @@ const startServer = async () => {
     const dbConnected = await connectDatabase();
 
     if (!dbConnected) {
-      console.error('❌ Failed to connect to MongoDB');
+      logger.error('❌ Failed to connect to MongoDB');
       process.exit(1);
     }
 
@@ -259,72 +262,72 @@ const startServer = async () => {
     startEmailWorker();
 
     server.listen(PORT, () => {
-      console.log('\n════════════════════════════════════════');
-      console.log('  JN BUSINESS SYSTEM MVP v2.0.0 STARTED');
-      console.log('════════════════════════════════════════\n');
-      console.log(`Environment: ${ENVIRONMENT}`);
-      console.log(`Server: http://localhost:${PORT}`);
-      console.log(`Database: ${process.env.MONGODB_URI?.split('@')[1] || 'Local MongoDB'}`);
-      console.log(`API Version: 2.0.0 MVP`);
-      console.log(`Auth: JWT + Role-based Access Control`);
-      console.log(`Stripe: Subscriptions + Webhooks`);
-      console.log(`Email Worker: Active (checks every 60s)`);
-      console.log(`Started at: ${new Date().toISOString()}\n`);
-      console.log('Socket.IO Events:');
-      console.log('   - bookingCreated, bookingUpdated, bookingDeleted');
-      console.log('   - paymentStarted, paymentCompleted, paymentFailed\n');
-      console.log('MVP Features:');
-      console.log('   - Embeddable booking widget (/api/widget)');
-      console.log('   - Slug-based public booking (/s/:slug)');
-      console.log('   - Stripe subscriptions (14-day trial)');
-      console.log('   - Confirmation emails (instant)');
-      console.log('   - Reminder emails (scheduled)');
-      console.log('   - Review request emails (after appointment)');
-      console.log('   - CEO subscription management\n');
+      logger.info('\n════════════════════════════════════════');
+      logger.info('  JN BUSINESS SYSTEM MVP v2.0.0 STARTED');
+      logger.info('════════════════════════════════════════\n');
+      logger.info(`Environment: ${ENVIRONMENT}`);
+      logger.info(`Server: http://localhost:${PORT}`);
+      logger.info(`Database: ${process.env.MONGODB_URI?.split('@')[1] || 'Local MongoDB'}`);
+      logger.info(`API Version: 2.0.0 MVP`);
+      logger.info(`Auth: JWT + Role-based Access Control`);
+      logger.info(`Stripe: Subscriptions + Webhooks`);
+      logger.info(`Email Worker: Active (checks every 60s)`);
+      logger.info(`Started at: ${new Date().toISOString()}\n`);
+      logger.info('Socket.IO Events:');
+      logger.info('   - bookingCreated, bookingUpdated, bookingDeleted');
+      logger.info('   - paymentStarted, paymentCompleted, paymentFailed\n');
+      logger.info('MVP Features:');
+      logger.info('   - Embeddable booking widget (/api/widget)');
+      logger.info('   - Slug-based public booking (/s/:slug)');
+      logger.info('   - Stripe subscriptions (14-day trial)');
+      logger.info('   - Confirmation emails (instant)');
+      logger.info('   - Reminder emails (scheduled)');
+      logger.info('   - Review request emails (after appointment)');
+      logger.info('   - CEO subscription management\n');
     });
   } catch (error) {
-    console.error('❌ Server startup error:', error.message);
+    logger.error('❌ Server startup error:', error.message);
     process.exit(1);
   }
 };
 
 // ==================== GLOBAL ERROR HANDLERS ====================
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
+  logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });
 
 // ==================== GRACEFUL SHUTDOWN ====================
 process.on('SIGTERM', async () => {
-  console.log('\n⚠️ SIGTERM signal received: Closing HTTP server');
+  logger.info('\n⚠️ SIGTERM signal received: Closing HTTP server');
   
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
   
   server.close(async () => {
-    console.log('✅ HTTP server closed');
+    logger.info('✅ HTTP server closed');
     await mongoose.connection.close();
-    console.log('✅ MongoDB connection closed');
+    logger.info('✅ MongoDB connection closed');
     process.exit(0);
   });
 });
 
 process.on('SIGINT', async () => {
-  console.log('\n⚠️ SIGINT signal received: Closing HTTP server');
+  logger.info('\n⚠️ SIGINT signal received: Closing HTTP server');
   
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
   
   server.close(async () => {
-    console.log('✅ HTTP server closed');
+    logger.info('✅ HTTP server closed');
     await mongoose.connection.close();
-    console.log('✅ MongoDB connection closed');
+    logger.info('✅ MongoDB connection closed');
     process.exit(0);
   });
 });
