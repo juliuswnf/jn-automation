@@ -23,12 +23,12 @@ const createTransporter = () => {
 
   // Production: Use SMTP
   return nodemailer.createTransporter({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT || 587,
-    secure: process.env.SMTP_SECURE === 'true',
+    host: process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || '587'),
+    secure: (process.env.EMAIL_SECURE || process.env.SMTP_SECURE) === 'true',
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      user: process.env.EMAIL_USER || process.env.SMTP_USER,
+      pass: process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS
     }
   });
 };
@@ -40,7 +40,7 @@ export const sendEmail = async (emailData) => {
     const transporter = createTransporter();
 
     const mailOptions = {
-      from: process.env.SMTP_FROM || 'noreply@jn-automation.com',
+      from: process.env.EMAIL_FROM || process.env.SMTP_FROM || 'JN Automation <noreply@jn-automation.com>',
       to: emailData.to,
       subject: emailData.subject,
       text: emailData.body,
