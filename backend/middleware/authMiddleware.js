@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 /**
  * Auth Middleware Suite
@@ -31,7 +32,7 @@ const protect = async (req, res, next) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
-      console.error('❌ JWT Verification Error:', error.name);
+      logger.error('❌ JWT Verification Error:', error.name);
       
       if (error.name === 'TokenExpiredError') {
         return res.status(401).json({
@@ -69,7 +70,7 @@ const protect = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ Protect Middleware Error:', error.message);
+    logger.error('❌ Protect Middleware Error:', error.message);
     next(error);
   }
 };
@@ -180,13 +181,13 @@ const optionalAuth = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await User.findById(decoded.id);
       } catch (error) {
-        console.log('⚠️ Optional auth token invalid, continuing without user');
+        logger.log('⚠️ Optional auth token invalid, continuing without user');
       }
     }
 
     next();
   } catch (error) {
-    console.error('❌ Optional Auth Middleware Error:', error.message);
+    logger.error('❌ Optional Auth Middleware Error:', error.message);
     next();
   }
 };
@@ -196,7 +197,7 @@ const optionalAuth = async (req, res, next) => {
 const validateRequest = (schema) => {
   return (req, res, next) => {
     if (!schema) {
-      console.error('❌ Validation schema is undefined');
+      logger.error('❌ Validation schema is undefined');
       return next();
     }
 
@@ -225,7 +226,7 @@ const logRequests = (req, res, next) => {
 
   res.on('finish', () => {
     const duration = Date.now() - startTime;
-    console.log(
+    logger.log(
       `[${new Date().toISOString()}] ${req.method} ${req.path} - ${res.statusCode} - ${duration}ms - User: ${req.user?.id || 'anonymous'}`
     );
   });
@@ -284,7 +285,7 @@ const requestTimeout = (timeout = 30000) => {
 
 const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch((err) => {
-    console.error('❌ Async Handler Error:', err.message);
+    logger.error('❌ Async Handler Error:', err.message);
     next(err);
   });
 };

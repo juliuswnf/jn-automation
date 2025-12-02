@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import logger from '../utils/logger.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -227,7 +228,7 @@ userSchema.methods.verifyEmail = async function() {
   this.emailVerified = true;
   this.emailVerificationToken = null;
   this.emailVerificationExpire = null;
-  console.log(`✅ Email verified: ${this.email}`);
+  logger.log(`✅ Email verified: ${this.email}`);
   return await this.save();
 };
 
@@ -241,7 +242,7 @@ userSchema.methods.incLoginAttempts = async function() {
     // Lock after 5 failed attempts
     if (this.loginAttempts >= 5) {
       this.lockUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
-      console.warn(`⚠️ Account locked: ${this.email}`);
+      logger.warn(`⚠️ Account locked: ${this.email}`);
     }
   }
   return await this.save();
@@ -251,7 +252,7 @@ userSchema.methods.resetLoginAttempts = async function() {
   this.loginAttempts = 0;
   this.lockUntil = null;
   this.lastLogin = new Date();
-  console.log(`✅ Login successful: ${this.email}`);
+  logger.log(`✅ Login successful: ${this.email}`);
   return await this.save();
 };
 

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import logger from '../utils/logger.js';
 
 const serviceSchema = new mongoose.Schema(
   {
@@ -363,7 +364,7 @@ serviceSchema.virtual('finalPrice').get(function() {
     const discountAmount = (this.price * this.discount) / 100;
     return Math.round((this.price - discountAmount) * 100) / 100;  // ✅ Fixed rounding
   } catch (err) {
-    console.error('❌ Calculate final price error:', err.message);
+    logger.error('❌ Calculate final price error:', err.message);
     return this.price;
   }
 });
@@ -372,7 +373,7 @@ serviceSchema.virtual('durationHours').get(function() {
   try {
     return (this.duration / 60).toFixed(1);
   } catch (err) {
-    console.error('❌ Calculate duration hours error:', err.message);
+    logger.error('❌ Calculate duration hours error:', err.message);
     return 0;
   }
 });
@@ -381,7 +382,7 @@ serviceSchema.virtual('totalDuration').get(function() {
   try {
     return this.preparationTime + this.duration + this.cleanupTime;
   } catch (err) {
-    console.error('❌ Calculate total duration error:', err.message);
+    logger.error('❌ Calculate total duration error:', err.message);
     return this.duration;
   }
 });
@@ -390,7 +391,7 @@ serviceSchema.virtual('pricePerMinute').get(function() {
   try {
     return (this.price / this.duration).toFixed(2);
   } catch (err) {
-    console.error('❌ Calculate price per minute error:', err.message);
+    logger.error('❌ Calculate price per minute error:', err.message);
     return 0;
   }
 });
@@ -399,7 +400,7 @@ serviceSchema.virtual('hasDiscount').get(function() {
   try {
     return this.discount > 0 && (!this.discountValidUntil || this.discountValidUntil > new Date());
   } catch (err) {
-    console.error('❌ Check has discount error:', err.message);
+    logger.error('❌ Check has discount error:', err.message);
     return false;
   }
 });
@@ -409,7 +410,7 @@ serviceSchema.virtual('isOnSale').get(function() {
     if (!this.discountValidUntil) return false;
     return this.discountValidUntil > new Date();
   } catch (err) {
-    console.error('❌ Check is on sale error:', err.message);
+    logger.error('❌ Check is on sale error:', err.message);
     return false;
   }
 });
@@ -418,7 +419,7 @@ serviceSchema.virtual('revenuePotential').get(function() {
   try {
     return this.totalRevenue / Math.max(this.totalBookings, 1);
   } catch (err) {
-    console.error('❌ Calculate revenue potential error:', err.message);
+    logger.error('❌ Calculate revenue potential error:', err.message);
     return 0;
   }
 });
@@ -436,7 +437,7 @@ serviceSchema.methods.generateSlug = function() {
       .replace(/^-+|-+$/g, '');
     return this.slug;
   } catch (err) {
-    console.error('❌ Generate slug error:', err.message);
+    logger.error('❌ Generate slug error:', err.message);
     throw err;
   }
 };
@@ -448,7 +449,7 @@ serviceSchema.methods.isCurrentlyAvailable = function() {
     if (this.availableUntil && new Date() > this.availableUntil) return false;
     return true;
   } catch (err) {
-    console.error('❌ Check is currently available error:', err.message);
+    logger.error('❌ Check is currently available error:', err.message);
     return false;
   }
 };
@@ -460,10 +461,10 @@ serviceSchema.methods.applyDiscount = async function(discountPercent, validUntil
     }
     this.discount = discountPercent;
     this.discountValidUntil = validUntil;
-    console.log(`💰 Discount applied: ${discountPercent}% until ${validUntil}`);
+    logger.log(`💰 Discount applied: ${discountPercent}% until ${validUntil}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Apply discount error:', err.message);
+    logger.error('❌ Apply discount error:', err.message);
     throw err;
   }
 };
@@ -472,10 +473,10 @@ serviceSchema.methods.removeDiscount = async function() {
   try {
     this.discount = 0;
     this.discountValidUntil = null;
-    console.log(`✅ Discount removed: ${this._id}`);
+    logger.log(`✅ Discount removed: ${this._id}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Remove discount error:', err.message);
+    logger.error('❌ Remove discount error:', err.message);
     throw err;
   }
 };
@@ -485,7 +486,7 @@ serviceSchema.methods.incrementViewCount = async function() {
     this.viewCount += 1;
     return await this.save();
   } catch (err) {
-    console.error('❌ Increment view count error:', err.message);
+    logger.error('❌ Increment view count error:', err.message);
     throw err;
   }
 };
@@ -496,10 +497,10 @@ serviceSchema.methods.markAsFeatured = async function(daysValid = 30) {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysValid);
     this.featuredUntil = futureDate;
-    console.log(`⭐ Service marked as featured: ${this.name}`);
+    logger.log(`⭐ Service marked as featured: ${this.name}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as featured error:', err.message);
+    logger.error('❌ Mark as featured error:', err.message);
     throw err;
   }
 };
@@ -507,10 +508,10 @@ serviceSchema.methods.markAsFeatured = async function(daysValid = 30) {
 serviceSchema.methods.markAsBestseller = async function() {
   try {
     this.isBestseller = true;
-    console.log(`🏆 Service marked as bestseller: ${this.name}`);
+    logger.log(`🏆 Service marked as bestseller: ${this.name}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as bestseller error:', err.message);
+    logger.error('❌ Mark as bestseller error:', err.message);
     throw err;
   }
 };
@@ -521,10 +522,10 @@ serviceSchema.methods.markAsNew = async function(daysValid = 30) {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysValid);
     this.newUntil = futureDate;
-    console.log(`🆕 Service marked as new: ${this.name}`);
+    logger.log(`🆕 Service marked as new: ${this.name}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as new error:', err.message);
+    logger.error('❌ Mark as new error:', err.message);
     throw err;
   }
 };
@@ -536,7 +537,7 @@ serviceSchema.methods.getPriceWithVariation = function(variationName) {
     const modifiedPrice = this.finalPrice + (variation.priceModifier || 0);
     return Math.max(0, modifiedPrice);
   } catch (err) {
-    console.error('❌ Get price with variation error:', err.message);
+    logger.error('❌ Get price with variation error:', err.message);
     return this.finalPrice;
   }
 };
@@ -547,7 +548,7 @@ serviceSchema.methods.getDurationWithVariation = function(variationName) {
     if (!variation) return this.duration;
     return this.duration + (variation.durationModifier || 0);
   } catch (err) {
-    console.error('❌ Get duration with variation error:', err.message);
+    logger.error('❌ Get duration with variation error:', err.message);
     return this.duration;
   }
 };
@@ -556,10 +557,10 @@ serviceSchema.methods.addBooking = async function(amount) {
   try {
     this.totalBookings += 1;
     this.totalRevenue += amount;
-    console.log(`📊 Booking added - Total: ${this.totalBookings}, Revenue: ${this.totalRevenue}`);
+    logger.log(`📊 Booking added - Total: ${this.totalBookings}, Revenue: ${this.totalRevenue}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Add booking error:', err.message);
+    logger.error('❌ Add booking error:', err.message);
     throw err;
   }
 };
@@ -569,10 +570,10 @@ serviceSchema.methods.updateRating = async function(newRating, reviewCount) {
     this.rating = newRating;
     this.reviewCount = reviewCount;
     this.averageRating = newRating;
-    console.log(`⭐ Rating updated: ${newRating} (${reviewCount} reviews)`);
+    logger.log(`⭐ Rating updated: ${newRating} (${reviewCount} reviews)`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Update rating error:', err.message);
+    logger.error('❌ Update rating error:', err.message);
     throw err;
   }
 };
@@ -581,7 +582,7 @@ serviceSchema.methods.getAddOns = function() {
   try {
     return this.addOns || [];
   } catch (err) {
-    console.error('❌ Get add-ons error:', err.message);
+    logger.error('❌ Get add-ons error:', err.message);
     return [];
   }
 };
@@ -606,7 +607,7 @@ serviceSchema.statics.getFeaturedServices = function(companyId, limit = 5) {
       .sort({ rating: -1, totalBookings: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get featured services error:', err.message);
+    logger.error('❌ Get featured services error:', err.message);
     throw err;
   }
 };
@@ -621,7 +622,7 @@ serviceSchema.statics.getBestsellers = function(companyId, limit = 10) {
       .sort({ totalBookings: -1, rating: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get bestsellers error:', err.message);
+    logger.error('❌ Get bestsellers error:', err.message);
     throw err;
   }
 };
@@ -637,7 +638,7 @@ serviceSchema.statics.getByCategory = function(companyId, category, limit = 20) 
       .sort({ rating: -1, totalBookings: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get by category error:', err.message);
+    logger.error('❌ Get by category error:', err.message);
     throw err;
   }
 };
@@ -654,7 +655,7 @@ serviceSchema.statics.searchServices = function(companyId, query) {
       ]
     }).sort({ rating: -1, totalBookings: -1 });
   } catch (err) {
-    console.error('❌ Search services error:', err.message);
+    logger.error('❌ Search services error:', err.message);
     throw err;
   }
 };
@@ -687,7 +688,7 @@ serviceSchema.statics.getServiceStats = async function(companyId) {
       averageRating: 0
     };
   } catch (err) {
-    console.error('❌ Get service stats error:', err.message);
+    logger.error('❌ Get service stats error:', err.message);
     throw err;
   }
 };
@@ -704,7 +705,7 @@ serviceSchema.statics.getOnSaleServices = function(companyId, limit = 10) {
       .sort({ discount: -1, rating: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get on sale services error:', err.message);
+    logger.error('❌ Get on sale services error:', err.message);
     throw err;
   }
 };
@@ -720,7 +721,7 @@ serviceSchema.statics.getRecentlyAdded = function(companyId, limit = 5) {
       .sort({ createdAt: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get recently added error:', err.message);
+    logger.error('❌ Get recently added error:', err.message);
     throw err;
   }
 };
@@ -732,7 +733,7 @@ serviceSchema.statics.getByEmployee = function(employeeId) {
       status: 'active'
     }).sort({ rating: -1 });
   } catch (err) {
-    console.error('❌ Get by employee error:', err.message);
+    logger.error('❌ Get by employee error:', err.message);
     throw err;
   }
 };
@@ -746,7 +747,7 @@ serviceSchema.statics.getTopRated = function(companyId, limit = 5) {
       .sort({ rating: -1, reviewCount: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get top rated error:', err.message);
+    logger.error('❌ Get top rated error:', err.message);
     throw err;
   }
 };
@@ -770,7 +771,7 @@ serviceSchema.statics.getPriceRange = async function(companyId, category = null)
 
     return result[0] || { minPrice: 0, maxPrice: 0, avgPrice: 0 };
   } catch (err) {
-    console.error('❌ Get price range error:', err.message);
+    logger.error('❌ Get price range error:', err.message);
     throw err;
   }
 };
@@ -779,7 +780,7 @@ serviceSchema.statics.getByCompany = function(companyId) {
   try {
     return this.find({ companyId, status: 'active' }).sort({ name: 1 });
   } catch (err) {
-    console.error('❌ Get by company error:', err.message);
+    logger.error('❌ Get by company error:', err.message);
     throw err;
   }
 };
@@ -792,7 +793,7 @@ serviceSchema.statics.searchByTag = function(companyId, tag) {
       status: 'active'
     }).sort({ rating: -1, totalBookings: -1 });
   } catch (err) {
-    console.error('❌ Search by tag error:', err.message);
+    logger.error('❌ Search by tag error:', err.message);
     throw err;
   }
 };
@@ -807,7 +808,7 @@ serviceSchema.statics.getTrendingServices = function(companyId, limit = 5) {
       .sort({ viewCount: -1, totalBookings: -1, rating: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get trending services error:', err.message);
+    logger.error('❌ Get trending services error:', err.message);
     throw err;
   }
 };
@@ -847,7 +848,7 @@ serviceSchema.pre('save', async function(next) {
 
     next();
   } catch (err) {
-    console.error('❌ Pre-save hook error:', err.message);
+    logger.error('❌ Pre-save hook error:', err.message);
     next(err);
   }
 });

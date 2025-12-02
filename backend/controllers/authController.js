@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import logger from '../utils/logger.js';
 
 /**
  * Auth Controller - MVP Version
@@ -72,7 +73,7 @@ export const register = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    console.log(`✅ User registered: ${user.email} (${user.role})`);
+    logger.log(`✅ User registered: ${user.email} (${user.role})`);
 
     res.status(201).json({
       success: true,
@@ -80,7 +81,7 @@ export const register = async (req, res) => {
       user: user.toJSON()
     });
   } catch (error) {
-    console.error('❌ Register Error:', error);
+    logger.error('❌ Register Error:', error);
     res.status(500).json({
       success: false,
       message: 'Registration failed',
@@ -107,7 +108,7 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-      console.warn(`⚠️ Login attempt with non-existent email: ${email}`);
+      logger.warn(`⚠️ Login attempt with non-existent email: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -126,7 +127,7 @@ export const login = async (req, res) => {
     const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
-      console.warn(`⚠️ Invalid password for: ${email}`);
+      logger.warn(`⚠️ Invalid password for: ${email}`);
       await user.incLoginAttempts();
       return res.status(401).json({
         success: false,
@@ -140,7 +141,7 @@ export const login = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    console.log(`✅ User logged in: ${user.email} (${user.role})`);
+    logger.log(`✅ User logged in: ${user.email} (${user.role})`);
 
     res.status(200).json({
       success: true,
@@ -148,7 +149,7 @@ export const login = async (req, res) => {
       user: user.toJSON()
     });
   } catch (error) {
-    console.error('❌ Login Error:', error);
+    logger.error('❌ Login Error:', error);
     res.status(500).json({
       success: false,
       message: 'Login failed'
@@ -174,7 +175,7 @@ export const ceoLogin = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-      console.warn(`⚠️ CEO login attempt with non-existent email: ${email}`);
+      logger.warn(`⚠️ CEO login attempt with non-existent email: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -183,7 +184,7 @@ export const ceoLogin = async (req, res) => {
 
     // Verify user is CEO
     if (user.role !== 'ceo') {
-      console.warn(`⚠️ Non-CEO user attempted CEO login: ${email} (role: ${user.role})`);
+      logger.warn(`⚠️ Non-CEO user attempted CEO login: ${email} (role: ${user.role})`);
       return res.status(403).json({
         success: false,
         message: 'Access denied. CEO credentials required.'
@@ -202,7 +203,7 @@ export const ceoLogin = async (req, res) => {
     const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
-      console.warn(`⚠️ Invalid password for CEO: ${email}`);
+      logger.warn(`⚠️ Invalid password for CEO: ${email}`);
       await user.incLoginAttempts();
       return res.status(401).json({
         success: false,
@@ -216,7 +217,7 @@ export const ceoLogin = async (req, res) => {
     // Generate token (CEO gets longer session)
     const token = generateToken(user._id, '30d');
 
-    console.log(`✅ CEO logged in: ${user.email}`);
+    logger.log(`✅ CEO logged in: ${user.email}`);
 
     res.status(200).json({
       success: true,
@@ -225,7 +226,7 @@ export const ceoLogin = async (req, res) => {
       message: 'Welcome, CEO!'
     });
   } catch (error) {
-    console.error('❌ CEO Login Error:', error);
+    logger.error('❌ CEO Login Error:', error);
     res.status(500).json({
       success: false,
       message: 'Login failed'
@@ -251,7 +252,7 @@ export const employeeLogin = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-      console.warn(`⚠️ Employee login attempt with non-existent email: ${email}`);
+      logger.warn(`⚠️ Employee login attempt with non-existent email: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -260,7 +261,7 @@ export const employeeLogin = async (req, res) => {
 
     // Verify user is employee or admin
     if (!['employee', 'admin'].includes(user.role)) {
-      console.warn(`⚠️ Non-employee user attempted employee login: ${email} (role: ${user.role})`);
+      logger.warn(`⚠️ Non-employee user attempted employee login: ${email} (role: ${user.role})`);
       return res.status(403).json({
         success: false,
         message: 'Access denied. Employee credentials required.'
@@ -269,7 +270,7 @@ export const employeeLogin = async (req, res) => {
 
     // Check company association if companyId provided
     if (companyId && user.companyId && user.companyId.toString() !== companyId) {
-      console.warn(`⚠️ Employee ${email} attempted login to wrong company`);
+      logger.warn(`⚠️ Employee ${email} attempted login to wrong company`);
       return res.status(403).json({
         success: false,
         message: 'Access denied. Invalid company.'
@@ -288,7 +289,7 @@ export const employeeLogin = async (req, res) => {
     const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
-      console.warn(`⚠️ Invalid password for employee: ${email}`);
+      logger.warn(`⚠️ Invalid password for employee: ${email}`);
       await user.incLoginAttempts();
       return res.status(401).json({
         success: false,
@@ -302,7 +303,7 @@ export const employeeLogin = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    console.log(`✅ Employee logged in: ${user.email} (${user.role})`);
+    logger.log(`✅ Employee logged in: ${user.email} (${user.role})`);
 
     res.status(200).json({
       success: true,
@@ -310,7 +311,7 @@ export const employeeLogin = async (req, res) => {
       user: user.toJSON()
     });
   } catch (error) {
-    console.error('❌ Employee Login Error:', error);
+    logger.error('❌ Employee Login Error:', error);
     res.status(500).json({
       success: false,
       message: 'Login failed'
@@ -336,7 +337,7 @@ export const getProfile = async (req, res) => {
       user: user.toJSON()
     });
   } catch (error) {
-    console.error('❌ GetProfile Error:', error);
+    logger.error('❌ GetProfile Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching profile'
@@ -380,7 +381,7 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    console.log(`✅ Profile updated for user: ${user.email}`);
+    logger.log(`✅ Profile updated for user: ${user.email}`);
 
     res.status(200).json({
       success: true,
@@ -388,7 +389,7 @@ export const updateProfile = async (req, res) => {
       user: user.toJSON()
     });
   } catch (error) {
-    console.error('❌ UpdateProfile Error:', error);
+    logger.error('❌ UpdateProfile Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating profile'
@@ -439,7 +440,7 @@ export const changePassword = async (req, res) => {
     // Verify old password
     const isPasswordCorrect = await user.comparePassword(oldPassword);
     if (!isPasswordCorrect) {
-      console.warn(`⚠️ Invalid old password for: ${user.email}`);
+      logger.warn(`⚠️ Invalid old password for: ${user.email}`);
       return res.status(401).json({
         success: false,
         message: 'Current password is incorrect'
@@ -450,14 +451,14 @@ export const changePassword = async (req, res) => {
     user.password = newPassword;
     await user.save();
 
-    console.log(`✅ Password changed for user: ${user.email}`);
+    logger.log(`✅ Password changed for user: ${user.email}`);
 
     res.status(200).json({
       success: true,
       message: 'Password successfully changed'
     });
   } catch (error) {
-    console.error('❌ ChangePassword Error:', error);
+    logger.error('❌ ChangePassword Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error changing password'
@@ -469,14 +470,14 @@ export const changePassword = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    console.log(`✅ User logged out: ${req.user.id}`);
+    logger.log(`✅ User logged out: ${req.user.id}`);
 
     res.status(200).json({
       success: true,
       message: 'Successfully logged out'
     });
   } catch (error) {
-    console.error('❌ Logout Error:', error);
+    logger.error('❌ Logout Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error logging out'
@@ -502,7 +503,7 @@ export const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       // Don't reveal if email exists (security best practice)
-      console.warn(`⚠️ Password reset requested for non-existent email: ${email}`);
+      logger.warn(`⚠️ Password reset requested for non-existent email: ${email}`);
       return res.status(200).json({
         success: true,
         message: 'If this email is registered, a reset link will be sent'
@@ -515,7 +516,7 @@ export const forgotPassword = async (req, res) => {
 
     // TODO: Send email with reset link
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-    console.log(`📧 Password reset link: ${resetUrl}`);
+    logger.log(`📧 Password reset link: ${resetUrl}`);
 
     res.status(200).json({
       success: true,
@@ -523,7 +524,7 @@ export const forgotPassword = async (req, res) => {
       ...(process.env.NODE_ENV === 'development' && { resetToken })
     });
   } catch (error) {
-    console.error('❌ ForgotPassword Error:', error);
+    logger.error('❌ ForgotPassword Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error processing password reset'
@@ -583,14 +584,14 @@ export const resetPassword = async (req, res) => {
     user.passwordResetExpire = undefined;
     await user.save();
 
-    console.log(`✅ Password reset for user: ${user.email}`);
+    logger.log(`✅ Password reset for user: ${user.email}`);
 
     res.status(200).json({
       success: true,
       message: 'Password successfully reset'
     });
   } catch (error) {
-    console.error('❌ ResetPassword Error:', error);
+    logger.error('❌ ResetPassword Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error resetting password'
@@ -608,7 +609,7 @@ export const verifyToken = (req, res) => {
       user: req.user
     });
   } catch (error) {
-    console.error('❌ VerifyToken Error:', error);
+    logger.error('❌ VerifyToken Error:', error);
     res.status(401).json({
       success: false,
       message: 'Invalid token'
@@ -635,7 +636,7 @@ export const sendVerificationEmail = async (req, res) => {
 
     // TODO: Send email
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
-    console.log(`📧 Verification link: ${verificationUrl}`);
+    logger.log(`📧 Verification link: ${verificationUrl}`);
 
     res.status(200).json({
       success: true,
@@ -643,7 +644,7 @@ export const sendVerificationEmail = async (req, res) => {
       ...(process.env.NODE_ENV === 'development' && { verificationToken })
     });
   } catch (error) {
-    console.error('❌ SendVerificationEmail Error:', error);
+    logger.error('❌ SendVerificationEmail Error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -672,14 +673,14 @@ export const verifyEmail = async (req, res) => {
     // Verify email
     await user.verifyEmail();
 
-    console.log(`✅ Email verified for: ${user.email}`);
+    logger.log(`✅ Email verified for: ${user.email}`);
 
     res.status(200).json({
       success: true,
       message: 'Email successfully verified'
     });
   } catch (error) {
-    console.error('❌ VerifyEmail Error:', error);
+    logger.error('❌ VerifyEmail Error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -695,7 +696,7 @@ export const healthCheck = async (req, res) => {
       version: '1.0.0'
     });
   } catch (error) {
-    console.error('❌ HealthCheck Error:', error);
+    logger.error('❌ HealthCheck Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error'

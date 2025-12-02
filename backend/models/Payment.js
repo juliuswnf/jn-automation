@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import logger from '../utils/logger.js';
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -366,7 +367,7 @@ paymentSchema.virtual('remainingAmount').get(function() {
   try {
     return Math.max(0, this.finalAmount - (this.refundAmount || 0));
   } catch (err) {
-    console.error('❌ Calculate remaining amount error:', err.message);
+    logger.error('❌ Calculate remaining amount error:', err.message);
     return this.finalAmount;
   }
 });
@@ -390,7 +391,7 @@ paymentSchema.methods.calculateFinalAmount = function() {
     this.finalAmount = Math.round((afterDiscount + taxAmount) * 100) / 100;  // ✅ Fixed rounding
     return this.finalAmount;
   } catch (err) {
-    console.error('❌ Calculate final amount error:', err.message);
+    logger.error('❌ Calculate final amount error:', err.message);
     return this.finalAmount;
   }
 };
@@ -398,10 +399,10 @@ paymentSchema.methods.calculateFinalAmount = function() {
 paymentSchema.methods.processPayment = async function() {
   try {
     this.status = 'processing';
-    console.log(`⏳ Processing payment: ${this._id}`);
+    logger.log(`⏳ Processing payment: ${this._id}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Process payment error:', err.message);
+    logger.error('❌ Process payment error:', err.message);
     throw err;
   }
 };
@@ -411,10 +412,10 @@ paymentSchema.methods.markAsCompleted = async function() {
     this.status = 'completed';
     this.processedAt = new Date();
     this.completedAt = new Date();
-    console.log(`✅ Payment completed: ${this.transactionId}`);
+    logger.log(`✅ Payment completed: ${this.transactionId}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as completed error:', err.message);
+    logger.error('❌ Mark as completed error:', err.message);
     throw err;
   }
 };
@@ -428,14 +429,14 @@ paymentSchema.methods.markAsFailed = async function(errorCode, errorMessage) {
     this.lastRetryAt = new Date();
     
     if (this.retryCount >= 5) {
-      console.error(`❌ Payment failed (Max retries): ${this._id}`);
+      logger.error(`❌ Payment failed (Max retries): ${this._id}`);
     } else {
-      console.warn(`⚠️ Payment failed (Retry ${this.retryCount}): ${errorCode}`);
+      logger.warn(`⚠️ Payment failed (Retry ${this.retryCount}): ${errorCode}`);
     }
     
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as failed error:', err.message);
+    logger.error('❌ Mark as failed error:', err.message);
     throw err;
   }
 };
@@ -455,15 +456,15 @@ paymentSchema.methods.refundPayment = async function(amount = null, reason = 'Cu
 
     if (refundAmount >= this.finalAmount) {
       this.status = 'refunded';
-      console.log(`💰 Full refund processed: ${this.transactionId}`);
+      logger.log(`💰 Full refund processed: ${this.transactionId}`);
     } else {
       this.status = 'partially_refunded';
-      console.log(`💸 Partial refund processed: ${this.transactionId} (${refundAmount})`);
+      logger.log(`💸 Partial refund processed: ${this.transactionId} (${refundAmount})`);
     }
 
     return await this.save();
   } catch (err) {
-    console.error('❌ Refund payment error:', err.message);
+    logger.error('❌ Refund payment error:', err.message);
     throw err;
   }
 };
@@ -476,7 +477,7 @@ paymentSchema.methods.generateInvoiceNumber = function() {
     this.invoiceNumber = `INV-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}-${String(random).padStart(5, '0')}`;
     return this.invoiceNumber;
   } catch (err) {
-    console.error('❌ Generate invoice number error:', err.message);
+    logger.error('❌ Generate invoice number error:', err.message);
     throw err;
   }
 };
@@ -486,10 +487,10 @@ paymentSchema.methods.markInvoiceGenerated = async function(invoiceUrl = null) {
     this.invoiceGenerated = true;
     this.invoiceGeneratedAt = new Date();
     if (invoiceUrl) this.invoiceUrl = invoiceUrl;
-    console.log(`📄 Invoice generated: ${this.invoiceNumber}`);
+    logger.log(`📄 Invoice generated: ${this.invoiceNumber}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark invoice generated error:', err.message);
+    logger.error('❌ Mark invoice generated error:', err.message);
     throw err;
   }
 };
@@ -499,10 +500,10 @@ paymentSchema.methods.markReceiptSent = async function(receiptUrl = null) {
     this.receiptSent = true;
     this.receiptSentAt = new Date();
     if (receiptUrl) this.receiptUrl = receiptUrl;
-    console.log(`📧 Receipt sent: ${this.transactionId}`);
+    logger.log(`📧 Receipt sent: ${this.transactionId}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark receipt sent error:', err.message);
+    logger.error('❌ Mark receipt sent error:', err.message);
     throw err;
   }
 };
@@ -514,10 +515,10 @@ paymentSchema.methods.retryPayment = async function() {
     }
 
     this.status = 'pending';
-    console.log(`🔄 Payment retry scheduled (Attempt ${this.retryCount + 1})`);
+    logger.log(`🔄 Payment retry scheduled (Attempt ${this.retryCount + 1})`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Retry payment error:', err.message);
+    logger.error('❌ Retry payment error:', err.message);
     throw err;
   }
 };
@@ -536,10 +537,10 @@ paymentSchema.methods.createInstallmentPlan = async function(planType = '2-pay')
     nextDate.setDate(nextDate.getDate() + 30);
     this.nextInstallmentDate = nextDate;
 
-    console.log(`📊 Installment plan created: ${planType} (${numberOfPayments} payments)`);
+    logger.log(`📊 Installment plan created: ${planType} (${numberOfPayments} payments)`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Create installment plan error:', err.message);
+    logger.error('❌ Create installment plan error:', err.message);
     throw err;
   }
 };
@@ -560,7 +561,7 @@ paymentSchema.methods.getSummary = function() {
       currency: this.currency
     };
   } catch (err) {
-    console.error('❌ Get summary error:', err.message);
+    logger.error('❌ Get summary error:', err.message);
     return {};
   }
 };
@@ -586,7 +587,7 @@ paymentSchema.statics.getByDateRange = async function(companyId, startDate, endD
       createdAt: { $gte: startDate, $lte: endDate }
     }).sort({ createdAt: -1 });
   } catch (err) {
-    console.error('❌ Get by date range error:', err.message);
+    logger.error('❌ Get by date range error:', err.message);
     throw err;
   }
 };
@@ -600,7 +601,7 @@ paymentSchema.statics.getCompleted = function(companyId, limit = 50) {
       .sort({ completedAt: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get completed error:', err.message);
+    logger.error('❌ Get completed error:', err.message);
     throw err;
   }
 };
@@ -612,7 +613,7 @@ paymentSchema.statics.getPending = function(companyId) {
       status: { $in: ['pending', 'processing'] }
     }).sort({ createdAt: 1 });
   } catch (err) {
-    console.error('❌ Get pending error:', err.message);
+    logger.error('❌ Get pending error:', err.message);
     throw err;
   }
 };
@@ -624,7 +625,7 @@ paymentSchema.statics.getFailed = function(companyId) {
       status: 'failed'
     }).sort({ lastRetryAt: -1 });
   } catch (err) {
-    console.error('❌ Get failed error:', err.message);
+    logger.error('❌ Get failed error:', err.message);
     throw err;
   }
 };
@@ -636,7 +637,7 @@ paymentSchema.statics.getRefunded = function(companyId) {
       isRefunded: true
     }).sort({ refundedAt: -1 });
   } catch (err) {
-    console.error('❌ Get refunded error:', err.message);
+    logger.error('❌ Get refunded error:', err.message);
     throw err;
   }
 };
@@ -648,7 +649,7 @@ paymentSchema.statics.getByCustomer = function(customerId, limit = 10) {
       .sort({ createdAt: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get by customer error:', err.message);
+    logger.error('❌ Get by customer error:', err.message);
     throw err;
   }
 };
@@ -682,7 +683,7 @@ paymentSchema.statics.getRevenueReport = async function(companyId, startDate, en
       averageTransaction: 0
     };
   } catch (err) {
-    console.error('❌ Get revenue report error:', err.message);
+    logger.error('❌ Get revenue report error:', err.message);
     throw err;
   }
 };
@@ -706,7 +707,7 @@ paymentSchema.statics.getPaymentMethodStats = async function(companyId) {
       { $sort: { totalAmount: -1 } }
     ]);
   } catch (err) {
-    console.error('❌ Get payment method stats error:', err.message);
+    logger.error('❌ Get payment method stats error:', err.message);
     throw err;
   }
 };
@@ -734,7 +735,7 @@ paymentSchema.statics.getDailyRevenue = async function(companyId, days = 30) {
       { $sort: { _id: 1 } }
     ]);
   } catch (err) {
-    console.error('❌ Get daily revenue error:', err.message);
+    logger.error('❌ Get daily revenue error:', err.message);
     throw err;
   }
 };
@@ -747,7 +748,7 @@ paymentSchema.statics.getInstallmentPayments = function(companyId) {
       status: { $ne: 'completed' }
     }).sort({ nextInstallmentDate: 1 });
   } catch (err) {
-    console.error('❌ Get installment payments error:', err.message);
+    logger.error('❌ Get installment payments error:', err.message);
     throw err;
   }
 };
@@ -761,7 +762,7 @@ paymentSchema.statics.getFailedForRetry = function(companyId, maxRetries = 5) {
       retryCount: { $lt: maxRetries }
     }).sort({ lastRetryAt: 1 });
   } catch (err) {
-    console.error('❌ Get failed for retry error:', err.message);
+    logger.error('❌ Get failed for retry error:', err.message);
     throw err;
   }
 };
@@ -798,7 +799,7 @@ paymentSchema.statics.getPaymentStats = async function(companyId) {
       }
     ]);
   } catch (err) {
-    console.error('❌ Get payment stats error:', err.message);
+    logger.error('❌ Get payment stats error:', err.message);
     throw err;
   }
 };
@@ -815,7 +816,7 @@ paymentSchema.pre('save', async function(next) {
     this.updatedAt = new Date();
     next();
   } catch (err) {
-    console.error('❌ Pre-save hook error:', err.message);
+    logger.error('❌ Pre-save hook error:', err.message);
     next(err);
   }
 });

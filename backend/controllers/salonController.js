@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Salon Controller - MVP
  * Salon owner operations for their salon
@@ -29,7 +30,7 @@ export const getSalonInfo = async (req, res) => {
       salon
     });
   } catch (error) {
-    console.error('GetSalonInfo Error:', error);
+    logger.error('GetSalonInfo Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -63,7 +64,7 @@ export const updateSalon = async (req, res) => {
       salon
     });
   } catch (error) {
-    console.error('UpdateSalon Error:', error);
+    logger.error('UpdateSalon Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -86,7 +87,7 @@ export const getSalonServices = async (req, res) => {
       services
     });
   } catch (error) {
-    console.error('GetSalonServices Error:', error);
+    logger.error('GetSalonServices Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -140,7 +141,7 @@ export const getSalonBookings = async (req, res) => {
       bookings
     });
   } catch (error) {
-    console.error('GetSalonBookings Error:', error);
+    logger.error('GetSalonBookings Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -174,7 +175,7 @@ export const getSalonStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetSalonStats Error:', error);
+    logger.error('GetSalonStats Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'

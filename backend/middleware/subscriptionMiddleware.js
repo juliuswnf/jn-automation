@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Subscription Middleware
  * Ensures salon has active subscription before allowing access
@@ -57,7 +58,7 @@ export const requireActiveSubscription = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error('Subscription middleware error:', error);
+    logger.error('Subscription middleware error:', error);
     res.status(500).json({
       success: false,
       message: 'Error checking subscription status'
@@ -96,7 +97,7 @@ export const checkSubscriptionStatus = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error('Check subscription status error:', error);
+    logger.error('Check subscription status error:', error);
     // Don't block on error, just continue
     next();
   }
@@ -162,7 +163,7 @@ export const requireTrialOrActive = async (req, res, next) => {
     req.salon = salon;
     next();
   } catch (error) {
-    console.error('Trial/Active check error:', error);
+    logger.error('Trial/Active check error:', error);
     res.status(500).json({
       success: false,
       message: 'Error checking subscription status'
@@ -190,7 +191,7 @@ export const isInTrial = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error('Trial check error:', error);
+    logger.error('Trial check error:', error);
     next();
   }
 };

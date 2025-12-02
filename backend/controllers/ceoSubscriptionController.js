@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * CEO Subscription Controller
  * Admin management of salon subscriptions
@@ -58,7 +59,7 @@ export const getAllSubscriptions = async (req, res) => {
       }))
     });
   } catch (error) {
-    console.error('GetAllSubscriptions Error:', error);
+    logger.error('GetAllSubscriptions Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -97,7 +98,7 @@ export const getSubscriptionStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetSubscriptionStats Error:', error);
+    logger.error('GetSubscriptionStats Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -129,7 +130,7 @@ export const getSalonSubscription = async (req, res) => {
       try {
         stripeStatus = await stripeService.getSubscriptionStatus(salon);
       } catch (error) {
-        console.error('Error fetching Stripe status:', error);
+        logger.error('Error fetching Stripe status:', error);
       }
     }
     
@@ -150,7 +151,7 @@ export const getSalonSubscription = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetSalonSubscription Error:', error);
+    logger.error('GetSalonSubscription Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -189,7 +190,7 @@ export const toggleSalonStatus = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('ToggleSalonStatus Error:', error);
+    logger.error('ToggleSalonStatus Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -237,7 +238,7 @@ export const updateSubscriptionStatus = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('UpdateSubscriptionStatus Error:', error);
+    logger.error('UpdateSubscriptionStatus Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -298,7 +299,7 @@ export const getExpiringSoon = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetExpiringSoon Error:', error);
+    logger.error('GetExpiringSoon Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'

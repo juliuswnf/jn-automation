@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import EmailQueue from '../models/EmailQueue.js';
 import EmailLog from '../models/EmailLog.js';
+import logger from '../utils/logger.js';
 
 /**
  * Email Service - Send transactional emails
@@ -59,11 +60,11 @@ export const sendEmail = async (emailData) => {
       messageId: info.messageId
     });
 
-    console.log(`✅ Email sent to: ${emailData.to}`);
+    logger.log(`✅ Email sent to: ${emailData.to}`);
 
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('❌ Email send error:', error);
+    logger.error('❌ Email send error:', error);
 
     // Log failed email
     await EmailLog.create({
@@ -136,11 +137,11 @@ export const sendBookingConfirmation = async (booking) => {
       language: booking.language
     });
 
-    console.log(`✅ Confirmation email queued for: ${booking.customerEmail}`);
+    logger.log(`✅ Confirmation email queued for: ${booking.customerEmail}`);
 
     return { success: true };
   } catch (error) {
-    console.error('❌ SendBookingConfirmation Error:', error);
+    logger.error('❌ SendBookingConfirmation Error:', error);
     throw error;
   }
 };
@@ -199,11 +200,11 @@ export const sendBookingReminder = async (booking) => {
       language: booking.language
     });
 
-    console.log(`✅ Reminder email queued for: ${booking.customerEmail}`);
+    logger.log(`✅ Reminder email queued for: ${booking.customerEmail}`);
 
     return { success: true };
   } catch (error) {
-    console.error('❌ SendBookingReminder Error:', error);
+    logger.error('❌ SendBookingReminder Error:', error);
     throw error;
   }
 };
@@ -218,7 +219,7 @@ export const sendReviewRequest = async (booking) => {
 
     // Check if Google review URL is configured
     if (!salon.googleReviewUrl) {
-      console.warn(`⚠️ Google Review URL not configured for salon: ${salon.name}`);
+      logger.warn(`⚠️ Google Review URL not configured for salon: ${salon.name}`);
       return { success: false, message: 'Google review URL not configured' };
     }
 
@@ -251,11 +252,11 @@ export const sendReviewRequest = async (booking) => {
       language: booking.language
     });
 
-    console.log(`✅ Review request email queued for: ${booking.customerEmail}`);
+    logger.log(`✅ Review request email queued for: ${booking.customerEmail}`);
 
     return { success: true };
   } catch (error) {
-    console.error('❌ SendReviewRequest Error:', error);
+    logger.error('❌ SendReviewRequest Error:', error);
     throw error;
   }
 };
@@ -272,7 +273,7 @@ export const processEmailQueue = async () => {
       .sort({ priority: 1, createdAt: 1 })
       .limit(10); // Process 10 at a time
 
-    console.log(`📧 Processing ${emails.length} emails from queue`);
+    logger.log(`📧 Processing ${emails.length} emails from queue`);
 
     for (const email of emails) {
       try {
@@ -296,7 +297,7 @@ export const processEmailQueue = async () => {
 
     return { success: true, processed: emails.length };
   } catch (error) {
-    console.error('❌ ProcessEmailQueue Error:', error);
+    logger.error('❌ ProcessEmailQueue Error:', error);
     throw error;
   }
 };

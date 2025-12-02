@@ -7,6 +7,7 @@ import path from 'path';
 
 import User from '../models/User.js';
 import BusinessSettings from '../models/BusinessSettings.js';
+import logger from './logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,9 +33,9 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log('\n✅ Database connected\n');
+    logger.log('\n✅ Database connected\n');
   } catch (error) {
-    console.error('\n❌ Database connection error:', error.message, '\n');
+    logger.error('\n❌ Database connection error:', error.message, '\n');
     process.exit(1);
   }
 };
@@ -56,28 +57,28 @@ const hashPassword = async (password) => {
 
 export const createCEO = async () => {
   try {
-    console.log('\n================================');
-    console.log('  🚀 CREATE CEO USER');
-    console.log('================================\n');
+    logger.log('\n================================');
+    logger.log('  🚀 CREATE CEO USER');
+    logger.log('================================\n');
 
     const existingCEO = await User.findOne({ role: 'ceo' });
     if (existingCEO) {
-      console.log('⚠️  CEO already exists!');
-      console.log(`   Email: ${existingCEO.email}\n`);
+      logger.log('⚠️  CEO already exists!');
+      logger.log(`   Email: ${existingCEO.email}\n`);
       
       const override = await question('Do you want to create another CEO? (yes/no): ');
       if (override.toLowerCase() !== 'yes') {
-        console.log('\n❌ Operation cancelled\n');
+        logger.log('\n❌ Operation cancelled\n');
         return null;
       }
     }
 
-    console.log('Please enter CEO details:\n');
+    logger.log('Please enter CEO details:\n');
 
     let name = '';
     while (!name) {
       name = await question('Full Name: ');
-      if (!name) console.log('❌ Name is required');
+      if (!name) logger.log('❌ Name is required');
     }
 
     let email = '';
@@ -85,13 +86,13 @@ export const createCEO = async () => {
     while (!isValidEmail) {
       email = await question('Email Address: ');
       if (!validateEmail(email)) {
-        console.log('❌ Invalid email format');
+        logger.log('❌ Invalid email format');
         continue;
       }
 
       const existingUser = await User.findOne({ email: email.toLowerCase() });
       if (existingUser) {
-        console.log('❌ Email already exists');
+        logger.log('❌ Email already exists');
         continue;
       }
 
@@ -103,14 +104,14 @@ export const createCEO = async () => {
     while (!isValidPassword) {
       password = await question('Password (min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special): ');
       if (!validatePassword(password)) {
-        console.log('❌ Password does not meet requirements');
-        console.log('   Requirements: min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character\n');
+        logger.log('❌ Password does not meet requirements');
+        logger.log('   Requirements: min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character\n');
         continue;
       }
 
       const confirmPassword = await question('Confirm Password: ');
       if (password !== confirmPassword) {
-        console.log('❌ Passwords do not match\n');
+        logger.log('❌ Passwords do not match\n');
         continue;
       }
 
@@ -129,44 +130,44 @@ export const createCEO = async () => {
       createdAt: new Date()
     });
 
-    console.log('\n✅ CEO user created successfully!\n');
-    console.log('📋 CEO Details:');
-    console.log(`   ID: ${ceo._id}`);
-    console.log(`   Name: ${ceo.name}`);
-    console.log(`   Email: ${ceo.email}`);
-    console.log(`   Role: ${ceo.role}\n`);
+    logger.log('\n✅ CEO user created successfully!\n');
+    logger.log('📋 CEO Details:');
+    logger.log(`   ID: ${ceo._id}`);
+    logger.log(`   Name: ${ceo.name}`);
+    logger.log(`   Email: ${ceo.email}`);
+    logger.log(`   Role: ${ceo.role}\n`);
 
     return ceo;
   } catch (error) {
-    console.error('\n❌ Error creating CEO:', error.message, '\n');
+    logger.error('\n❌ Error creating CEO:', error.message, '\n');
     throw error;
   }
 };
 
 export const createBusinessSettings = async (ceo) => {
   try {
-    console.log('Creating initial business settings...\n');
+    logger.log('Creating initial business settings...\n');
 
     const existingSettings = await BusinessSettings.findOne({
       companyId: ceo._id
     });
 
     if (existingSettings) {
-      console.log('⚠️  Business settings already exist\n');
+      logger.log('⚠️  Business settings already exist\n');
       return existingSettings;
     }
 
     let businessName = '';
     while (!businessName) {
       businessName = await question('Business Name: ');
-      if (!businessName) console.log('❌ Business name is required');
+      if (!businessName) logger.log('❌ Business name is required');
     }
 
     let businessEmail = '';
     while (!businessEmail) {
       businessEmail = await question('Business Email: ');
       if (!validateEmail(businessEmail)) {
-        console.log('❌ Invalid email format\n');
+        logger.log('❌ Invalid email format\n');
         continue;
       }
       break;
@@ -175,19 +176,19 @@ export const createBusinessSettings = async (ceo) => {
     let businessPhone = '';
     while (!businessPhone) {
       businessPhone = await question('Business Phone (e.g., +49123456789): ');
-      if (!businessPhone) console.log('❌ Phone is required');
+      if (!businessPhone) logger.log('❌ Phone is required');
     }
 
     let businessCity = '';
     while (!businessCity) {
       businessCity = await question('Business City: ');
-      if (!businessCity) console.log('❌ City is required');
+      if (!businessCity) logger.log('❌ City is required');
     }
 
     let businessZipCode = '';
     while (!businessZipCode) {
       businessZipCode = await question('Business Zip Code: ');
-      if (!businessZipCode) console.log('❌ Zip code is required');
+      if (!businessZipCode) logger.log('❌ Zip code is required');
     }
 
     const businessSettings = await BusinessSettings.create({
@@ -226,10 +227,10 @@ export const createBusinessSettings = async (ceo) => {
       }
     });
 
-    console.log('\n✅ Business settings created successfully!\n');
+    logger.log('\n✅ Business settings created successfully!\n');
     return businessSettings;
   } catch (error) {
-    console.error('\n❌ Error creating business settings:', error.message, '\n');
+    logger.error('\n❌ Error creating business settings:', error.message, '\n');
     throw error;
   }
 };
@@ -249,18 +250,18 @@ const main = async () => {
       await createBusinessSettings(ceo);
     }
 
-    console.log('================================');
-    console.log('  ✅ CEO setup completed!');
-    console.log('================================\n');
+    logger.log('================================');
+    logger.log('  ✅ CEO setup completed!');
+    logger.log('================================\n');
 
-    console.log('📧 Login with:');
-    console.log(`   Email: ${ceo.email}`);
-    console.log('   Password: (the password you just entered)\n');
+    logger.log('📧 Login with:');
+    logger.log(`   Email: ${ceo.email}`);
+    logger.log('   Password: (the password you just entered)\n');
 
     rl.close();
     process.exit(0);
   } catch (error) {
-    console.error('\n❌ Fatal error:', error.message, '\n');
+    logger.error('\n❌ Fatal error:', error.message, '\n');
     rl.close();
     process.exit(1);
   }

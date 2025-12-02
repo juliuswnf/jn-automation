@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import validator from 'validator';
+import logger from '../utils/logger.js';
 
 /**
  * Validation Middleware Suite
@@ -41,7 +42,7 @@ export const validateBody = (schema) => {
           type: detail.type
         }));
 
-        console.warn(`❌ Body Validation Error: ${JSON.stringify(errors)}`);
+        logger.warn(`❌ Body Validation Error: ${JSON.stringify(errors)}`);
 
         return res.status(400).json({
           success: false,
@@ -55,7 +56,7 @@ export const validateBody = (schema) => {
       req.body = value;
       next();
     } catch (err) {
-      console.error('❌ Body Validation Exception:', err.message);
+      logger.error('❌ Body Validation Exception:', err.message);
       next(err);
     }
   };
@@ -81,7 +82,7 @@ export const validateParams = (schema) => {
           message: detail.message
         }));
 
-        console.warn(`❌ Params Validation Error:  ${JSON.stringify(errors)}`);
+        logger.warn(`❌ Params Validation Error:  ${JSON.stringify(errors)}`);
 
         return res.status(400).json({
           success: false,
@@ -95,7 +96,7 @@ export const validateParams = (schema) => {
       req.params = value;
       next();
     } catch (err) {
-      console.error('❌ Params Validation Exception:', err.message);
+      logger.error('❌ Params Validation Exception:', err.message);
       next(err);
     }
   };
@@ -133,7 +134,7 @@ export const validateQuery = (schema) => {
       req.query = value;
       next();
     } catch (err) {
-      console.error('❌ Query Validation Exception:', err.message);
+      logger.error('❌ Query Validation Exception:', err.message);
       next(err);
     }
   };
@@ -190,7 +191,7 @@ export const sanitizeInput = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ Sanitize Input Error:', error.message);
+    logger.error('❌ Sanitize Input Error:', error.message);
     next(error);
   }
 };
@@ -216,7 +217,7 @@ export const sanitizeField = (field, type = 'string') => {
 
       next();
     } catch (error) {
-      console.error(`❌ Sanitize Field "${field}" Error:`, error.message);
+      logger.error(`❌ Sanitize Field "${field}" Error:`, error.message);
       next(error);
     }
   };
@@ -229,7 +230,7 @@ export const validateEmail = (req, res, next) => {
     const { email } = req.body || req.query || req.params;
 
     if (email && !validator.isEmail(email)) {
-      console.warn(`⚠️ Invalid email format: ${email}`);
+      logger.warn(`⚠️ Invalid email format: ${email}`);
       return res.status(400).json({
         success: false,
         message: 'Ungültige Email-Adresse',
@@ -240,7 +241,7 @@ export const validateEmail = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ Email Validation Error:', error.message);
+    logger.error('❌ Email Validation Error:', error.message);
     next(error);
   }
 };
@@ -278,7 +279,7 @@ export const validatePassword = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ Password Validation Error:', error.message);
+    logger.error('❌ Password Validation Error:', error.message);
     next(error);
   }
 };
@@ -290,7 +291,7 @@ export const validatePhone = (req, res, next) => {
     const { phone } = req.body || req.query;
 
     if (phone && !validator.isMobilePhone(phone, 'any', { strictMode: false })) {
-      console.warn(`⚠️ Invalid phone format: ${phone}`);
+      logger.warn(`⚠️ Invalid phone format: ${phone}`);
       return res.status(400).json({
         success: false,
         message: 'Ungültige Telefonnummer',
@@ -301,7 +302,7 @@ export const validatePhone = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ Phone Validation Error:', error.message);
+    logger.error('❌ Phone Validation Error:', error.message);
     next(error);
   }
 };
@@ -323,7 +324,7 @@ export const validateURL = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ URL Validation Error:', error.message);
+    logger.error('❌ URL Validation Error:', error.message);
     next(error);
   }
 };
@@ -348,7 +349,7 @@ export const validateDate = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('❌ Date Validation Error:', error.message);
+    logger.error('❌ Date Validation Error:', error.message);
     next(error);
   }
 };
@@ -375,7 +376,7 @@ export const validateNumeric = (fields = []) => {
 
       next();
     } catch (error) {
-      console.error('❌ Numeric Validation Error:', error.message);
+      logger.error('❌ Numeric Validation Error:', error.message);
       next(error);
     }
   };
@@ -403,7 +404,7 @@ export const validateArray = (fields = []) => {
 
       next();
     } catch (error) {
-      console.error('❌ Array Validation Error:', error.message);
+      logger.error('❌ Array Validation Error:', error.message);
       next(error);
     }
   };
@@ -429,7 +430,7 @@ export const validateRequiredFields = (fields = []) => {
 
       next();
     } catch (error) {
-      console.error('❌ Required Fields Validation Error:', error.message);
+      logger.error('❌ Required Fields Validation Error:', error.message);
       next(error);
     }
   };
@@ -457,7 +458,7 @@ export const validateStringLength = (field, minLength, maxLength) => {
 
       next();
     } catch (error) {
-      console.error('❌ String Length Validation Error:', error.message);
+      logger.error('❌ String Length Validation Error:', error.message);
       next(error);
     }
   };
@@ -482,7 +483,7 @@ export const validateEnum = (field, allowedValues) => {
 
       next();
     } catch (error) {
-      console.error('❌ Enum Validation Error:', error.message);
+      logger.error('❌ Enum Validation Error:', error.message);
       next(error);
     }
   };
@@ -505,7 +506,7 @@ export const validateCustom = (validationFn, message = 'Validierung fehlgeschlag
 
       next();
     } catch (err) {
-      console.error('❌ Custom Validation Error:', err);
+      logger.error('❌ Custom Validation Error:', err);
       res.status(500).json({
         success: false,
         message: 'Validierungsfehler im Server'

@@ -5,6 +5,7 @@ import Booking from '../models/Booking.js';
 import User from '../models/User.js';
 import { validateBooking } from '../middleware/validationMiddleware.js';
 import emailService from '../services/emailService.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ router.get('/config/:slug', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Widget Config Error:', error);
+    logger.error('Widget Config Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error loading widget configuration'
@@ -74,7 +75,7 @@ router.get('/services/:slug', async (req, res) => {
       services
     });
   } catch (error) {
-    console.error('Widget Services Error:', error);
+    logger.error('Widget Services Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error loading services'
@@ -176,7 +177,7 @@ router.get('/timeslots/:slug', async (req, res) => {
       timeSlots
     });
   } catch (error) {
-    console.error('Widget Timeslots Error:', error);
+    logger.error('Widget Timeslots Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error loading time slots'
@@ -240,7 +241,7 @@ router.post('/book/:slug', validateBooking, async (req, res) => {
     try {
       await emailService.sendBookingConfirmation(booking._id);
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      logger.error('Email sending failed:', emailError);
     }
 
     res.status(201).json({
@@ -257,7 +258,7 @@ router.post('/book/:slug', validateBooking, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Widget Booking Error:', error);
+    logger.error('Widget Booking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Error creating booking'

@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
@@ -19,9 +20,9 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log('✅ Database connected for seeding');
+    logger.log('✅ Database connected for seeding');
   } catch (error) {
-    console.error('❌ Database connection error:', error);
+    logger.error('❌ Database connection error:', error);
     process.exit(1);
   }
 };
@@ -40,11 +41,11 @@ const seedUsers = async () => {
     // Check if users exist
     const existingUsers = await User.countDocuments();
     if (existingUsers > 0) {
-      console.log('⏭️  Users already exist. Skipping user seeding.');
+      logger.log('⏭️  Users already exist. Skipping user seeding.');
       return;
     }
 
-    console.log('🌱 Seeding users...');
+    logger.log('🌱 Seeding users...');
 
     // Create CEO
     const ceoPassword = await hashPassword('CEO@12345');
@@ -56,7 +57,7 @@ const seedUsers = async () => {
       isActive: true,
       emailVerified: true
     });
-    console.log('✅ CEO created:', ceo.email);
+    logger.log('✅ CEO created:', ceo.email);
 
     // Create Admin
     const adminPassword = await hashPassword('Admin@12345');
@@ -70,7 +71,7 @@ const seedUsers = async () => {
       isActive: true,
       emailVerified: true
     });
-    console.log('✅ Admin created:', admin.email);
+    logger.log('✅ Admin created:', admin.email);
 
     // Create Employees
     const employees = [];
@@ -95,12 +96,12 @@ const seedUsers = async () => {
         emailVerified: true
       });
       employees.push(employee);
-      console.log(`✅ Employee created: ${employee.email}`);
+      logger.log(`✅ Employee created: ${employee.email}`);
     }
 
     return { ceo, admin, employees };
   } catch (error) {
-    console.error('❌ Error seeding users:', error);
+    logger.error('❌ Error seeding users:', error);
     throw error;
   }
 };
@@ -114,11 +115,11 @@ const seedBusinessSettings = async (admin) => {
     });
 
     if (existingSettings) {
-      console.log('⏭️  Business settings already exist. Skipping.');
+      logger.log('⏭️  Business settings already exist. Skipping.');
       return existingSettings;
     }
 
-    console.log('🌱 Seeding business settings...');
+    logger.log('🌱 Seeding business settings...');
 
     const settings = await BusinessSettings.create({
       companyId: admin._id,
@@ -175,10 +176,10 @@ const seedBusinessSettings = async (admin) => {
       }
     });
 
-    console.log('✅ Business settings created');
+    logger.log('✅ Business settings created');
     return settings;
   } catch (error) {
-    console.error('❌ Error seeding business settings:', error);
+    logger.error('❌ Error seeding business settings:', error);
     throw error;
   }
 };
@@ -192,11 +193,11 @@ const seedServices = async (admin) => {
     });
 
     if (existingServices > 0) {
-      console.log('⏭️  Services already exist. Skipping.');
+      logger.log('⏭️  Services already exist. Skipping.');
       return;
     }
 
-    console.log('🌱 Seeding services...');
+    logger.log('🌱 Seeding services...');
 
     const services = [
       {
@@ -260,12 +261,12 @@ const seedServices = async (admin) => {
         rating: Math.floor(Math.random() * 5) + 3
       });
       createdServices.push(newService);
-      console.log(`✅ Service created: ${newService.name}`);
+      logger.log(`✅ Service created: ${newService.name}`);
     }
 
     return createdServices;
   } catch (error) {
-    console.error('❌ Error seeding services:', error);
+    logger.error('❌ Error seeding services:', error);
     throw error;
   }
 };
@@ -279,11 +280,11 @@ const seedCustomers = async (admin) => {
     });
 
     if (existingCustomers > 0) {
-      console.log('⏭️  Customers already exist. Skipping.');
+      logger.log('⏭️  Customers already exist. Skipping.');
       return;
     }
 
-    console.log('🌱 Seeding customers...');
+    logger.log('🌱 Seeding customers...');
 
     const customers = [
       {
@@ -355,12 +356,12 @@ const seedCustomers = async (admin) => {
         lastVisitDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
       });
       createdCustomers.push(newCustomer);
-      console.log(`✅ Customer created: ${newCustomer.name}`);
+      logger.log(`✅ Customer created: ${newCustomer.name}`);
     }
 
     return createdCustomers;
   } catch (error) {
-    console.error('❌ Error seeding customers:', error);
+    logger.error('❌ Error seeding customers:', error);
     throw error;
   }
 };
@@ -374,11 +375,11 @@ const seedAppointments = async (admin, employees, customers, services) => {
     });
 
     if (existingAppointments > 0) {
-      console.log('⏭️  Appointments already exist. Skipping.');
+      logger.log('⏭️  Appointments already exist. Skipping.');
       return;
     }
 
-    console.log('🌱 Seeding appointments...');
+    logger.log('🌱 Seeding appointments...');
 
     const appointments = [];
     for (let i = 0; i < 15; i++) {
@@ -407,12 +408,12 @@ const seedAppointments = async (admin, employees, customers, services) => {
         notes: 'Gebucht über System'
       });
       appointments.push(appointment);
-      console.log(`✅ Appointment created for ${randomCustomer.name}`);
+      logger.log(`✅ Appointment created for ${randomCustomer.name}`);
     }
 
     return appointments;
   } catch (error) {
-    console.error('❌ Error seeding appointments:', error);
+    logger.error('❌ Error seeding appointments:', error);
     throw error;
   }
 };
@@ -426,11 +427,11 @@ const seedEmployeesData = async (admin, employees) => {
     });
 
     if (existingEmployees > 0) {
-      console.log('⏭️  Employee data already exists. Skipping.');
+      logger.log('⏭️  Employee data already exists. Skipping.');
       return;
     }
 
-    console.log('🌱 Seeding employee data...');
+    logger.log('🌱 Seeding employee data...');
 
     for (const user of employees) {
       const employee = await Employee.create({
@@ -453,10 +454,10 @@ const seedEmployeesData = async (admin, employees) => {
           sunday: { start: '00:00', end: '00:00', working: false }
         }
       });
-      console.log(`✅ Employee data created for ${employee.fullName}`);
+      logger.log(`✅ Employee data created for ${employee.fullName}`);
     }
   } catch (error) {
-    console.error('❌ Error seeding employee data:', error);
+    logger.error('❌ Error seeding employee data:', error);
     throw error;
   }
 };
@@ -465,7 +466,7 @@ const seedEmployeesData = async (admin, employees) => {
 
 const seed = async () => {
   try {
-    console.log('\n🚀 Starting database seed...\n');
+    logger.log('\n🚀 Starting database seed...\n');
 
     await connectDB();
 
@@ -487,17 +488,17 @@ const seed = async () => {
     // Seed employee data
     await seedEmployeesData(admin, employees);
 
-    console.log('\n✅ Database seeding completed successfully!\n');
-    console.log('📋 Default login credentials:');
-    console.log('   CEO: julius@jn-automation.de / CEO@12345');
-    console.log('   Admin: anna@meinsalon.de / Admin@12345');
-    console.log('   Employee 1: maria@meinsalon.de / Employee@12345');
-    console.log('   Employee 2: clara@meinsalon.de / Employee@12346');
-    console.log('   Employee 3: sophie@meinsalon.de / Employee@12347\n');
+    logger.log('\n✅ Database seeding completed successfully!\n');
+    logger.log('📋 Default login credentials:');
+    logger.log('   CEO: julius@jn-automation.de / CEO@12345');
+    logger.log('   Admin: anna@meinsalon.de / Admin@12345');
+    logger.log('   Employee 1: maria@meinsalon.de / Employee@12345');
+    logger.log('   Employee 2: clara@meinsalon.de / Employee@12346');
+    logger.log('   Employee 3: sophie@meinsalon.de / Employee@12347\n');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
+    logger.error('❌ Seeding failed:', error);
     process.exit(1);
   }
 };

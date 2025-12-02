@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Booking Controller - MVP Simplified
  * Essential booking operations only
@@ -62,7 +63,7 @@ export const createBooking = async (req, res) => {
       booking
     });
   } catch (error) {
-    console.error('CreateBooking Error:', error);
+    logger.error('CreateBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -130,7 +131,7 @@ export const getBookings = async (req, res) => {
       bookings
     });
   } catch (error) {
-    console.error('GetBookings Error:', error);
+    logger.error('GetBookings Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -158,7 +159,7 @@ export const getBooking = async (req, res) => {
       booking
     });
   } catch (error) {
-    console.error('GetBooking Error:', error);
+    logger.error('GetBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -195,7 +196,7 @@ export const updateBooking = async (req, res) => {
       booking
     });
   } catch (error) {
-    console.error('UpdateBooking Error:', error);
+    logger.error('UpdateBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -226,7 +227,7 @@ export const confirmBooking = async (req, res) => {
       booking
     });
   } catch (error) {
-    console.error('ConfirmBooking Error:', error);
+    logger.error('ConfirmBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -257,7 +258,7 @@ export const cancelBooking = async (req, res) => {
       booking
     });
   } catch (error) {
-    console.error('CancelBooking Error:', error);
+    logger.error('CancelBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -288,7 +289,7 @@ export const completeBooking = async (req, res) => {
       booking
     });
   } catch (error) {
-    console.error('CompleteBooking Error:', error);
+    logger.error('CompleteBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -314,7 +315,7 @@ export const deleteBooking = async (req, res) => {
       message: 'Booking deleted'
     });
   } catch (error) {
-    console.error('DeleteBooking Error:', error);
+    logger.error('DeleteBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -352,7 +353,7 @@ export const getBookingStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetBookingStats Error:', error);
+    logger.error('GetBookingStats Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -400,7 +401,7 @@ export const getBookingsByDate = async (req, res) => {
       bookings
     });
   } catch (error) {
-    console.error('GetBookingsByDate Error:', error);
+    logger.error('GetBookingsByDate Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'

@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 // ==================== CHECK CEO ROLE ====================
 
@@ -35,7 +36,7 @@ const verifyCEOAuth = async (req, res, next) => {
   }
 
   // Log CEO actions for audit trail
-  console.log(`[CEO ACTION] User: ${req.user.id}, Action: ${req.method} ${req.path}, Timestamp: ${new Date().toISOString()}`);
+  logger.log(`[CEO ACTION] User: ${req.user.id}, Action: ${req.method} ${req.path}, Timestamp: ${new Date().toISOString()}`);
 
   next();
 };
@@ -88,7 +89,7 @@ const validateCEOBusinessAccess = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('ValidateCEOBusinessAccess Error:', error);
+    logger.error('ValidateCEOBusinessAccess Error:', error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -191,7 +192,7 @@ const verifyCEOEmail = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('VerifyCEOEmail Error:', error);
+    logger.error('VerifyCEOEmail Error:', error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -244,14 +245,14 @@ const triggerDataBackup = async (req, res, next) => {
     }
 
     // Log backup request
-    console.log(`[BACKUP] Triggered by CEO: ${req.user.email} at ${new Date().toISOString()}`);
+    logger.log(`[BACKUP] Triggered by CEO: ${req.user.email} at ${new Date().toISOString()}`);
 
     // Backup logic would go here
     req.backupTriggered = true;
 
     next();
   } catch (error) {
-    console.error('TriggerDataBackup Error:', error);
+    logger.error('TriggerDataBackup Error:', error);
     next();
   }
 };
@@ -339,7 +340,7 @@ const verifySensitiveAction = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('VerifySensitiveAction Error:', error);
+    logger.error('VerifySensitiveAction Error:', error);
     res.status(500).json({
       success: false,
       message: error.message

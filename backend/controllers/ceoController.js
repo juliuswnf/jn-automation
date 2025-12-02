@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * CEO Controller - MVP Optimized
  * Essential CEO dashboard and salon management only
@@ -55,7 +56,7 @@ export const getCEODashboard = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetCEODashboard Error:', error);
+    logger.error('GetCEODashboard Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -99,7 +100,7 @@ export const getSystemOverview = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetSystemOverview Error:', error);
+    logger.error('GetSystemOverview Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -146,7 +147,7 @@ export const getAllBusinesses = async (req, res) => {
       businesses: salons
     });
   } catch (error) {
-    console.error('GetAllBusinesses Error:', error);
+    logger.error('GetAllBusinesses Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -206,7 +207,7 @@ export const createBusiness = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('CreateBusiness Error:', error);
+    logger.error('CreateBusiness Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -247,7 +248,7 @@ export const updateBusiness = async (req, res) => {
       salon
     });
   } catch (error) {
-    console.error('UpdateBusiness Error:', error);
+    logger.error('UpdateBusiness Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -282,7 +283,7 @@ export const deleteBusiness = async (req, res) => {
       message: 'Salon deleted successfully'
     });
   } catch (error) {
-    console.error('DeleteBusiness Error:', error);
+    logger.error('DeleteBusiness Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -322,7 +323,7 @@ export const suspendBusiness = async (req, res) => {
       salon
     });
   } catch (error) {
-    console.error('SuspendBusiness Error:', error);
+    logger.error('SuspendBusiness Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -362,7 +363,7 @@ export const reactivateBusiness = async (req, res) => {
       salon
     });
   } catch (error) {
-    console.error('ReactivateBusiness Error:', error);
+    logger.error('ReactivateBusiness Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -438,7 +439,7 @@ export const getRevenueReport = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetRevenueReport Error:', error);
+    logger.error('GetRevenueReport Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -478,7 +479,7 @@ export const getSubscriptionInfo = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetSubscriptionInfo Error:', error);
+    logger.error('GetSubscriptionInfo Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -509,7 +510,7 @@ export const getSystemSettings = async (req, res) => {
       settings
     });
   } catch (error) {
-    console.error('GetSystemSettings Error:', error);
+    logger.error('GetSystemSettings Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -542,7 +543,7 @@ export const updateSystemSettings = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('UpdateSystemSettings Error:', error);
+    logger.error('UpdateSystemSettings Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -569,7 +570,7 @@ export const getCEOStatus = async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('GetCEOStatus Error:', error);
+    logger.error('GetCEOStatus Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'

@@ -1,3 +1,4 @@
+import logger from './logger.js';
 // ==================== HELPER FUNCTIONS ====================
 
 import crypto from 'crypto';
@@ -380,24 +381,24 @@ export const paginationHelpers = {
 
 export const loggerHelpers = {
   logInfo: (message, data = null) => {
-    console.log(`ℹ️  [INFO] ${message}`, data ? data : '');
+    logger.log(`ℹ️  [INFO] ${message}`, data ? data : '');
   },
 
   logSuccess: (message, data = null) => {
-    console.log(`✅ [SUCCESS] ${message}`, data ? data : '');
+    logger.log(`✅ [SUCCESS] ${message}`, data ? data : '');
   },
 
   logWarning: (message, data = null) => {
-    console.warn(`⚠️  [WARNING] ${message}`, data ? data : '');
+    logger.warn(`⚠️  [WARNING] ${message}`, data ? data : '');
   },
 
   logError: (message, error = null) => {
-    console.error(`❌ [ERROR] ${message}`, error ? error.message : '');
+    logger.error(`❌ [ERROR] ${message}`, error ? error.message : '');
   },
 
   logDebug: (message, data = null) => {
     if (process.env.DEBUG === 'true') {
-      console.log(`🐛 [DEBUG] ${message}`, data ? data : '');
+      logger.log(`🐛 [DEBUG] ${message}`, data ? data : '');
     }
   }
 };

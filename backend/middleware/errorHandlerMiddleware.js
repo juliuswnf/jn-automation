@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Error Handler Middleware Suite
  * Version: 1.0.0
@@ -29,7 +30,7 @@ const logError = (err, req) => {
     userAgent: req.get('user-agent')
   };
 
-  console.error('❌ ERROR LOG:', errorLog);
+  logger.error('❌ ERROR LOG:', errorLog);
 };
 
 // ==================== ERROR HANDLERS ====================
@@ -240,7 +241,7 @@ const validationErrorHandler = (req, res, next) => {
 
 const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch((err) => {
-    console.error('❌ Async Error:', err);
+    logger.error('❌ Async Error:', err);
     next(err);
   });
 };

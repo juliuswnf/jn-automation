@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Stripe Webhook Controller
  * Handles Stripe webhook events for subscription management
@@ -20,7 +21,7 @@ export const handleStripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
     
     if (!sig) {
-      console.error('❌ Missing Stripe signature header');
+      logger.error('❌ Missing Stripe signature header');
       return res.status(401).json({
         success: false,
         message: 'Missing signature'
@@ -28,7 +29,7 @@ export const handleStripeWebhook = async (req, res) => {
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.error('❌ STRIPE_WEBHOOK_SECRET not configured');
+      logger.error('❌ STRIPE_WEBHOOK_SECRET not configured');
       return res.status(500).json({
         success: false,
         message: 'Webhook secret not configured'
@@ -43,14 +44,14 @@ export const handleStripeWebhook = async (req, res) => {
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.error('❌ Stripe signature verification failed:', err.message);
+      logger.error('❌ Stripe signature verification failed:', err.message);
       return res.status(400).json({
         success: false,
         message: 'Webhook signature verification failed'
       });
     }
 
-    console.log(`✅ Stripe webhook received: ${event.type}`);
+    logger.log(`✅ Stripe webhook received: ${event.type}`);
 
     // Handle different event types
     switch (event.type) {
@@ -76,12 +77,12 @@ export const handleStripeWebhook = async (req, res) => {
       
       case 'invoice.paid':
         await stripeService.handleSuccessfulPayment(event.data.object);
-        console.log('✅ Invoice paid successfully');
+        logger.log('✅ Invoice paid successfully');
         break;
       
       case 'invoice.payment_failed':
         await stripeService.handleFailedPayment(event.data.object);
-        console.log('❌ Invoice payment failed');
+        logger.log('❌ Invoice payment failed');
         break;
       
       case 'invoice.payment_action_required':
@@ -91,38 +92,38 @@ export const handleStripeWebhook = async (req, res) => {
       // ==================== PAYMENT EVENTS ====================
       
       case 'payment_intent.succeeded':
-        console.log('✅ Payment succeeded:', event.data.object.id);
+        logger.log('✅ Payment succeeded:', event.data.object.id);
         break;
 
       case 'payment_intent.payment_failed':
-        console.log('❌ Payment failed:', event.data.object.id);
+        logger.log('❌ Payment failed:', event.data.object.id);
         break;
 
       case 'charge.refunded':
-        console.log('💰 Charge refunded:', event.data.object.id);
+        logger.log('💰 Charge refunded:', event.data.object.id);
         break;
       
       // ==================== CUSTOMER EVENTS ====================
       
       case 'customer.created':
-        console.log('👤 Customer created:', event.data.object.id);
+        logger.log('👤 Customer created:', event.data.object.id);
         break;
       
       case 'customer.updated':
-        console.log('👤 Customer updated:', event.data.object.id);
+        logger.log('👤 Customer updated:', event.data.object.id);
         break;
       
       case 'customer.deleted':
-        console.log('👤 Customer deleted:', event.data.object.id);
+        logger.log('👤 Customer deleted:', event.data.object.id);
         break;
 
       default:
-        console.log(`⚠️ Unhandled webhook event type: ${event.type}`);
+        logger.log(`⚠️ Unhandled webhook event type: ${event.type}`);
     }
 
     res.status(200).json({ received: true });
   } catch (error) {
-    console.error('❌ Stripe Webhook Error:', error);
+    logger.error('❌ Stripe Webhook Error:', error);
     res.status(400).json({
       success: false,
       message: 'Webhook processing error',
@@ -139,14 +140,14 @@ const handleSubscriptionCreated = async (subscription) => {
     const salonId = subscription.metadata?.salonId;
     
     if (!salonId) {
-      console.warn('Subscription has no salonId in metadata');
+      logger.warn('Subscription has no salonId in metadata');
       return;
     }
     
     const salon = await Salon.findById(salonId);
     
     if (!salon) {
-      console.warn(`Salon not found: ${salonId}`);
+      logger.warn(`Salon not found: ${salonId}`);
       return;
     }
     
@@ -161,9 +162,9 @@ const handleSubscriptionCreated = async (subscription) => {
     
     await salon.save();
     
-    console.log(`✅ Subscription created for salon: ${salon.slug}`);
+    logger.log(`✅ Subscription created for salon: ${salon.slug}`);
   } catch (error) {
-    console.error('Error handling subscription created:', error);
+    logger.error('Error handling subscription created:', error);
   }
 };
 
@@ -177,7 +178,7 @@ const handleSubscriptionUpdated = async (subscription) => {
     });
     
     if (!salon) {
-      console.warn(`No salon found for subscription: ${subscription.id}`);
+      logger.warn(`No salon found for subscription: ${subscription.id}`);
       return;
     }
     
@@ -193,9 +194,9 @@ const handleSubscriptionUpdated = async (subscription) => {
     
     await salon.save();
     
-    console.log(`✅ Subscription updated for salon: ${salon.slug}`);
+    logger.log(`✅ Subscription updated for salon: ${salon.slug}`);
   } catch (error) {
-    console.error('Error handling subscription updated:', error);
+    logger.error('Error handling subscription updated:', error);
   }
 };
 
@@ -209,18 +210,18 @@ const handleSubscriptionDeleted = async (subscription) => {
     });
     
     if (!salon) {
-      console.warn(`No salon found for subscription: ${subscription.id}`);
+      logger.warn(`No salon found for subscription: ${subscription.id}`);
       return;
     }
     
     salon.subscription.status = 'canceled';
     await salon.save();
     
-    console.log(`✅ Subscription deleted for salon: ${salon.slug}`);
+    logger.log(`✅ Subscription deleted for salon: ${salon.slug}`);
     
     // TODO: Send email notification to salon owner
   } catch (error) {
-    console.error('Error handling subscription deleted:', error);
+    logger.error('Error handling subscription deleted:', error);
   }
 };
 
@@ -234,15 +235,15 @@ const handleTrialWillEnd = async (subscription) => {
     });
     
     if (!salon) {
-      console.warn(`No salon found for subscription: ${subscription.id}`);
+      logger.warn(`No salon found for subscription: ${subscription.id}`);
       return;
     }
     
-    console.log(`⚠️ Trial ending soon for salon: ${salon.slug}`);
+    logger.log(`⚠️ Trial ending soon for salon: ${salon.slug}`);
     
     // TODO: Send email notification to salon owner about trial ending
   } catch (error) {
-    console.error('Error handling trial will end:', error);
+    logger.error('Error handling trial will end:', error);
   }
 };
 
@@ -262,15 +263,15 @@ const handlePaymentActionRequired = async (invoice) => {
     });
     
     if (!salon) {
-      console.warn(`No salon found for subscription: ${subscriptionId}`);
+      logger.warn(`No salon found for subscription: ${subscriptionId}`);
       return;
     }
     
-    console.log(`⚠️ Payment action required for salon: ${salon.slug}`);
+    logger.log(`⚠️ Payment action required for salon: ${salon.slug}`);
     
     // TODO: Send email notification to salon owner about payment action required
   } catch (error) {
-    console.error('Error handling payment action required:', error);
+    logger.error('Error handling payment action required:', error);
   }
 };
 

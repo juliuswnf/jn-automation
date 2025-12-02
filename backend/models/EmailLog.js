@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import logger from '../utils/logger.js';
 
 const emailLogSchema = new mongoose.Schema(
   {
@@ -182,10 +183,10 @@ emailLogSchema.methods.markAsRetry = async function() {
     this.attempts += 1;
     this.lastAttemptAt = new Date();
     this.status = 'pending';
-    console.log(`🔄 Email retry scheduled: ${this.recipientEmail} (Attempt ${this.attempts})`);
+    logger.log(`🔄 Email retry scheduled: ${this.recipientEmail} (Attempt ${this.attempts})`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as retry error:', err.message);
+    logger.error('❌ Mark as retry error:', err.message);
     throw err;
   }
 };
@@ -195,10 +196,10 @@ emailLogSchema.methods.markAsSent = async function(responseCode = 250) {
     this.status = 'sent';
     this.sentAt = new Date();
     this.responseCode = responseCode;
-    console.log(`✅ Email sent: ${this.recipientEmail}`);
+    logger.log(`✅ Email sent: ${this.recipientEmail}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as sent error:', err.message);
+    logger.error('❌ Mark as sent error:', err.message);
     throw err;
   }
 };
@@ -208,10 +209,10 @@ emailLogSchema.methods.markAsFailed = async function(errorMessage, errorCode = '
     this.status = 'failed';
     this.error = errorMessage;
     this.responseCode = errorCode;
-    console.error(`❌ Email failed: ${this.recipientEmail} - ${errorMessage}`);
+    logger.error(`❌ Email failed: ${this.recipientEmail} - ${errorMessage}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as failed error:', err.message);
+    logger.error('❌ Mark as failed error:', err.message);
     throw err;
   }
 };
@@ -220,10 +221,10 @@ emailLogSchema.methods.markAsBounced = async function(bounceType = 'permanent') 
   try {
     this.status = 'bounced';
     this.error = `Email bounced (${bounceType})`;
-    console.warn(`⚠️ Email bounced: ${this.recipientEmail} - ${bounceType}`);
+    logger.warn(`⚠️ Email bounced: ${this.recipientEmail} - ${bounceType}`);
     return await this.save();
   } catch (err) {
-    console.error('❌ Mark as bounced error:', err.message);
+    logger.error('❌ Mark as bounced error:', err.message);
     throw err;
   }
 };
@@ -251,7 +252,7 @@ emailLogSchema.statics.getFailedEmails = function(companyId, limit = 50) {
       .sort({ lastAttemptAt: 1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get failed emails error:', err.message);
+    logger.error('❌ Get failed emails error:', err.message);
     throw err;
   }
 };
@@ -264,7 +265,7 @@ emailLogSchema.statics.getSentCount = async function(companyId, startDate, endDa
       sentAt: { $gte: startDate, $lte: endDate }
     });
   } catch (err) {
-    console.error('❌ Get sent count error:', err.message);
+    logger.error('❌ Get sent count error:', err.message);
     throw err;
   }
 };
@@ -277,7 +278,7 @@ emailLogSchema.statics.getFailedCount = async function(companyId, startDate, end
       sentAt: { $gte: startDate, $lte: endDate }
     });
   } catch (err) {
-    console.error('❌ Get failed count error:', err.message);
+    logger.error('❌ Get failed count error:', err.message);
     throw err;
   }
 };
@@ -303,7 +304,7 @@ emailLogSchema.statics.getStatistics = async function(companyId, startDate, endD
       }
     ]);
   } catch (err) {
-    console.error('❌ Get statistics error:', err.message);
+    logger.error('❌ Get statistics error:', err.message);
     throw err;
   }
 };
@@ -329,7 +330,7 @@ emailLogSchema.statics.getStatsByType = async function(companyId, startDate, end
       }
     ]);
   } catch (err) {
-    console.error('❌ Get stats by type error:', err.message);
+    logger.error('❌ Get stats by type error:', err.message);
     throw err;
   }
 };
@@ -344,7 +345,7 @@ emailLogSchema.statics.getRecipientHistory = function(companyId, recipientEmail,
       .sort({ createdAt: -1 })
       .limit(limit);
   } catch (err) {
-    console.error('❌ Get recipient history error:', err.message);
+    logger.error('❌ Get recipient history error:', err.message);
     throw err;
   }
 };
@@ -360,7 +361,7 @@ emailLogSchema.statics.getPendingForRetry = function(companyId, maxAttempts = 10
       .sort({ lastAttemptAt: 1 })
       .limit(100);  // Batch processing
   } catch (err) {
-    console.error('❌ Get pending for retry error:', err.message);
+    logger.error('❌ Get pending for retry error:', err.message);
     throw err;
   }
 };
@@ -377,7 +378,7 @@ emailLogSchema.statics.getBouncedEmails = function(companyId, days = 30) {
       createdAt: { $gte: startDate }
     }).sort({ createdAt: -1 });
   } catch (err) {
-    console.error('❌ Get bounced emails error:', err.message);
+    logger.error('❌ Get bounced emails error:', err.message);
     throw err;
   }
 };
@@ -424,7 +425,7 @@ emailLogSchema.statics.getDeliveryRate = async function(companyId, days = 7) {
 
     return stats[0] || { total: 0, sent: 0, failed: 0, bounced: 0, deliveryRate: 0 };
   } catch (err) {
-    console.error('❌ Get delivery rate error:', err.message);
+    logger.error('❌ Get delivery rate error:', err.message);
     throw err;
   }
 };
@@ -444,7 +445,7 @@ emailLogSchema.pre('save', async function(next) {
 
     next();
   } catch (err) {
-    console.error('❌ Pre-save hook error:', err.message);
+    logger.error('❌ Pre-save hook error:', err.message);
     next(err);
   }
 });

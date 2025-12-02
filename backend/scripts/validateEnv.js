@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 #!/usr/bin/env node
 const required = [
   'NODE_ENV',
@@ -10,8 +11,8 @@ const required = [
 const missing = required.filter((k) => !process.env[k]);
 
 if (missing.length) {
-  console.error('Missing required environment variables:', missing.join(', '));
+  logger.error('Missing required environment variables:', missing.join(', '));
   process.exitCode = 1;
 } else {
-  console.log('All required environment variables are present.');
+  logger.log('All required environment variables are present.');
 }

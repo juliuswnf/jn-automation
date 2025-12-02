@@ -1,30 +1,31 @@
 import cron from 'node-cron';
 import errorHandlerService from './errorHandlerService.js';
+import logger from '../utils/logger.js';
 
 // ==================== CLEANUP JOBS ====================
 
 const cleanupExpiredErrorLogs = async () => {
   try {
     // MVP: Error logs are console-only, no DB cleanup needed
-    console.log('✅ Cleanup: Error logs cleanup triggered (console-only for MVP)');
+    logger.log('✅ Cleanup: Error logs cleanup triggered (console-only for MVP)');
   } catch (err) {
-    console.error('❌ Cleanup error logs failed:', err.message);
+    logger.error('❌ Cleanup error logs failed:', err.message);
   }
 };
 
 const cleanupExpiredSessions = async () => {
   try {
-    console.log('✅ Session cleanup triggered');
+    logger.log('✅ Session cleanup triggered');
   } catch (err) {
-    console.error('❌ Session cleanup failed:', err.message);
+    logger.error('❌ Session cleanup failed:', err.message);
   }
 };
 
 const cleanupOrphanedData = async () => {
   try {
-    console.log('✅ Orphaned data cleanup triggered');
+    logger.log('✅ Orphaned data cleanup triggered');
   } catch (err) {
-    console.error('❌ Orphaned data cleanup failed:', err.message);
+    logger.error('❌ Orphaned data cleanup failed:', err.message);
   }
 };
 
@@ -32,19 +33,19 @@ const cleanupOrphanedData = async () => {
 
 const performDatabaseMaintenance = async () => {
   try {
-    console.log('✅ Database maintenance started');
+    logger.log('✅ Database maintenance started');
     // Add DB index building, stats update, etc.
   } catch (err) {
-    console.error('❌ Database maintenance failed:', err.message);
+    logger.error('❌ Database maintenance failed:', err.message);
   }
 };
 
 const generateSystemReport = async () => {
   try {
     // MVP: Simple console report
-    console.log(`✅ System Report: System running normally`);
+    logger.log(`✅ System Report: System running normally`);
   } catch (err) {
-    console.error('❌ System report generation failed:', err.message);
+    logger.error('❌ System report generation failed:', err.message);
   }
 };
 
@@ -52,17 +53,17 @@ const generateSystemReport = async () => {
 
 const checkSystemHealth = async () => {
   try {
-    console.log('✅ System health check passed');
+    logger.log('✅ System health check passed');
   } catch (err) {
-    console.error('❌ System health check failed:', err.message);
+    logger.error('❌ System health check failed:', err.message);
   }
 };
 
 const checkWebhookHealth = async () => {
   try {
-    console.log('✅ Webhook health check triggered');
+    logger.log('✅ Webhook health check triggered');
   } catch (err) {
-    console.error('❌ Webhook health check failed:', err.message);
+    logger.error('❌ Webhook health check failed:', err.message);
   }
 };
 
@@ -70,17 +71,17 @@ const checkWebhookHealth = async () => {
 
 const sendDailyReports = async () => {
   try {
-    console.log('✅ Daily reports sent');
+    logger.log('✅ Daily reports sent');
   } catch (err) {
-    console.error('❌ Daily report sending failed:', err.message);
+    logger.error('❌ Daily report sending failed:', err.message);
   }
 };
 
 const sendWeeklyDigest = async () => {
   try {
-    console.log('✅ Weekly digest sent');
+    logger.log('✅ Weekly digest sent');
   } catch (err) {
-    console.error('❌ Weekly digest sending failed:', err.message);
+    logger.error('❌ Weekly digest sending failed:', err.message);
   }
 };
 
@@ -88,7 +89,7 @@ const sendWeeklyDigest = async () => {
 
 export const initializeCronJobs = () => {
   try {
-    console.log('🕐 Initializing Cron Jobs...');
+    logger.log('🕐 Initializing Cron Jobs...');
 
     // ✅ Cleanup Jobs
     // Every day at 2 AM - Clean up old error logs
@@ -121,9 +122,9 @@ export const initializeCronJobs = () => {
     // Every Monday at 9 AM - Send weekly digest
     cron.schedule('0 9 * * 1', sendWeeklyDigest);
 
-    console.log('✅ All Cron Jobs initialized successfully');
+    logger.log('✅ All Cron Jobs initialized successfully');
   } catch (err) {
-    console.error('❌ Failed to initialize cron jobs:', err.message);
+    logger.error('❌ Failed to initialize cron jobs:', err.message);
     throw err;
   }
 };
@@ -135,9 +136,9 @@ export const stopAllCronJobs = () => {
     cron.getTasks().forEach(task => {
       task.stop();
     });
-    console.log('✅ All cron jobs stopped');
+    logger.log('✅ All cron jobs stopped');
   } catch (err) {
-    console.error('❌ Failed to stop cron jobs:', err.message);
+    logger.error('❌ Failed to stop cron jobs:', err.message);
     throw err;
   }
 };

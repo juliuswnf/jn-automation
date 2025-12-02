@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Public Booking Controller
  * Handles booking creation without customer authentication
@@ -65,7 +66,7 @@ export const getSalonBySlug = async (req, res) => {
       employees
     });
   } catch (error) {
-    console.error('GetSalonBySlug Error:', error);
+    logger.error('GetSalonBySlug Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -185,7 +186,7 @@ export const getAvailableSlots = async (req, res) => {
       slots
     });
   } catch (error) {
-    console.error('GetAvailableSlots Error:', error);
+    logger.error('GetAvailableSlots Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'
@@ -330,9 +331,9 @@ export const createPublicBooking = async (req, res) => {
       // Mark email as sent
       await booking.markEmailSent('confirmation');
       
-      console.log(`✉️  Sent confirmation email to ${customerEmail}`);
+      logger.log(`✉️  Sent confirmation email to ${customerEmail}`);
     } catch (emailError) {
-      console.error('Error sending confirmation email:', emailError);
+      logger.error('Error sending confirmation email:', emailError);
       // Don't fail the booking if email fails
     }
     
@@ -340,14 +341,14 @@ export const createPublicBooking = async (req, res) => {
     try {
       await emailQueueWorker.scheduleReminderEmail(booking, salon);
     } catch (error) {
-      console.error('Error scheduling reminder email:', error);
+      logger.error('Error scheduling reminder email:', error);
     }
     
     // Schedule review email
     try {
       await emailQueueWorker.scheduleReviewEmail(booking, salon);
     } catch (error) {
-      console.error('Error scheduling review email:', error);
+      logger.error('Error scheduling review email:', error);
     }
     
     // Notify salon owner
@@ -361,7 +362,7 @@ export const createPublicBooking = async (req, res) => {
         html: `<h2>New Booking</h2><p><strong>Customer:</strong> ${customerName}<br><strong>Email:</strong> ${customerEmail}<br><strong>Service:</strong> ${service.name}<br><strong>Date:</strong> ${new Date(bookingDate).toLocaleString('de-DE')}</p>`
       });
     } catch (error) {
-      console.error('Error sending salon notification:', error);
+      logger.error('Error sending salon notification:', error);
     }
     
     res.status(201).json({
@@ -375,7 +376,7 @@ export const createPublicBooking = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('CreatePublicBooking Error:', error);
+    logger.error('CreatePublicBooking Error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error'

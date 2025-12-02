@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Rate Limiter Middleware Suite
  * Version: 1.0.0
@@ -28,7 +29,7 @@ class MemoryStoreAdapter {
 
       cb(null, current);
     } catch (err) {
-      console.error('❌ MemoryStore incr error:', err);
+      logger.error('❌ MemoryStore incr error:', err);
       cb(err);
     }
   }
@@ -39,7 +40,7 @@ class MemoryStoreAdapter {
       this.hits.set(key, { count: current, timestamp: Date.now() });
       cb(null, current);
     } catch (err) {
-      console.error('❌ MemoryStore decrement error:', err);
+      logger.error('❌ MemoryStore decrement error:', err);
       cb(err);
     }
   }
@@ -65,7 +66,7 @@ class MemoryStoreAdapter {
       }
     }
 
-    console.log(`✅ Cleaned up ${deleted} expired rate limit entries`);
+    logger.log(`✅ Cleaned up ${deleted} expired rate limit entries`);
   }
 
   startCleanupInterval() {
@@ -98,7 +99,7 @@ const generalLimiter = rateLimit({
   keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
   skip: (req) => req.user && (req.user.role === 'admin' || req.user.role === 'ceo'),
   handler: (req, res) => {
-    console.warn(`⚠️ Rate limit exceeded for ${req.ip}`);
+    logger.warn(`⚠️ Rate limit exceeded for ${req.ip}`);
     res.status(429).json({
       success: false,
       message: 'Zu viele Anfragen, bitte später versuchen',
@@ -119,7 +120,7 @@ const authLimiter = rateLimit({
   store: memoryStoreAdapter,
   keyGenerator: (req) => req.body?.email || req.ip || 'unknown',
   handler: (req, res) => {
-    console.warn(`⚠️ Auth rate limit exceeded for ${req.body?.email || req.ip}`);
+    logger.warn(`⚠️ Auth rate limit exceeded for ${req.body?.email || req.ip}`);
     res.status(429).json({
       success: false,
       message: 'Zu viele Login-Versuche. Bitte versuchen Sie es später erneut.',
@@ -159,7 +160,7 @@ const paymentLimiter = rateLimit({
   store: memoryStoreAdapter,
   keyGenerator: (req) => req.user?.id || req.ip,
   handler: (req, res) => {
-    console.warn(`⚠️ Payment rate limit exceeded for user ${req.user?.id}`);
+    logger.warn(`⚠️ Payment rate limit exceeded for user ${req.user?.id}`);
     res.status(429).json({
       success: false,
       message: 'Zu viele Zahlungsversuche. Bitte versuchen Sie es später erneut.',
@@ -191,7 +192,7 @@ const emailLimiter = rateLimit({
   store: memoryStoreAdapter,
   keyGenerator: (req) => req.user?.email || req.email || req.ip,
   handler: (req, res) => {
-    console.warn(`⚠️ Email rate limit exceeded for ${req.user?.email || req.ip}`);
+    logger.warn(`⚠️ Email rate limit exceeded for ${req.user?.email || req.ip}`);
     res.status(429).json({
       success: false,
       message: 'Zu viele Email-Anfragen. Bitte versuchen Sie es später erneut.',

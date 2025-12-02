@@ -1,5 +1,6 @@
 import EmailQueue from '../models/EmailQueue.js';
 import Booking from '../models/Booking.js';
+import logger from '../utils/logger.js';
 
 /**
  * Google Review Service - Automated Review Request Emails
@@ -17,14 +18,14 @@ export const sendReviewRequestEmail = async (booking) => {
 
     // Check if Google review URL is configured
     if (!salon.googleReviewUrl) {
-      console.warn(`⚠️ Google Review URL not configured for salon: ${salon.name}`);
+      logger.warn(`⚠️ Google Review URL not configured for salon: ${salon.name}`);
       return { success: false, message: 'Google review URL not configured' };
     }
 
     // Get email template
     const template = salon.getEmailTemplate('review', booking.language);
     if (!template) {
-      console.error(`❌ Review email template not found for language: ${booking.language}`);
+      logger.error(`❌ Review email template not found for language: ${booking.language}`);
       return { success: false, message: 'Email template not found' };
     }
 
@@ -53,11 +54,11 @@ export const sendReviewRequestEmail = async (booking) => {
       language: booking.language
     });
 
-    console.log(`✅ Review request email queued for: ${booking.customerEmail}`);
+    logger.log(`✅ Review request email queued for: ${booking.customerEmail}`);
 
     return { success: true, message: 'Review email queued' };
   } catch (error) {
-    console.error('❌ SendReviewRequestEmail Error:', error);
+    logger.error('❌ SendReviewRequestEmail Error:', error);
     throw error;
   }
 };
@@ -69,14 +70,14 @@ export const processCompletedBookings = async () => {
     // Get bookings that need review email
     const bookings = await Booking.getNeedingReviewEmail();
 
-    console.log(`🔍 Found ${bookings.length} bookings needing review email`);
+    logger.log(`🔍 Found ${bookings.length} bookings needing review email`);
 
     for (const booking of bookings) {
       try {
         await sendReviewRequestEmail(booking);
         await booking.markEmailSent('review');
       } catch (error) {
-        console.error(`❌ Failed to send review email for booking ${booking._id}:`, error);
+        logger.error(`❌ Failed to send review email for booking ${booking._id}:`, error);
       }
     }
 
@@ -85,7 +86,7 @@ export const processCompletedBookings = async () => {
       processed: bookings.length
     };
   } catch (error) {
-    console.error('❌ ProcessCompletedBookings Error:', error);
+    logger.error('❌ ProcessCompletedBookings Error:', error);
     throw error;
   }
 };

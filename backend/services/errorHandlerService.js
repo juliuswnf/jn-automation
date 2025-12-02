@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 // ==================== ERROR TYPES ====================
 
@@ -99,11 +100,11 @@ class ErrorHandlerService {
       }
 
       // MVP: Console logging instead of DB
-      console.error('📝 Error logged:', errorData);
+      logger.error('📝 Error logged:', errorData);
       
       return errorData;
     } catch (err) {
-      console.error('❌ Failed to log error:', err);
+      logger.error('❌ Failed to log error:', err);
       return null;
     }
   }

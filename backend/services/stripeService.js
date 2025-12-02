@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Stripe Subscription Service
  * Handles Stripe integration for salon subscriptions
@@ -28,10 +29,10 @@ export const createStripeCustomer = async (salon, ownerData) => {
       }
     });
     
-    console.log(`✅ Created Stripe customer: ${customer.id}`);
+    logger.log(`✅ Created Stripe customer: ${customer.id}`);
     return customer.id;
   } catch (error) {
-    console.error('Error creating Stripe customer:', error);
+    logger.error('Error creating Stripe customer:', error);
     throw error;
   }
 };
@@ -90,11 +91,11 @@ export const createSubscription = async (salon, priceId, trialDays = 14) => {
     
     await salon.save();
     
-    console.log(`✅ Created subscription for salon ${salon.slug}`);
+    logger.log(`✅ Created subscription for salon ${salon.slug}`);
     
     return subscription;
   } catch (error) {
-    console.error('Error creating subscription:', error);
+    logger.error('Error creating subscription:', error);
     throw error;
   }
 };
@@ -129,11 +130,11 @@ export const cancelSubscription = async (salon, immediately = false) => {
     
     await salon.save();
     
-    console.log(`✅ Cancelled subscription for salon ${salon.slug}`);
+    logger.log(`✅ Cancelled subscription for salon ${salon.slug}`);
     
     return subscription;
   } catch (error) {
-    console.error('Error cancelling subscription:', error);
+    logger.error('Error cancelling subscription:', error);
     throw error;
   }
 };
@@ -159,11 +160,11 @@ export const reactivateSubscription = async (salon) => {
     salon.subscription.status = 'active';
     await salon.save();
     
-    console.log(`✅ Reactivated subscription for salon ${salon.slug}`);
+    logger.log(`✅ Reactivated subscription for salon ${salon.slug}`);
     
     return subscription;
   } catch (error) {
-    console.error('Error reactivating subscription:', error);
+    logger.error('Error reactivating subscription:', error);
     throw error;
   }
 };
@@ -195,11 +196,11 @@ export const updateSubscriptionPlan = async (salon, newPriceId) => {
     salon.subscription.planId = newPriceId;
     await salon.save();
     
-    console.log(`✅ Updated subscription plan for salon ${salon.slug}`);
+    logger.log(`✅ Updated subscription plan for salon ${salon.slug}`);
     
     return updatedSubscription;
   } catch (error) {
-    console.error('Error updating subscription plan:', error);
+    logger.error('Error updating subscription plan:', error);
     throw error;
   }
 };
@@ -232,7 +233,7 @@ export const getSubscriptionStatus = async (salon) => {
       trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null
     };
   } catch (error) {
-    console.error('Error getting subscription status:', error);
+    logger.error('Error getting subscription status:', error);
     throw error;
   }
 };
@@ -246,7 +247,7 @@ export const handleSuccessfulPayment = async (invoice) => {
     const subscriptionId = invoice.subscription;
     
     if (!subscriptionId) {
-      console.warn('Invoice has no subscription ID');
+      logger.warn('Invoice has no subscription ID');
       return;
     }
     
@@ -255,7 +256,7 @@ export const handleSuccessfulPayment = async (invoice) => {
     });
     
     if (!salon) {
-      console.warn(`No salon found for subscription: ${subscriptionId}`);
+      logger.warn(`No salon found for subscription: ${subscriptionId}`);
       return;
     }
     
@@ -266,9 +267,9 @@ export const handleSuccessfulPayment = async (invoice) => {
     
     await salon.save();
     
-    console.log(`✅ Updated subscription after successful payment for salon ${salon.slug}`);
+    logger.log(`✅ Updated subscription after successful payment for salon ${salon.slug}`);
   } catch (error) {
-    console.error('Error handling successful payment:', error);
+    logger.error('Error handling successful payment:', error);
     throw error;
   }
 };
@@ -282,7 +283,7 @@ export const handleFailedPayment = async (invoice) => {
     const subscriptionId = invoice.subscription;
     
     if (!subscriptionId) {
-      console.warn('Invoice has no subscription ID');
+      logger.warn('Invoice has no subscription ID');
       return;
     }
     
@@ -291,7 +292,7 @@ export const handleFailedPayment = async (invoice) => {
     });
     
     if (!salon) {
-      console.warn(`No salon found for subscription: ${subscriptionId}`);
+      logger.warn(`No salon found for subscription: ${subscriptionId}`);
       return;
     }
     
@@ -300,11 +301,11 @@ export const handleFailedPayment = async (invoice) => {
     
     await salon.save();
     
-    console.log(`⚠️ Updated subscription after failed payment for salon ${salon.slug}`);
+    logger.log(`⚠️ Updated subscription after failed payment for salon ${salon.slug}`);
     
     // TODO: Send email notification to salon owner
   } catch (error) {
-    console.error('Error handling failed payment:', error);
+    logger.error('Error handling failed payment:', error);
     throw error;
   }
 };
@@ -362,11 +363,11 @@ export const createCheckoutSession = async (salon, priceId, successUrl, cancelUr
       }
     });
     
-    console.log(`✅ Created checkout session for salon ${salon.slug}`);
+    logger.log(`✅ Created checkout session for salon ${salon.slug}`);
     
     return session;
   } catch (error) {
-    console.error('Error creating checkout session:', error);
+    logger.error('Error creating checkout session:', error);
     throw error;
   }
 };
@@ -392,7 +393,7 @@ export const createBillingPortalSession = async (salon, returnUrl) => {
     
     return session;
   } catch (error) {
-    console.error('Error creating billing portal session:', error);
+    logger.error('Error creating billing portal session:', error);
     throw error;
   }
 };

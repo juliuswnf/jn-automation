@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 /**
  * Email Queue Worker
  * Processes scheduled emails (reminders and review requests)
@@ -29,15 +30,15 @@ const processEmailQueue = async () => {
       return;
     }
     
-    console.log(`📧 Processing ${pendingEmails.length} pending emails...`);
+    logger.log(`📧 Processing ${pendingEmails.length} pending emails...`);
     
     for (const queueItem of pendingEmails) {
       await processEmailQueueItem(queueItem);
     }
     
-    console.log(`✅ Finished processing email queue`);
+    logger.log(`✅ Finished processing email queue`);
   } catch (error) {
-    console.error('❌ Error processing email queue:', error);
+    logger.error('❌ Error processing email queue:', error);
   }
 };
 
@@ -53,7 +54,7 @@ const processEmailQueueItem = async (queueItem) => {
       .populate('serviceId');
     
     if (!booking) {
-      console.warn(`⚠️  Booking not found: ${queueItem.bookingId}`);
+      logger.warn(`⚠️  Booking not found: ${queueItem.bookingId}`);
       queueItem.status = 'failed';
       queueItem.error = 'Booking not found';
       await queueItem.save();
@@ -64,7 +65,7 @@ const processEmailQueueItem = async (queueItem) => {
     const salon = await Salon.findById(booking.salonId || queueItem.salonId);
     
     if (!salon) {
-      console.warn(`⚠️  Salon not found`);
+      logger.warn(`⚠️  Salon not found`);
       queueItem.status = 'failed';
       queueItem.error = 'Salon not found';
       await queueItem.save();
@@ -118,10 +119,10 @@ const processEmailQueueItem = async (queueItem) => {
       sentAt: new Date()
     });
     
-    console.log(`✉️  Sent ${queueItem.type} email to ${booking.customerEmail}`);
+    logger.log(`✉️  Sent ${queueItem.type} email to ${booking.customerEmail}`);
     
   } catch (error) {
-    console.error(`❌ Failed to send email ${queueItem._id}:`, error.message);
+    logger.error(`❌ Failed to send email ${queueItem._id}:`, error.message);
     
     // Increment retry counter
     queueItem.retries = (queueItem.retries || 0) + 1;
@@ -130,7 +131,7 @@ const processEmailQueueItem = async (queueItem) => {
     // If max retries reached, mark as failed
     if (queueItem.retries >= 3) {
       queueItem.status = 'failed';
-      console.error(`💀 Email ${queueItem._id} failed after ${queueItem.retries} retries`);
+      logger.error(`💀 Email ${queueItem._id} failed after ${queueItem.retries} retries`);
       
       // Log failed send
       await EmailLog.create({
@@ -147,7 +148,7 @@ const processEmailQueueItem = async (queueItem) => {
       // Schedule retry with exponential backoff
       const backoffMinutes = Math.pow(2, queueItem.retries) * 5; // 5, 10, 20 minutes
       queueItem.scheduledFor = new Date(Date.now() + backoffMinutes * 60 * 1000);
-      console.log(`🔄 Scheduled retry #${queueItem.retries} in ${backoffMinutes} minutes`);
+      logger.log(`🔄 Scheduled retry #${queueItem.retries} in ${backoffMinutes} minutes`);
     }
     
     await queueItem.save();
@@ -166,7 +167,7 @@ const scheduleReminderEmail = async (booking, salon) => {
     
     // Don't schedule if booking date is in the past or too soon
     if (scheduledFor < new Date()) {
-      console.log('⏭️  Skipping reminder - booking is too soon or in the past');
+      logger.log('⏭️  Skipping reminder - booking is too soon or in the past');
       return null;
     }
     
@@ -179,10 +180,10 @@ const scheduleReminderEmail = async (booking, salon) => {
       status: 'pending'
     });
     
-    console.log(`⏰ Scheduled reminder email for ${booking.customerEmail} at ${scheduledFor}`);
+    logger.log(`⏰ Scheduled reminder email for ${booking.customerEmail} at ${scheduledFor}`);
     return queueItem;
   } catch (error) {
-    console.error('Error scheduling reminder email:', error);
+    logger.error('Error scheduling reminder email:', error);
     throw error;
   }
 };
@@ -206,10 +207,10 @@ const scheduleReviewEmail = async (booking, salon) => {
       status: 'pending'
     });
     
-    console.log(`⭐ Scheduled review email for ${booking.customerEmail} at ${scheduledFor}`);
+    logger.log(`⭐ Scheduled review email for ${booking.customerEmail} at ${scheduledFor}`);
     return queueItem;
   } catch (error) {
-    console.error('Error scheduling review email:', error);
+    logger.error('Error scheduling review email:', error);
     throw error;
   }
 };
@@ -231,10 +232,10 @@ const cancelScheduledEmails = async (bookingId) => {
       }
     );
     
-    console.log(`🚫 Cancelled ${result.modifiedCount} pending emails for booking ${bookingId}`);
+    logger.log(`🚫 Cancelled ${result.modifiedCount} pending emails for booking ${bookingId}`);
     return result;
   } catch (error) {
-    console.error('Error cancelling scheduled emails:', error);
+    logger.error('Error cancelling scheduled emails:', error);
     throw error;
   }
 };
@@ -253,12 +254,12 @@ const cleanupOldEmails = async () => {
     });
     
     if (result.deletedCount > 0) {
-      console.log(`🧹 Cleaned up ${result.deletedCount} old email queue items`);
+      logger.log(`🧹 Cleaned up ${result.deletedCount} old email queue items`);
     }
     
     return result;
   } catch (error) {
-    console.error('Error cleaning up old emails:', error);
+    logger.error('Error cleaning up old emails:', error);
     throw error;
   }
 };
@@ -268,7 +269,7 @@ const cleanupOldEmails = async () => {
  * Runs every minute to process pending emails
  */
 const startWorker = () => {
-  console.log('🚀 Starting email queue worker...');
+  logger.log('🚀 Starting email queue worker...');
   
   // Process queue immediately on startup
   processEmailQueue();
@@ -294,7 +295,7 @@ const stopWorker = (intervals) => {
   if (intervals.cleanupIntervalId) {
     clearInterval(intervals.cleanupIntervalId);
   }
-  console.log('🛑 Email queue worker stopped');
+  logger.log('🛑 Email queue worker stopped');
 };
 
 // ES6 Export

@@ -13,6 +13,7 @@ import Review from '../models/Review.js';
 import Payment from '../models/Payment.js';
 import Employee from '../models/Employee.js';
 import Appointment from '../models/Appointment.js';
+import logger from './logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,9 +39,9 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log('\n✅ Database connected\n');
+    logger.log('\n✅ Database connected\n');
   } catch (error) {
-    console.error('\n❌ Database connection error:', error.message, '\n');
+    logger.error('\n❌ Database connection error:', error.message, '\n');
     process.exit(1);
   }
 };
@@ -52,7 +53,7 @@ const hashPassword = async (password) => {
 
 export const seedUsers = async (companyId) => {
   try {
-    console.log('📝 Seeding users...\n');
+    logger.log('📝 Seeding users...\n');
 
     const hashedPassword = await hashPassword('TestPassword123!');
 
@@ -90,17 +91,17 @@ export const seedUsers = async (companyId) => {
     ];
 
     const createdUsers = await User.insertMany(users);
-    console.log(`✅ ${createdUsers.length} users seeded\n`);
+    logger.log(`✅ ${createdUsers.length} users seeded\n`);
     return createdUsers;
   } catch (error) {
-    console.error('❌ Error seeding users:', error.message, '\n');
+    logger.error('❌ Error seeding users:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedCustomers = async (companyId) => {
   try {
-    console.log('👥 Seeding customers...\n');
+    logger.log('👥 Seeding customers...\n');
 
     const customers = [
       {
@@ -145,17 +146,17 @@ export const seedCustomers = async (companyId) => {
     ];
 
     const createdCustomers = await Customer.insertMany(customers);
-    console.log(`✅ ${createdCustomers.length} customers seeded\n`);
+    logger.log(`✅ ${createdCustomers.length} customers seeded\n`);
     return createdCustomers;
   } catch (error) {
-    console.error('❌ Error seeding customers:', error.message, '\n');
+    logger.error('❌ Error seeding customers:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedServices = async (companyId) => {
   try {
-    console.log('🔧 Seeding services...\n');
+    logger.log('🔧 Seeding services...\n');
 
     const services = [
       {
@@ -201,17 +202,17 @@ export const seedServices = async (companyId) => {
     ];
 
     const createdServices = await Service.insertMany(services);
-    console.log(`✅ ${createdServices.length} services seeded\n`);
+    logger.log(`✅ ${createdServices.length} services seeded\n`);
     return createdServices;
   } catch (error) {
-    console.error('❌ Error seeding services:', error.message, '\n');
+    logger.error('❌ Error seeding services:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedAppointments = async (companyId, customers, services, employees) => {
   try {
-    console.log('📅 Seeding appointments...\n');
+    logger.log('📅 Seeding appointments...\n');
 
     const appointments = [
       {
@@ -247,17 +248,17 @@ export const seedAppointments = async (companyId, customers, services, employees
     ];
 
     const createdAppointments = await Appointment.insertMany(appointments);
-    console.log(`✅ ${createdAppointments.length} appointments seeded\n`);
+    logger.log(`✅ ${createdAppointments.length} appointments seeded\n`);
     return createdAppointments;
   } catch (error) {
-    console.error('❌ Error seeding appointments:', error.message, '\n');
+    logger.error('❌ Error seeding appointments:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedBookings = async (companyId, customers, services) => {
   try {
-    console.log('📋 Seeding bookings...\n');
+    logger.log('📋 Seeding bookings...\n');
 
     const bookings = [
       {
@@ -283,17 +284,17 @@ export const seedBookings = async (companyId, customers, services) => {
     ];
 
     const createdBookings = await Booking.insertMany(bookings);
-    console.log(`✅ ${createdBookings.length} bookings seeded\n`);
+    logger.log(`✅ ${createdBookings.length} bookings seeded\n`);
     return createdBookings;
   } catch (error) {
-    console.error('❌ Error seeding bookings:', error.message, '\n');
+    logger.error('❌ Error seeding bookings:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedPayments = async (companyId, bookings) => {
   try {
-    console.log('💳 Seeding payments...\n');
+    logger.log('💳 Seeding payments...\n');
 
     const payments = bookings.map(booking => ({
       bookingId: booking._id,
@@ -307,17 +308,17 @@ export const seedPayments = async (companyId, bookings) => {
     }));
 
     const createdPayments = await Payment.insertMany(payments);
-    console.log(`✅ ${createdPayments.length} payments seeded\n`);
+    logger.log(`✅ ${createdPayments.length} payments seeded\n`);
     return createdPayments;
   } catch (error) {
-    console.error('❌ Error seeding payments:', error.message, '\n');
+    logger.error('❌ Error seeding payments:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedReviews = async (companyId, customers, services) => {
   try {
-    console.log('⭐ Seeding reviews...\n');
+    logger.log('⭐ Seeding reviews...\n');
 
     const reviews = [
       {
@@ -347,17 +348,17 @@ export const seedReviews = async (companyId, customers, services) => {
     ];
 
     const createdReviews = await Review.insertMany(reviews);
-    console.log(`✅ ${createdReviews.length} reviews seeded\n`);
+    logger.log(`✅ ${createdReviews.length} reviews seeded\n`);
     return createdReviews;
   } catch (error) {
-    console.error('❌ Error seeding reviews:', error.message, '\n');
+    logger.error('❌ Error seeding reviews:', error.message, '\n');
     throw error;
   }
 };
 
 export const seedEmployees = async (companyId) => {
   try {
-    console.log('👨‍💼 Seeding employees...\n');
+    logger.log('👨‍💼 Seeding employees...\n');
 
     const employees = [
       {
@@ -385,10 +386,10 @@ export const seedEmployees = async (companyId) => {
     ];
 
     const createdEmployees = await Employee.insertMany(employees);
-    console.log(`✅ ${createdEmployees.length} employees seeded\n`);
+    logger.log(`✅ ${createdEmployees.length} employees seeded\n`);
     return createdEmployees;
   } catch (error) {
-    console.error('❌ Error seeding employees:', error.message, '\n');
+    logger.error('❌ Error seeding employees:', error.message, '\n');
     throw error;
   }
 };
@@ -397,9 +398,9 @@ const main = async () => {
   try {
     await connectDB();
 
-    console.log('================================');
-    console.log('  🌱 DATABASE SEEDING');
-    console.log('================================\n');
+    logger.log('================================');
+    logger.log('  🌱 DATABASE SEEDING');
+    logger.log('================================\n');
 
     const companyId = new mongoose.Types.ObjectId();
 
@@ -412,28 +413,28 @@ const main = async () => {
     const payments = await seedPayments(companyId, bookings);
     const reviews = await seedReviews(companyId, customers, services);
 
-    console.log('================================');
-    console.log('  ✅ Database seeding completed!');
-    console.log('================================\n');
+    logger.log('================================');
+    logger.log('  ✅ Database seeding completed!');
+    logger.log('================================\n');
 
-    console.log('📊 Seeded Data Summary:');
-    console.log(`   Users: ${users.length}`);
-    console.log(`   Customers: ${customers.length}`);
-    console.log(`   Services: ${services.length}`);
-    console.log(`   Appointments: ${appointments.length}`);
-    console.log(`   Bookings: ${bookings.length}`);
-    console.log(`   Payments: ${payments.length}`);
-    console.log(`   Reviews: ${reviews.length}`);
-    console.log(`   Employees: ${employees.length}\n`);
+    logger.log('📊 Seeded Data Summary:');
+    logger.log(`   Users: ${users.length}`);
+    logger.log(`   Customers: ${customers.length}`);
+    logger.log(`   Services: ${services.length}`);
+    logger.log(`   Appointments: ${appointments.length}`);
+    logger.log(`   Bookings: ${bookings.length}`);
+    logger.log(`   Payments: ${payments.length}`);
+    logger.log(`   Reviews: ${reviews.length}`);
+    logger.log(`   Employees: ${employees.length}\n`);
 
-    console.log('🔐 Test Login Credentials:');
-    console.log('   Email: admin@test.com');
-    console.log('   Password: TestPassword123!\n');
+    logger.log('🔐 Test Login Credentials:');
+    logger.log('   Email: admin@test.com');
+    logger.log('   Password: TestPassword123!\n');
 
     rl.close();
     process.exit(0);
   } catch (error) {
-    console.error('\n❌ Fatal error:', error.message, '\n');
+    logger.error('\n❌ Fatal error:', error.message, '\n');
     rl.close();
     process.exit(1);
   }

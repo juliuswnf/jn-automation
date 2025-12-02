@@ -1,4 +1,5 @@
 import cors from 'cors';
+import logger from '../utils/logger.js';
 
 /**
  * CORS Middleware Suite
@@ -19,7 +20,7 @@ const allowedOrigins = [
   process.env.PRODUCTION_FRONTEND_URL
 ].filter(Boolean);
 
-console.log('✅ Allowed CORS Origins:', allowedOrigins);
+logger.log('✅ Allowed CORS Origins:', allowedOrigins);
 
 // ==================== CORS OPTIONS ====================
 
@@ -28,7 +29,7 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn(`❌ CORS blocked request from origin: ${origin}`);
+      logger.warn(`❌ CORS blocked request from origin: ${origin}`);
       callback(new Error('Not allowed by CORS policy'));
     }
   },
@@ -129,7 +130,7 @@ const dynamicCors = (req, res, next) => {
 
 const corsErrorHandler = (err, req, res, next) => {
   if (err.message && err.message.includes('CORS')) {
-    console.warn(`❌ CORS Error: Origin ${req.headers.origin} not allowed`);
+    logger.warn(`❌ CORS Error: Origin ${req.headers.origin} not allowed`);
 
     return res.status(403).json({
       success: false,
@@ -160,7 +161,7 @@ const corsWithLogging = (req, res, next) => {
   const origin = req.headers.origin;
   const allowed = !origin || allowedOrigins.includes(origin);
 
-  console.log(
+  logger.log(
     `[CORS] ${req.method} ${req.path} from ${origin || 'no-origin'} - ${allowed ? '✅ ALLOWED' : '❌ BLOCKED'}`
   );
 
@@ -207,7 +208,7 @@ const addCorsOrigin = (req, res) => {
 
     if (!allowedOrigins.includes(origin)) {
       allowedOrigins.push(origin);
-      console.log('✅ New CORS origin added:', origin);
+      logger.log('✅ New CORS origin added:', origin);
     }
 
     res.status(200).json({
@@ -232,7 +233,7 @@ const removeCorsOrigin = (req, res) => {
 
     if (index > -1) {
       allowedOrigins.splice(index, 1);
-      console.log('✅ CORS origin removed:', origin);
+      logger.log('✅ CORS origin removed:', origin);
     }
 
     res.status(200).json({
