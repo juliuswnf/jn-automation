@@ -24,7 +24,7 @@ export default function Appointments() {
       const response = await bookingAPI.getByDateRange({ startDate: selectedDate, limit: 50 });
       setAppointments(response.data.bookings || response.data.data || []);
     } catch (error) {
-      logger.error('Error loading appointments:', error);
+      console.error('Error loading appointments:', error);
       showNotification('Error loading appointments', 'error');
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ export default function Appointments() {
         });
       }
     } catch (error) {
-      logger.error('Error loading stats:', error);
+      console.error('Error loading stats:', error);
     }
   };
 
