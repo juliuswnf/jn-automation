@@ -20,16 +20,16 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 // Service configurations
 const SERVICES = {
   mongodb: {
-    name: 'MongoDB',
+    name: 'MongoDB Atlas',
     port: 27017,
-    type: 'docker',
+    type: 'cloud', // We use MongoDB Atlas (cloud)
     containerName: 'jn-automation-mongodb',
     image: 'mongo:latest'
   },
   redis: {
     name: 'Redis',
     port: 6379,
-    type: 'docker',
+    type: 'optional', // Redis is optional - not needed for basic functionality
     containerName: 'jn-automation-redis',
     image: 'redis:alpine'
   },
@@ -146,18 +146,10 @@ const startNodeService = async (service, serviceId) => {
 
   try {
     if (isWindows) {
-      // Windows: Start in a new PowerShell window that stays open
-      const escapedPath = service.cwd.replace(/'/g, "''");
-      const psScript = `
-        cd '${escapedPath}'
-        Write-Host 'Starting ${service.name}...' -ForegroundColor Cyan
-        npm run dev
-      `;
+      // Windows: Start in a new cmd window that stays open
+      const startCommand = `start "${service.name}" cmd /k "cd /d ${service.cwd} && npm run dev"`;
 
-      // Use Start-Process to create a completely independent process
-      const startCommand = `Start-Process powershell -ArgumentList '-NoExit', '-Command', "${psScript.replace(/"/g, '\\"').replace(/\n/g, '; ')}" -WindowStyle Normal`;
-
-      await execAsync(`powershell -Command "${startCommand}"`, { timeout: 10000 });
+      await execAsync(startCommand, { timeout: 10000, shell: 'cmd.exe' });
 
       return { success: true, message: 'Process started in new window' };
     } else {
@@ -237,7 +229,14 @@ export const getServiceStatus = async (req, res) => {
 
     let status = 'unknown';
 
-    if (service.type === 'docker') {
+    if (service.type === 'cloud') {
+      // Cloud service (MongoDB Atlas) - always running if we can connect
+      // Since the backend is connected (we're handling this request), MongoDB is working
+      status = 'running';
+    } else if (service.type === 'optional') {
+      // Optional service (Redis) - not required, show as disabled
+      status = 'disabled';
+    } else if (service.type === 'docker') {
       const isRunning = await checkDockerContainer(service.containerName);
       status = isRunning ? 'running' : 'stopped';
     } else {
@@ -249,7 +248,8 @@ export const getServiceStatus = async (req, res) => {
       success: true,
       service: serviceId,
       status,
-      port: service.port
+      port: service.port,
+      type: service.type
     });
   } catch (error) {
     logger.error('GetServiceStatus Error:', error);
@@ -269,6 +269,24 @@ export const startService = async (req, res) => {
 
     if (!service) {
       return res.status(404).json({ success: false, message: 'Service not found' });
+    }
+
+    // Cloud services (MongoDB Atlas) - always running, can't be started/stopped
+    if (service.type === 'cloud') {
+      return res.status(200).json({
+        success: true,
+        message: `${service.name} is a cloud service and is always running`,
+        status: 'running'
+      });
+    }
+
+    // Optional services (Redis) - not needed, Docker not installed
+    if (service.type === 'optional') {
+      return res.status(200).json({
+        success: true,
+        message: `${service.name} is optional and not required for basic functionality`,
+        status: 'disabled'
+      });
     }
 
     if (service.type === 'docker') {
@@ -366,6 +384,23 @@ export const stopService = async (req, res) => {
       });
     }
 
+    // Cloud services (MongoDB Atlas) - can't be stopped
+    if (service.type === 'cloud') {
+      return res.status(400).json({
+        success: false,
+        message: `${service.name} is a cloud service and cannot be stopped from here`
+      });
+    }
+
+    // Optional services (Redis) - not running anyway
+    if (service.type === 'optional') {
+      return res.status(200).json({
+        success: true,
+        message: `${service.name} is optional and not running`,
+        status: 'disabled'
+      });
+    }
+
     if (service.type === 'docker') {
       const result = await stopDockerContainer(service.containerName);
       if (result.success) {
@@ -412,6 +447,28 @@ export const startAllServices = async (req, res) => {
       const service = SERVICES[serviceId];
 
       try {
+        // Skip cloud services (always running)
+        if (service.type === 'cloud') {
+          results.push({
+            service: serviceId,
+            success: true,
+            message: 'Cloud service (always running)',
+            status: 'running'
+          });
+          continue;
+        }
+
+        // Skip optional services (not needed)
+        if (service.type === 'optional') {
+          results.push({
+            service: serviceId,
+            success: true,
+            message: 'Optional (not required)',
+            status: 'disabled'
+          });
+          continue;
+        }
+
         // Check if already running
         let isRunning = false;
         if (service.type === 'docker') {
@@ -502,6 +559,28 @@ export const stopAllServices = async (req, res) => {
       const service = SERVICES[serviceId];
 
       try {
+        // Skip cloud services
+        if (service.type === 'cloud') {
+          results.push({
+            service: serviceId,
+            success: true,
+            message: 'Cloud service (cannot be stopped)',
+            status: 'running'
+          });
+          continue;
+        }
+
+        // Skip optional services
+        if (service.type === 'optional') {
+          results.push({
+            service: serviceId,
+            success: true,
+            message: 'Optional (not running)',
+            status: 'disabled'
+          });
+          continue;
+        }
+
         if (service.type === 'docker') {
           const result = await stopDockerContainer(service.containerName);
           results.push({
@@ -563,7 +642,13 @@ export const getAllServicesStatus = async (req, res) => {
       let status = 'unknown';
 
       try {
-        if (service.type === 'docker') {
+        if (service.type === 'cloud') {
+          // Cloud services are always running if we can respond to this request
+          status = 'running';
+        } else if (service.type === 'optional') {
+          // Optional services (Redis) - not required
+          status = 'disabled';
+        } else if (service.type === 'docker') {
           const isRunning = await checkDockerContainer(service.containerName);
           status = isRunning ? 'running' : 'stopped';
         } else {
