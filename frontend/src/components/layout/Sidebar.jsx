@@ -61,7 +61,17 @@ const Sidebar = ({ isOpen = true, onClose = null }) => {
   const isActive = (path) => location.pathname.startsWith(path);
 
   const handleLogout = () => {
+    // Clear all auth data from localStorage first
+    localStorage.removeItem('jnAuthToken');
+    localStorage.removeItem('jnUser');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('tempUser');
+    
+    // Then call logout and redirect
     logout();
+    window.location.replace('/');
   };
 
   return (
@@ -73,7 +83,7 @@ const Sidebar = ({ isOpen = true, onClose = null }) => {
       {/* Header */}
       <div className="p-6 border-b border-gray-700">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">JN Automation</h1>
+          <Link to="/" className="text-2xl font-bold hover:text-gray-300 transition-colors">JN Automation</Link>
           {onClose && (
             <button onClick={onClose} className="md:hidden">
               <FiX size={24} />

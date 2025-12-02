@@ -9,7 +9,7 @@
   }
 
   body {
-    background-color: #000; /* strong black background */
+    background-color: #000;
     @apply text-white font-sans antialiased;
   }
 

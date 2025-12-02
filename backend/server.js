@@ -151,7 +151,7 @@ app.use('/api/bookings', authMiddleware.protect, bookingRoutes);
 app.use('/api/payments', authMiddleware.protect, paymentRoutes);
 app.use('/api/services', authMiddleware.protect, serviceRoutes);
 app.use('/api/employees', authMiddleware.protect, employeeRoutes);
-app.use('/api/ceo', authMiddleware.protect, ceoMiddleware.verifyCEOAuth, ceoRoutes);
+app.use('/api/ceo', ceoRoutes); // Auth middleware is already in ceoRoutes
 
 // ==================== 404 HANDLER (BEFORE ERROR HANDLER) ====================
 app.use('*', (req, res, _next) => {

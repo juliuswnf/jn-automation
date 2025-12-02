@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import UserMenu from '../components/common/UserMenu';
 
 export default function DashboardLayout({ children }) {
   return (
@@ -27,7 +28,7 @@ export default function DashboardLayout({ children }) {
             <div className="bg-black/20 border-b border-zinc-800 p-4">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Dashboard</h2>
-                <div className="text-sm text-zinc-400">Studio-User</div>
+                <UserMenu />
               </div>
             </div>
 

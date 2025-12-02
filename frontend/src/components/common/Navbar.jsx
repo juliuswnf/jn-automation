@@ -28,11 +28,14 @@ export default function Navbar() {
     } catch (error) {
       console.warn('Logout API failed:', error);
     }
+    // Clear ALL auth data from localStorage
+    localStorage.removeItem('jnAuthToken');
+    localStorage.removeItem('jnUser');
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     localStorage.removeItem('tempUser');
-    navigate('/login');
+    window.location.replace('/');
   };
 
   return (

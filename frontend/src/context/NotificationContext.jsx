@@ -55,6 +55,7 @@ export const NotificationProvider = ({ children }) => {
   const value = {
     notifications,
     addNotification,
+    showNotification: addNotification, // Alias for convenience
     removeNotification,
     success,
     error,

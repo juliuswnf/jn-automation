@@ -4,12 +4,31 @@ import securityMiddleware from '../middleware/securityMiddleware.js';
 import ceoMiddleware from '../middleware/ceoMiddleware.js';
 import ceoController from '../controllers/ceoController.js';
 import ceoSubscriptionController from '../controllers/ceoSubscriptionController.js';
+import * as systemController from '../controllers/systemController.js';
 
 const router = express.Router();
 
 // Apply auth middleware
 router.use(authMiddleware.protect);
 router.use(authMiddleware.authorize('ceo'));
+
+// ==================== NEW CEO DASHBOARD ENDPOINTS ====================
+
+// Get CEO Stats (für neues Dashboard)
+router.get('/stats', ceoMiddleware.verifyCEOAuth, ceoController.getCEOStats);
+
+// Get All Customers (Unternehmen)
+router.get('/customers', ceoMiddleware.verifyCEOAuth, ceoController.getAllCustomers);
+
+// Get CEO Subscriptions (für Abonnements Tab)
+router.get('/ceo-subscriptions', ceoMiddleware.verifyCEOAuth, ceoController.getCEOSubscriptions);
+
+// Error Log Management
+router.get('/errors', ceoMiddleware.verifyCEOAuth, ceoController.getErrorLogs);
+router.post('/errors', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoController.createErrorLog);
+router.patch('/errors/:errorId/resolve', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoController.resolveError);
+
+// ==================== EXISTING ENDPOINTS ====================
 
 // CEO Dashboard
 router.get('/dashboard', ceoMiddleware.verifyCEOAuth, ceoController.getCEODashboard);
@@ -75,5 +94,26 @@ router.get('/status', ceoMiddleware.verifyCEOAuth, (req, res) => {
     uptime: process.uptime()
   });
 });
+
+// ==================== SYSTEM CONTROL ROUTES ====================
+// Für das System Control Tab im CEO Dashboard
+
+// Get status of all services
+router.get('/system/status', ceoMiddleware.verifyCEOAuth, systemController.getAllServicesStatus);
+
+// Get status of a specific service
+router.get('/system/status/:serviceId', ceoMiddleware.verifyCEOAuth, systemController.getServiceStatus);
+
+// Start a specific service
+router.post('/system/start/:serviceId', ceoMiddleware.verifyCEOAuth, systemController.startService);
+
+// Stop a specific service
+router.post('/system/stop/:serviceId', ceoMiddleware.verifyCEOAuth, systemController.stopService);
+
+// Start all services
+router.post('/system/start-all', ceoMiddleware.verifyCEOAuth, systemController.startAllServices);
+
+// Stop all services
+router.post('/system/stop-all', ceoMiddleware.verifyCEOAuth, systemController.stopAllServices);
 
 export default router;

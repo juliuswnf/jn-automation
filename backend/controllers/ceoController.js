@@ -7,6 +7,13 @@ import logger from '../utils/logger.js';
 import Salon from '../models/Salon.js';
 import Booking from '../models/Booking.js';
 import User from '../models/User.js';
+import ErrorLog from '../models/ErrorLog.js';
+
+// ==================== PRICING CONSTANTS ====================
+const PRICING = {
+  starter: 29,  // €29/Monat
+  pro: 69       // €69/Monat
+};
 
 // ==================== GET CEO DASHBOARD ====================
 
@@ -578,6 +585,422 @@ export const getCEOStatus = async (req, res) => {
   }
 };
 
+// ==================== CEO DASHBOARD STATS (NEW) ====================
+// Für das neue CEO Dashboard mit Echtzeit-Daten
+export const getCEOStats = async (req, res) => {
+  try {
+    if (req.user.role !== 'ceo') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - CEO only'
+      });
+    }
+
+    // Gesamte Kunden (Salons/Unternehmen)
+    const totalCustomers = await Salon.countDocuments();
+    
+    // Starter Abos (planId enthält 'starter' oder subscription.planId)
+    const starterAbos = await Salon.countDocuments({
+      'subscription.status': 'active',
+      $or: [
+        { 'subscription.planId': { $regex: /starter/i } },
+        { 'subscription.planId': 'price_starter' },
+        { isPremium: false, 'subscription.status': 'active' }
+      ]
+    });
+    
+    // Pro Abos
+    const proAbos = await Salon.countDocuments({
+      'subscription.status': 'active',
+      $or: [
+        { 'subscription.planId': { $regex: /pro|premium/i } },
+        { 'subscription.planId': 'price_pro' },
+        { isPremium: true }
+      ]
+    });
+    
+    // Trial Abos
+    const trialAbos = await Salon.countDocuments({
+      'subscription.status': 'trial'
+    });
+    
+    // Berechne tatsächliche Starter/Pro basierend auf verfügbaren Daten
+    const activeSalons = await Salon.find({ 'subscription.status': 'active' });
+    let calculatedStarter = 0;
+    let calculatedPro = 0;
+    
+    activeSalons.forEach(salon => {
+      if (salon.isPremium || (salon.subscription?.planId && salon.subscription.planId.toLowerCase().includes('pro'))) {
+        calculatedPro++;
+      } else {
+        calculatedStarter++;
+      }
+    });
+    
+    // Fallback: wenn keine planId gesetzt, alle aktiven als Starter zählen
+    const finalStarter = calculatedStarter || starterAbos || (activeSalons.length - calculatedPro);
+    const finalPro = calculatedPro || proAbos;
+    
+    // MRR Berechnung (Monthly Recurring Revenue)
+    const totalRevenue = (finalStarter * PRICING.starter) + (finalPro * PRICING.pro);
+    
+    // Ungelöste Fehler
+    const unresolvedErrors = await ErrorLog.countDocuments({ resolved: false });
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalCustomers,
+        starterAbos: finalStarter,
+        proAbos: finalPro,
+        trialAbos,
+        totalRevenue,
+        unresolvedErrors
+      }
+    });
+  } catch (error) {
+    logger.error('GetCEOStats Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+// ==================== GET ERROR LOGS ====================
+export const getErrorLogs = async (req, res) => {
+  try {
+    if (req.user.role !== 'ceo') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - CEO only'
+      });
+    }
+
+    const { resolved, type, limit = 50, page = 1 } = req.query;
+    
+    let filter = {};
+    
+    if (resolved !== undefined) {
+      filter.resolved = resolved === 'true';
+    }
+    
+    if (type) {
+      filter.type = type;
+    }
+    
+    const skip = (page - 1) * limit;
+    const total = await ErrorLog.countDocuments(filter);
+    
+    const errors = await ErrorLog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('salonId', 'name')
+      .populate('userId', 'name email')
+      .populate('resolvedBy', 'name');
+
+    res.status(200).json({
+      success: true,
+      count: errors.length,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+      errors: errors.map(e => ({
+        id: e._id,
+        type: e.type,
+        message: e.message,
+        details: e.details,
+        source: e.source,
+        salon: e.salonId ? { id: e.salonId._id, name: e.salonId.name } : null,
+        user: e.userId ? { id: e.userId._id, name: e.userId.name, email: e.userId.email } : null,
+        resolved: e.resolved,
+        resolvedAt: e.resolvedAt,
+        resolvedBy: e.resolvedBy ? e.resolvedBy.name : null,
+        resolutionNotes: e.resolutionNotes,
+        timestamp: e.createdAt
+      }))
+    });
+  } catch (error) {
+    logger.error('GetErrorLogs Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+// ==================== RESOLVE ERROR ====================
+export const resolveError = async (req, res) => {
+  try {
+    if (req.user.role !== 'ceo') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - CEO only'
+      });
+    }
+
+    const { errorId } = req.params;
+    const { notes } = req.body;
+    
+    const errorLog = await ErrorLog.findById(errorId);
+    
+    if (!errorLog) {
+      return res.status(404).json({
+        success: false,
+        message: 'Error log not found'
+      });
+    }
+    
+    await errorLog.resolve(req.user._id, notes || '');
+
+    res.status(200).json({
+      success: true,
+      message: 'Error marked as resolved',
+      error: {
+        id: errorLog._id,
+        resolved: true,
+        resolvedAt: errorLog.resolvedAt
+      }
+    });
+  } catch (error) {
+    logger.error('ResolveError Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+// ==================== CREATE ERROR LOG (for testing/manual) ====================
+export const createErrorLog = async (req, res) => {
+  try {
+    if (req.user.role !== 'ceo') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - CEO only'
+      });
+    }
+
+    const { type, message, details, source, salonId } = req.body;
+    
+    if (!message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error message is required'
+      });
+    }
+    
+    const errorLog = await ErrorLog.logError({
+      type: type || 'error',
+      message,
+      details,
+      source: source || 'system',
+      salonId
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Error log created',
+      error: {
+        id: errorLog._id,
+        type: errorLog.type,
+        message: errorLog.message,
+        source: errorLog.source,
+        timestamp: errorLog.createdAt
+      }
+    });
+  } catch (error) {
+    logger.error('CreateErrorLog Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+// ==================== GET ALL CUSTOMERS (Unternehmen) ====================
+export const getAllCustomers = async (req, res) => {
+  try {
+    if (req.user.role !== 'ceo') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - CEO only'
+      });
+    }
+
+    const { status, plan, search, page = 1, limit = 20 } = req.query;
+    
+    let filter = {};
+    
+    // Filter by subscription status
+    if (status === 'active') {
+      filter['subscription.status'] = 'active';
+    } else if (status === 'trial') {
+      filter['subscription.status'] = 'trial';
+    } else if (status === 'inactive') {
+      filter['subscription.status'] = { $in: ['inactive', 'canceled', 'past_due'] };
+    }
+    
+    // Filter by plan type
+    if (plan === 'starter') {
+      filter.$or = [
+        { 'subscription.planId': { $regex: /starter/i } },
+        { isPremium: false }
+      ];
+    } else if (plan === 'pro') {
+      filter.$or = [
+        { 'subscription.planId': { $regex: /pro|premium/i } },
+        { isPremium: true }
+      ];
+    }
+    
+    // Search by name or email
+    if (search) {
+      const searchFilter = {
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ]
+      };
+      filter = { ...filter, ...searchFilter };
+    }
+    
+    const skip = (page - 1) * limit;
+    const total = await Salon.countDocuments(filter);
+    
+    const customers = await Salon.find(filter)
+      .populate('owner', 'name email')
+      .select('name email phone address isActive isPremium subscription createdAt')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.status(200).json({
+      success: true,
+      count: customers.length,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+      customers: customers.map(c => {
+        // Determine plan type
+        let planType = 'starter';
+        if (c.isPremium || (c.subscription?.planId && c.subscription.planId.toLowerCase().includes('pro'))) {
+          planType = 'pro';
+        }
+        
+        // Determine status
+        let customerStatus = 'inactive';
+        if (c.subscription?.status === 'active') {
+          customerStatus = 'active';
+        } else if (c.subscription?.status === 'trial') {
+          customerStatus = 'trial';
+        }
+        
+        return {
+          id: c._id,
+          name: c.name,
+          email: c.email,
+          phone: c.phone,
+          owner: c.owner ? { name: c.owner.name, email: c.owner.email } : null,
+          plan: planType,
+          status: customerStatus,
+          isActive: c.isActive,
+          subscription: c.subscription,
+          since: c.createdAt
+        };
+      })
+    });
+  } catch (error) {
+    logger.error('GetAllCustomers Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+// ==================== GET ALL SUBSCRIPTIONS FOR CEO DASHBOARD ====================
+export const getCEOSubscriptions = async (req, res) => {
+  try {
+    if (req.user.role !== 'ceo') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - CEO only'
+      });
+    }
+
+    const { status, page = 1, limit = 20 } = req.query;
+    
+    let filter = {};
+    
+    if (status === 'active') {
+      filter['subscription.status'] = 'active';
+    } else if (status === 'trial') {
+      filter['subscription.status'] = 'trial';
+    }
+    
+    const skip = (page - 1) * limit;
+    const total = await Salon.countDocuments(filter);
+    
+    const salons = await Salon.find(filter)
+      .populate('owner', 'name email')
+      .select('name email isPremium subscription createdAt')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Calculate MRR
+    let totalMRR = 0;
+    
+    const subscriptions = salons.map(s => {
+      const isPro = s.isPremium || (s.subscription?.planId && s.subscription.planId.toLowerCase().includes('pro'));
+      const planName = isPro ? 'Pro' : 'Starter';
+      const amount = s.subscription?.status === 'active' ? (isPro ? PRICING.pro : PRICING.starter) : 0;
+      
+      if (s.subscription?.status === 'active') {
+        totalMRR += amount;
+      }
+      
+      // Calculate next billing date
+      let nextBilling = null;
+      if (s.subscription?.currentPeriodEnd) {
+        nextBilling = s.subscription.currentPeriodEnd;
+      } else if (s.subscription?.status === 'trial' && s.subscription?.trialEndsAt) {
+        nextBilling = s.subscription.trialEndsAt;
+      }
+      
+      return {
+        id: s._id,
+        customer: s.name,
+        email: s.email,
+        plan: planName,
+        amount,
+        status: s.subscription?.status || 'inactive',
+        startDate: s.createdAt,
+        nextBilling,
+        stripeSubscriptionId: s.subscription?.stripeSubscriptionId
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      count: subscriptions.length,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+      totalMRR,
+      subscriptions
+    });
+  } catch (error) {
+    logger.error('GetCEOSubscriptions Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
 // ==================== DEFAULT EXPORT ====================
 
 export default {
@@ -593,5 +1016,12 @@ export default {
   getSubscriptionInfo,
   getSystemSettings,
   updateSystemSettings,
-  getCEOStatus
+  getCEOStatus,
+  // New endpoints for real-time dashboard
+  getCEOStats,
+  getErrorLogs,
+  resolveError,
+  createErrorLog,
+  getAllCustomers,
+  getCEOSubscriptions
 };

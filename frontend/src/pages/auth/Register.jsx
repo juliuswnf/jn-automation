@@ -1,27 +1,50 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { authAPI, formatError } from '../../utils/api';
 import { useNotification } from '../../hooks/useNotification';
 import { FiLock, FiClipboard } from 'react-icons/fi';
 
 export default function Register() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { success, error: showError } = useNotification();
+  
+  // Check if coming from checkout
+  const fromCheckout = location.state?.fromCheckout;
+  const selectedPlan = location.state?.plan;
+  const checkoutEmail = location.state?.email;
+  
+  // Get plan info from sessionStorage
+  const storedPlan = JSON.parse(sessionStorage.getItem('selectedPlan') || 'null');
+
+  // Redirect to pricing if not coming from checkout
+  useEffect(() => {
+    if (!fromCheckout && !storedPlan) {
+      navigate('/pricing');
+    }
+  }, [fromCheckout, storedPlan, navigate]);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    email: checkoutEmail || storedPlan?.email || '',
     phone: '',
     companyName: '',
     password: '',
     confirmPassword: '',
-    userType: 'customer',
+    userType: 'salon_owner',
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState('');
+
+  const planInfo = storedPlan || {
+    planId: selectedPlan || 'starter',
+    planName: selectedPlan === 'pro' ? 'Pro' : 'Starter',
+    price: selectedPlan === 'pro' ? 69 : 29,
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,21 +59,21 @@ export default function Register() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name required';
+    if (!formData.firstName.trim()) newErrors.firstName = 'Vorname erforderlich';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Nachname erforderlich';
     if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Valid email required';
+      newErrors.email = 'Gültige E-Mail erforderlich';
     }
-    if (!formData.phone.trim()) newErrors.phone = 'Phone required';
-    if (!formData.companyName.trim()) newErrors.companyName = 'Company name required';
+    if (!formData.phone.trim()) newErrors.phone = 'Telefon erforderlich';
+    if (!formData.companyName.trim()) newErrors.companyName = 'Firmenname erforderlich';
     if (formData.password.length < 8) {
-      newErrors.password = 'Min 8 characters';
+      newErrors.password = 'Mind. 8 Zeichen';
     }
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'Passwörter stimmen nicht überein';
     }
     if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = 'Must agree to terms';
+      newErrors.agreeToTerms = 'Bitte AGB akzeptieren';
     }
     return newErrors;
   };
@@ -75,22 +98,21 @@ export default function Register() {
         phone: formData.phone,
         companyName: formData.companyName,
         password: formData.password,
-        role: formData.userType,
+        role: 'salon_owner',
+        plan: planInfo.planId,
       });
 
       if (response.data.success) {
         const { token, user } = response.data;
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-
         
-        success('Registration successful! Redirecting...');
+        // Clear session storage
+        sessionStorage.removeItem('selectedPlan');
+        
+        success('Registrierung erfolgreich! Weiterleitung...');
         setTimeout(() => {
-          if (user.emailVerified) {
-            navigate(`/${user.role}/dashboard`);
-          } else {
-            navigate('/verify-email', { state: { email: user.email } });
-          }
+          navigate('/dashboard');
         }, 1500);
       }
     } catch (error) {
@@ -107,8 +129,29 @@ export default function Register() {
       <div className="w-full max-w-2xl">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="text-4xl font-bold mb-2">Registrierung</div>
-          <p className="text-gray-400 text-lg">Erstellen Sie Ihr Konto für Salon-Management</p>
+          <div className="text-4xl font-bold mb-2">Konto erstellen</div>
+          <p className="text-gray-400 text-lg">
+            Fast geschafft! Erstelle dein {planInfo.planName}-Konto
+          </p>
+        </div>
+
+        {/* Plan Info Banner */}
+        <div className="bg-indigo-900/30 border border-indigo-500/30 rounded-xl p-4 mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-medium text-white">{planInfo.planName} Plan</p>
+              <p className="text-sm text-indigo-300">14 Tage kostenlos testen</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-xl font-bold text-white">€{planInfo.price}/Monat</p>
+            <p className="text-xs text-gray-400">nach Testphase</p>
+          </div>
         </div>
 
         {/* Form Container */}

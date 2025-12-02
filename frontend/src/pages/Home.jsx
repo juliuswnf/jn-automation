@@ -18,17 +18,17 @@ function Home() {
 
               <div className="flex flex-wrap gap-4">
                 <Link
-                  to="/login"
+                  to="/pricing"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-black font-medium shadow-md hover:opacity-95 transition"
                 >
-                  Demo starten
+                  Jetzt starten
                 </Link>
 
                 <Link
-                  to="/how-it-works"
+                  to="/pricing"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-gray-700 text-gray-200 hover:bg-white/5 transition"
                 >
-                  Mehr erfahren
+                  Preise ansehen
                 </Link>
               </div>
 
@@ -72,7 +72,10 @@ function Home() {
                 }} />
 
                 {/* Floating animation */}
-                <style>{`\n                  @keyframes floatY { 0% { transform: translateY(0px);} 50% { transform: translateY(-10px);} 100% { transform: translateY(0px);} }\n                  .widget-float { animation: floatY 6s ease-in-out infinite; }\n                `}</style>
+                <style>{`
+                  @keyframes floatY { 0% { transform: translateY(0px);} 50% { transform: translateY(-10px);} 100% { transform: translateY(0px);} }
+                  .widget-float { animation: floatY 6s ease-in-out infinite; }
+                `}</style>
 
                 <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 widget-float pointer-events-none">
                   <div className="w-40 h-2 bg-gradient-to-r from-white/8 to-transparent rounded-full" />

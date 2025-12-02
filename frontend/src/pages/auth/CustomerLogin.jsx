@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useNotification } from '../../context/NotificationContext';
 import { authAPI } from '../../utils/api';
 
@@ -7,36 +7,53 @@ const CustomerLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { showNotification } = useNotification();
+  const notification = useNotification();
+
+  // No auto-redirect - allow users to log in as different account
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (loading) return;
     setLoading(true);
+    
+    console.log('Login attempt with:', email);
 
     try {
       const response = await authAPI.login(email, password);
       const data = response.data;
+      
+      console.log('Login response:', data);
 
-      if (data.success) {
+      if (data.success && data.token) {
+        // Store auth data (both new and legacy keys for compatibility)
+        localStorage.setItem('jnAuthToken', data.token);
+        localStorage.setItem('jnUser', JSON.stringify(data.user));
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        showNotification('Erfolgreich angemeldet', 'success');
+        console.log('Auth data saved, redirecting...');
         
         // Redirect based on role
-        if (data.user.role === 'customer') {
-          navigate('/customer/dashboard');
+        const role = data.user?.role || 'customer';
+        
+        if (role === 'customer') {
+          window.location.replace('/customer/dashboard');
+        } else if (role === 'ceo') {
+          window.location.replace('/ceo/dashboard');
         } else {
-          showNotification('Bitte nutzen Sie das Business-Login', 'error');
+          window.location.replace('/dashboard');
         }
+        return; // Stop execution after redirect
       } else {
-        showNotification(data.message || 'Login fehlgeschlagen', 'error');
+        console.log('Login failed:', data.message);
+        notification.error(data.message || 'Login fehlgeschlagen');
+        setLoading(false);
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.error('Customer login error:', error);
-      showNotification('Verbindungsfehler. Bitte versuchen Sie es erneut.', 'error');
-    } finally {
+      console.error('Customer login error:', error);
+      const errorMsg = error.response?.data?.message || 'Verbindungsfehler. Bitte versuchen Sie es erneut.';
+      notification.error(errorMsg);
       setLoading(false);
     }
   };
@@ -100,7 +117,7 @@ const CustomerLogin = () => {
         </div>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-400">Noch kein Konto? <Link to="/register" className="text-white font-semibold">Jetzt registrieren</Link></p>
+          <p className="text-gray-400">Noch kein Konto? <Link to="/register/customer" className="text-white font-semibold">Jetzt registrieren</Link></p>
         </div>
 
         <div className="mt-4 text-center">
