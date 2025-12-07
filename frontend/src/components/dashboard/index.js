@@ -6,3 +6,4 @@ export { default as DashboardWidget } from './DashboardWidget';
 export { default as MetricBox } from './MetricBox';
 export { default as StatsCard } from './StatsCard';
 export { default as StatsList } from './StatsList';
+export { default as OnboardingChecklist } from './OnboardingChecklist';

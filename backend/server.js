@@ -37,6 +37,8 @@ import stripeWebhookController from './controllers/stripeWebhookController.js';
 import { initializeCronJobs } from './services/cronService.js';
 import emailQueueWorker from './workers/emailQueueWorker.js';
 import logger from './utils/logger.js';
+import { requestTimingMiddleware, getHealthStatus, getMetrics } from './services/monitoringService.js';
+import alertingService from './services/alertingService.js';
 
 // Initialize Express App
 const app = express();
@@ -98,22 +100,48 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '50mb' }));
 
-// 4️⃣ LOGGING
+// 4️⃣ LOGGING & MONITORING
 if (ENVIRONMENT === 'development') {
   app.use(morgan('dev'));
 } else {
   app.use(morgan('combined'));
 }
 
+// Request timing for metrics
+app.use(requestTimingMiddleware);
+
 // ==================== HEALTH CHECK ====================
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  try {
+    const health = await getHealthStatus();
+    health.emailWorker = emailWorkerIntervals ? 'running' : 'stopped';
+    
+    const statusCode = health.status === 'healthy' ? 200 : 
+                       health.status === 'degraded' ? 200 : 503;
+    
+    res.status(statusCode).json(health);
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Metrics endpoint (protected - CEO only in production)
+app.get('/api/metrics', async (req, res) => {
+  // In production, this should be protected
+  if (ENVIRONMENT === 'production') {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader !== `Bearer ${process.env.METRICS_SECRET}`) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+  }
+  
   res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    version: '2.0.0',
-    uptime: process.uptime(),
-    environment: ENVIRONMENT,
-    emailWorker: emailWorkerIntervals ? 'running' : 'stopped'
+    success: true,
+    metrics: getMetrics()
   });
 });
 
@@ -251,6 +279,17 @@ const startEmailWorker = () => {
   }
 };
 
+// ==================== ALERTING SERVICE ====================
+const startAlertingService = () => {
+  try {
+    // Start health checks every 60 seconds
+    alertingService.startHealthChecks(getMetrics, 60000);
+    logger.info('✅ Alerting service started');
+  } catch (error) {
+    logger.error('⚠️ Alerting service initialization error:', error.message);
+  }
+};
+
 // ==================== SERVER STARTUP ====================
 const startServer = async () => {
   try {
@@ -263,6 +302,7 @@ const startServer = async () => {
 
     await initializeCrons();
     startEmailWorker();
+    startAlertingService();
 
     server.listen(PORT, () => {
       logger.info('\n════════════════════════════════════════');

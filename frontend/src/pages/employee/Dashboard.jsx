@@ -1,21 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { authAPI, bookingAPI, employeeAPI } from '../../utils/api';
+
+// API Base URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function Dashboard() {
-  const [employee] = useState({
-    name: 'Sarah Johnson',
-    role: 'Hair Stylist',
-    rating: 4.9,
-    totalBookings: 156,
-    monthlyEarnings: 3240,
-    upcomingBookings: 8,
+  const [employee, setEmployee] = useState(null);
+  const [upcomingBookings, setUpcomingBookings] = useState([]);
+  const [stats, setStats] = useState({
+    upcomingCount: 0,
+    monthlyEarnings: 0,
+    totalBookings: 0
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [upcomingBookings] = useState([
-    { id: 1, customer: 'Emma Wilson', service: 'Haircut & Style', time: '2:00 PM', duration: '45 min', status: 'Confirmed' },
-    { id: 2, customer: 'Lisa Anderson', service: 'Hair Color', time: '3:15 PM', duration: '120 min', status: 'Confirmed' },
-    { id: 3, customer: 'Michelle Brown', service: 'Haircut', time: '4:45 PM', duration: '30 min', status: 'Pending' },
-    { id: 4, customer: 'Jennifer Davis', service: 'Styling', time: '5:30 PM', duration: '45 min', status: 'Confirmed' },
-  ]);
+  // Get auth token
+  const getToken = () => {
+    return localStorage.getItem('jnAuthToken') || localStorage.getItem('token');
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    const token = getToken();
+
+    if (!token) {
+      setError('Nicht angemeldet');
+      setLoading(false);
+      return;
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      // Fetch employee profile
+      const profileRes = await fetch(`${API_URL}/auth/profile`, { headers });
+      if (profileRes.ok) {
+        const profileData = await profileRes.json();
+        if (profileData.success) {
+          setEmployee({
+            name: profileData.user?.name || 'Mitarbeiter',
+            role: profileData.user?.role || 'employee',
+            email: profileData.user?.email || ''
+          });
+        }
+      }
+
+      // Fetch today's bookings for this employee
+      const today = new Date().toISOString().split('T')[0];
+      const bookingsRes = await fetch(`${API_URL}/bookings?date=${today}&limit=20`, { headers });
+      if (bookingsRes.ok) {
+        const bookingsData = await bookingsRes.json();
+        if (bookingsData.success && bookingsData.bookings) {
+          const formattedBookings = bookingsData.bookings.map(b => ({
+            id: b._id,
+            customer: b.customerName || b.customerEmail || 'Kunde',
+            service: b.serviceId?.name || 'Service',
+            time: new Date(b.bookingDate).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+            duration: b.serviceId?.duration ? `${b.serviceId.duration} min` : '30 min',
+            status: b.status === 'confirmed' ? 'Bestätigt' : b.status === 'pending' ? 'Ausstehend' : b.status
+          }));
+          setUpcomingBookings(formattedBookings);
+          setStats(prev => ({ ...prev, upcomingCount: formattedBookings.length }));
+        }
+      }
+
+      // Try to fetch employee stats if available
+      try {
+        const statsRes = await fetch(`${API_URL}/employees/my-stats`, { headers });
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          if (statsData.success) {
+            setStats(prev => ({
+              ...prev,
+              monthlyEarnings: statsData.stats?.monthlyEarnings || 0,
+              totalBookings: statsData.stats?.totalBookings || 0
+            }));
+          }
+        }
+      } catch {
+        // Stats endpoint may not exist yet - that's okay
+        console.log('Employee stats not available');
+      }
+
+    } catch (err) {
+      console.error('Error fetching employee data:', err);
+      setError('Fehler beim Laden der Daten');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const StatCard = ({ icon, label, value, color }) => (
     <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-6 hover:border-purple-600 transition">
@@ -38,92 +120,119 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-1">My Dashboard</h1>
-              <p className="text-gray-400 text-sm">Welcome back, {employee.name}!</p>
+              <h1 className="text-3xl font-bold mb-1">Mein Dashboard</h1>
+              <p className="text-gray-400 text-sm">
+                Willkommen zurück{employee ? `, ${employee.name}` : ''}!
+              </p>
             </div>
             <div className="text-right">
-              <p className="text-yellow-400 font-semibold">⭐ {employee.rating}/5.0</p>
-              <p className="text-gray-400 text-sm">{employee.role}</p>
+              <p className="text-gray-400 text-sm capitalize">{employee?.role || 'Mitarbeiter'}</p>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="max-w-7xl mx-auto px-6 py-12 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          <p className="text-gray-400 mt-4">Lade Daten...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 text-center">
+            <p className="text-red-300">{error}</p>
+            <button 
+              onClick={fetchData}
+              className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white"
+            >
+              Erneut versuchen
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <StatCard icon="📅" label="Upcoming Bookings" value={employee.upcomingBookings} color="bg-blue-900" />
-          <StatCard icon="💰" label="Monthly Earnings" value={`$${employee.monthlyEarnings}`} color="bg-green-900" />
-          <StatCard icon="📊" label="Total Bookings" value={employee.totalBookings} color="bg-purple-900" />
-        </div>
-
-        {/* Today's Bookings */}
-        <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">Today's Schedule</h2>
-            <span className="px-3 py-1 rounded-full bg-blue-900 text-blue-200 text-sm font-semibold">
-              {upcomingBookings.length} Bookings
-            </span>
+      {!loading && !error && (
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          {/* Stats Grid */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <StatCard icon="📅" label="Heutige Termine" value={stats.upcomingCount} color="bg-blue-900" />
+            <StatCard icon="💰" label="Monatsverdienst" value={`${stats.monthlyEarnings}€`} color="bg-green-900" />
+            <StatCard icon="📊" label="Gesamt-Buchungen" value={stats.totalBookings} color="bg-purple-900" />
           </div>
 
-          <div className="space-y-3">
-            {upcomingBookings.map((booking) => (
-              <div 
-                key={booking.id} 
-                className="p-4 rounded-lg bg-gray-800 bg-opacity-50 hover:bg-opacity-100 transition border-l-4 border-purple-600"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="font-semibold text-white">{booking.customer}</p>
-                    <p className="text-gray-400 text-sm">{booking.service}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-300">
-                      <span>🕐 {booking.time}</span>
-                      <span>⏱️ {booking.duration}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      booking.status === 'Confirmed' 
-                        ? 'bg-green-900 text-green-300' 
-                        : 'bg-yellow-900 text-yellow-300'
-                    }`}>
-                      {booking.status}
-                    </span>
-                    <div className="mt-2 space-x-1">
-                      <button className="px-2 py-1 text-sm bg-blue-900 text-blue-200 rounded hover:bg-blue-800 transition">
-                        Edit
-                      </button>
-                      <button className="px-2 py-1 text-sm bg-red-900 text-red-200 rounded hover:bg-red-800 transition">
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
+          {/* Today's Bookings */}
+          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">Heutige Termine</h2>
+              <span className="px-3 py-1 rounded-full bg-blue-900 text-blue-200 text-sm font-semibold">
+                {upcomingBookings.length} Termine
+              </span>
+            </div>
+
+            {upcomingBookings.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-400">Keine Termine für heute</p>
               </div>
-            ))}
+            ) : (
+              <div className="space-y-3">
+                {upcomingBookings.map((booking) => (
+                  <div 
+                    key={booking.id} 
+                    className="p-4 rounded-lg bg-gray-800 bg-opacity-50 hover:bg-opacity-100 transition border-l-4 border-purple-600"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="font-semibold text-white">{booking.customer}</p>
+                        <p className="text-gray-400 text-sm">{booking.service}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-300">
+                          <span>🕐 {booking.time}</span>
+                          <span>⏱️ {booking.duration}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                          booking.status === 'Bestätigt' 
+                            ? 'bg-green-900 text-green-300' 
+                            : 'bg-yellow-900 text-yellow-300'
+                        }`}>
+                          {booking.status}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="mt-12 grid md:grid-cols-2 gap-6">
+            <div className="rounded-2xl bg-gradient-to-br from-purple-900 to-black border border-purple-800 p-6 hover:border-purple-600 transition">
+              <h3 className="text-xl font-bold mb-3">📅 Zeitplan verwalten</h3>
+              <p className="text-gray-300 mb-4">Verfügbarkeit und freie Tage einstellen</p>
+              <button className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition">
+                Zeitplan öffnen
+              </button>
+            </div>
+
+            <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-black border border-blue-800 p-6 hover:border-blue-600 transition">
+              <h3 className="text-xl font-bold mb-3">🔄 Aktualisieren</h3>
+              <p className="text-gray-300 mb-4">Termine neu laden</p>
+              <button 
+                onClick={fetchData}
+                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition"
+              >
+                Daten aktualisieren
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
-          <div className="rounded-2xl bg-gradient-to-br from-purple-900 to-black border border-purple-800 p-6 hover:border-purple-600 transition">
-            <h3 className="text-xl font-bold mb-3">📅 Manage Schedule</h3>
-            <p className="text-gray-300 mb-4">Set your availability and time off</p>
-            <button className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition">
-              Open Schedule
-            </button>
-          </div>
-
-          <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-black border border-blue-800 p-6 hover:border-blue-600 transition">
-            <h3 className="text-xl font-bold mb-3">💬 Messages</h3>
-            <p className="text-gray-300 mb-4">View messages from customers</p>
-            <button className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition">
-              View Messages
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

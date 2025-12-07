@@ -17,7 +17,7 @@ const ForgotPassword = () => {
       const response = await authAPI.forgotPassword(email);
       if (response.data.success) {
         setSubmitted(true);
-        showNotification('Password reset link sent to your email!', 'success');
+        showNotification('Link zum Zurücksetzen wurde gesendet!', 'success');
       }
     } catch (error) {
       showNotification(formatError(error), 'error');
@@ -28,29 +28,33 @@ const ForgotPassword = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
-            <div className="text-5xl mb-4">📧</div>
-            <h2 className="text-2xl font-bold text-white mb-4">Check your email</h2>
-            <p className="text-slate-350 mb-6">
-              We've sent a password reset link to <strong>{email}</strong>. The link will expire in 1 hour.
+          <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-4">E-Mail gesendet</h2>
+            <p className="text-gray-400 mb-6">
+              Wir haben einen Link zum Zurücksetzen an <strong className="text-white">{email}</strong> gesendet. Der Link ist 1 Stunde gültig.
             </p>
-            <p className="text-sm text-slate-400 mb-8">
-              Didn't receive the email? Check your spam folder or try again.
+            <p className="text-sm text-gray-500 mb-8">
+              Keine E-Mail erhalten? Prüfen Sie Ihren Spam-Ordner.
             </p>
             <button
               onClick={() => setSubmitted(false)}
-              className="text-accent hover:text-accent-light font-semibold transition mb-4"
+              className="text-indigo-400 hover:text-indigo-300 font-medium mb-4"
             >
-              Try another email
+              Andere E-Mail verwenden
             </button>
-            <div className="border-t border-accent/10 pt-6 mt-6">
+            <div className="border-t border-gray-800 pt-6 mt-6">
               <Link
                 to="/login"
-                className="text-accent hover:text-accent-light font-semibold transition"
+                className="text-gray-400 hover:text-white transition"
               >
-                Back to Login
+                ← Zurück zum Login
               </Link>
             </div>
           </div>
@@ -60,25 +64,27 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent mb-2">JN Business</h1>
-          <h2 className="text-xl text-slate-350 mb-8">Forgot Password?</h2>
-          
-          <p className="text-slate-350 mb-6">
-            Enter your email address and we'll send you a link to reset your password.
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Passwort vergessen?</h1>
+          <p className="text-gray-400">
+            Kein Problem. Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen.
           </p>
+        </div>
 
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-white mb-2">Email Address</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                E-Mail Adresse
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 rounded-lg bg-primary/50 border border-accent/20 hover:border-accent/40 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent text-white placeholder:text-slate-350"
+                placeholder="ihre@email.de"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 required
               />
             </div>
@@ -86,20 +92,17 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-accent hover:bg-accent-light text-primary font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 shadow-lg shadow-accent/30 hover:shadow-accent/50"
+              className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? '⏳ Sending...' : '📧 Send Reset Link'}
+              {loading ? 'Wird gesendet...' : 'Link senden'}
             </button>
           </form>
+        </div>
 
-          <div className="mt-8 text-center text-sm text-slate-350 border-t border-accent/10 pt-8">
-            <p>
-              Remember your password?{' '}
-              <Link to="/login" className="text-accent hover:text-accent-light font-semibold transition">
-                Back to Login
-              </Link>
-            </p>
-          </div>
+        <div className="mt-6 text-center">
+          <Link to="/login" className="text-gray-400 hover:text-white transition">
+            ← Zurück zum Login
+          </Link>
         </div>
       </div>
     </div>

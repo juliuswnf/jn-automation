@@ -4,6 +4,7 @@ import Service from '../models/Service.js';
 import Booking from '../models/Booking.js';
 import User from '../models/User.js';
 import { validateBooking } from '../middleware/validationMiddleware.js';
+import { widgetLimiter, publicBookingLimiter } from '../middleware/rateLimiterMiddleware.js';
 import emailService from '../services/emailService.js';
 import logger from '../utils/logger.js';
 
@@ -13,7 +14,11 @@ const router = express.Router();
  * Widget Routes - Embeddable Booking Widget API
  * Public endpoints für externe Salon-Websites
  * Kein Auth erforderlich - Slug-basiert
+ * Rate-Limited für Spam-Schutz
  */
+
+// Apply widget rate limiter to all routes
+router.use(widgetLimiter);
 
 // ==================== GET WIDGET CONFIG ====================
 router.get('/config/:slug', async (req, res) => {
@@ -186,7 +191,8 @@ router.get('/timeslots/:slug', async (req, res) => {
 });
 
 // ==================== CREATE BOOKING (NO AUTH) ====================
-router.post('/book/:slug', validateBooking, async (req, res) => {
+// Extra strict rate limiting for booking creation
+router.post('/book/:slug', publicBookingLimiter, validateBooking, async (req, res) => {
   try {
     const { slug } = req.params;
     const { customerName, customerEmail, customerPhone, serviceId, date, time, notes } = req.body;

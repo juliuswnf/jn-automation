@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNotification } from '../../hooks/useNotification';
 import { FiClock, FiStar, FiUser, FiCheck } from 'react-icons/fi';
+
+// API Base URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * CUSTOMER BOOKING - Angemeldeter Kunde
@@ -8,52 +11,246 @@ import { FiClock, FiStar, FiUser, FiCheck } from 'react-icons/fi';
  */
 export default function Booking() {
   const [isLoggedIn] = useState(true); // TRUE = Kunde ist angemeldet
-  const [customerProfile] = useState({
-    name: 'Max Mustermann',
-    email: 'max@beispiel.de',
-    phone: '+49 123 456789'
+  const [customerProfile, setCustomerProfile] = useState({
+    name: '',
+    email: '',
+    phone: ''
   });
+  const [loading, setLoading] = useState(true);
 
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingData, setBookingData] = useState({
     service: '',
+    serviceId: '',
     date: '',
     time: '',
     employee: '',
+    employeeId: '',
     note: '',
   });
 
   const { showNotification } = useNotification();
 
-  const services = [
-    { id: 1, name: 'Haarschnitt', duration: '30 min', price: '25€' },
-    { id: 2, name: 'Haarfarbe', duration: '90 min', price: '50€' },
-    { id: 3, name: 'Styling', duration: '45 min', price: '35€' },
-    { id: 4, name: 'Frisur & Makeup', duration: '120 min', price: '75€' },
-  ];
+  const [services, setServices] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
-  const employees = [
-    { id: 1, name: 'Sarah Johnson', rating: 4.9, appointments: 15 },
-    { id: 2, name: 'Emma Wilson', rating: 4.8, appointments: 12 },
-    { id: 3, name: 'Lisa Anderson', rating: 4.7, appointments: 8 },
-  ];
-
-  const timeSlots = [
+  // Default time slots (will be replaced by API data if available)
+  const defaultTimeSlots = [
     '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
     '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
     '16:00', '16:30', '17:00', '17:30'
   ];
+
+  // Get auth token
+  const getToken = () => {
+    return localStorage.getItem('jnAuthToken') || localStorage.getItem('token');
+  };
+
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  const fetchInitialData = async () => {
+    setLoading(true);
+    const token = getToken();
+
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      // Fetch customer profile
+      const profileRes = await fetch(`${API_URL}/auth/profile`, { headers });
+      if (profileRes.ok) {
+        const profileData = await profileRes.json();
+        if (profileData.success && profileData.user) {
+          setCustomerProfile({
+            name: profileData.user.name || 'Kunde',
+            email: profileData.user.email || '',
+            phone: profileData.user.phone || ''
+          });
+        }
+      }
+
+      // Fetch services - try salon-specific first, then general
+      let servicesData = [];
+      try {
+        const servicesRes = await fetch(`${API_URL}/salons/services`, { headers });
+        if (servicesRes.ok) {
+          const data = await servicesRes.json();
+          if (data.success && data.services) {
+            servicesData = data.services.map(s => ({
+              id: s._id,
+              name: s.name,
+              duration: `${s.duration || 30} min`,
+              price: `${s.price || 0}€`
+            }));
+          }
+        }
+      } catch {
+        // Try alternative endpoint
+        const servicesRes = await fetch(`${API_URL}/services`, { headers });
+        if (servicesRes.ok) {
+          const data = await servicesRes.json();
+          if (data.success && data.services) {
+            servicesData = data.services.map(s => ({
+              id: s._id,
+              name: s.name,
+              duration: `${s.duration || 30} min`,
+              price: `${s.price || 0}€`
+            }));
+          }
+        }
+      }
+      setServices(servicesData.length > 0 ? servicesData : [
+        { id: 'default', name: 'Standard Service', duration: '30 min', price: '25€' }
+      ]);
+
+      // Fetch employees
+      try {
+        const employeesRes = await fetch(`${API_URL}/employees`, { headers });
+        if (employeesRes.ok) {
+          const data = await employeesRes.json();
+          if (data.success && data.employees) {
+            setEmployees(data.employees.map(e => ({
+              id: e._id,
+              name: e.name,
+              rating: 4.5,
+              appointments: 0
+            })));
+          }
+        }
+      } catch {
+        console.log('Employees endpoint not available');
+      }
+
+    } catch (error) {
+      console.error('Error fetching initial data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch available time slots when date changes
+  useEffect(() => {
+    if (bookingData.date && bookingData.serviceId) {
+      fetchAvailableSlots();
+    }
+  }, [bookingData.date, bookingData.serviceId]);
+
+  const fetchAvailableSlots = async () => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const res = await fetch(
+        `${API_URL}/bookings/available-slots?date=${bookingData.date}&serviceId=${bookingData.serviceId}`,
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.slots) {
+          setAvailableSlots(data.slots);
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('Available slots endpoint not available');
+    }
+    // Fallback to default slots
+    setAvailableSlots(defaultTimeSlots);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBookingData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-    if (import.meta.env.DEV) console.log('Customer Booking:', bookingData);
-    // use site-wide notification hook instead of alert
-    showNotification('Termin bestätigt. Eine Bestätigung wurde per E‑Mail versandt.', 'success');
+  const handleServiceSelect = (service) => {
+    setBookingData(prev => ({ 
+      ...prev, 
+      service: service.name,
+      serviceId: service.id
+    }));
   };
+
+  const handleEmployeeSelect = (emp) => {
+    setBookingData(prev => ({ 
+      ...prev, 
+      employee: emp.name,
+      employeeId: emp.id
+    }));
+  };
+
+  const handleSubmit = async () => {
+    const token = getToken();
+    if (!token) {
+      showNotification('Bitte melden Sie sich an', 'error');
+      return;
+    }
+
+    try {
+      const bookingDateTime = new Date(`${bookingData.date}T${bookingData.time}:00`);
+      
+      const res = await fetch(`${API_URL}/bookings`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          serviceId: bookingData.serviceId,
+          employeeId: bookingData.employeeId || undefined,
+          bookingDate: bookingDateTime.toISOString(),
+          customerName: customerProfile.name,
+          customerEmail: customerProfile.email,
+          customerPhone: customerProfile.phone,
+          notes: bookingData.note
+        })
+      });
+
+      if (res.ok) {
+        showNotification('Termin bestätigt. Eine Bestätigung wurde per E‑Mail versandt.', 'success');
+        // Reset form
+        setBookingStep(1);
+        setBookingData({
+          service: '',
+          serviceId: '',
+          date: '',
+          time: '',
+          employee: '',
+          employeeId: '',
+          note: '',
+        });
+      } else {
+        const data = await res.json();
+        showNotification(data.message || 'Fehler beim Buchen', 'error');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      showNotification('Fehler beim Buchen des Termins', 'error');
+    }
+  };
+
+  const timeSlots = availableSlots.length > 0 ? availableSlots : defaultTimeSlots;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          <p className="text-gray-400 mt-4">Lade Buchungsoptionen...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -107,7 +304,7 @@ export default function Booking() {
               {services.map((service) => (
                 <div
                   key={service.id}
-                  onClick={() => setBookingData(prev => ({ ...prev, service: service.name }))}
+                  onClick={() => handleServiceSelect(service)}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition ${
                     bookingData.service === service.name
                       ? 'border-purple-600 bg-purple-900 bg-opacity-20'
@@ -124,34 +321,40 @@ export default function Booking() {
             </div>
 
             <h3 className="text-xl font-bold mb-4 mt-8">Bevorzugten Friseur wählen</h3>
-            <div className="space-y-3 mb-6">
-              {employees.map((emp) => (
-                <div
-                  key={emp.id}
-                  onClick={() => setBookingData(prev => ({ ...prev, employee: emp.name }))}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition ${
-                    bookingData.employee === emp.name
-                      ? 'border-white bg-white/5'
-                      : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
-                  }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold">{emp.name}</p>
-                      <p className="text-xs text-gray-400">{emp.appointments} Termine</p>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-300 gap-2">
-                      <FiStar className="text-yellow-400" />
-                      <span>{emp.rating.toFixed(1)}</span>
+            {employees.length === 0 ? (
+              <p className="text-gray-400 mb-6">Keine Mitarbeiter verfügbar - Wir weisen Ihnen einen Friseur zu.</p>
+            ) : (
+              <div className="space-y-3 mb-6">
+                {employees.map((emp) => (
+                  <div
+                    key={emp.id}
+                    onClick={() => handleEmployeeSelect(emp)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition ${
+                      bookingData.employee === emp.name
+                        ? 'border-white bg-white/5'
+                        : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold">{emp.name}</p>
+                        <p className="text-xs text-gray-400">{emp.appointments} Termine</p>
+                      </div>
+                      {emp.rating > 0 && (
+                        <div className="flex items-center text-sm text-gray-300 gap-2">
+                          <FiStar className="text-yellow-400" />
+                          <span>{emp.rating.toFixed(1)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={() => setBookingStep(2)}
-              disabled={!bookingData.service || !bookingData.employee}
+              disabled={!bookingData.service}
               className="w-full px-6 py-3 bg-white text-black rounded-full font-semibold hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-md"
             >
               Weiter

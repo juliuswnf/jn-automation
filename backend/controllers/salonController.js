@@ -252,6 +252,34 @@ export const getSalonDashboard = async (req, res) => {
 
     const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
 
+    // Calculate booking limits for Starter plan
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+    const bookingsThisMonth = await Booking.countDocuments({
+      salonId,
+      createdAt: { $gte: startOfMonth },
+      status: { $ne: 'cancelled' }
+    });
+    
+    const planId = (salon.subscription?.planId || '').toLowerCase();
+    const isPro = planId.includes('pro');
+    const isStarter = !isPro && salon.subscription?.status !== 'trial';
+    const isTrial = salon.subscription?.status === 'trial';
+    
+    let bookingLimits = null;
+    if (!isPro) {
+      const limit = isTrial ? 50 : 100;
+      bookingLimits = {
+        used: bookingsThisMonth,
+        limit,
+        remaining: Math.max(0, limit - bookingsThisMonth),
+        percentUsed: Math.round((bookingsThisMonth / limit) * 100),
+        planType: isTrial ? 'trial' : 'starter'
+      };
+    }
+
     // Get recent bookings
     const recentBookings = await Booking.find({ salonId })
       .populate('serviceId', 'name price')
@@ -272,7 +300,14 @@ export const getSalonDashboard = async (req, res) => {
           cancelledBookings,
           totalRevenue
         },
-        recentBookings
+        recentBookings,
+        bookingLimits,
+        subscription: {
+          status: salon.subscription?.status || 'none',
+          planId: salon.subscription?.planId,
+          trialEndsAt: salon.subscription?.trialEndsAt,
+          isPro
+        }
       }
     });
   } catch (error) {

@@ -1,4 +1,5 @@
 import logger from '../utils/logger.js';
+import alertingService from '../services/alertingService.js';
 /**
  * Error Handler Middleware Suite
  * Version: 1.0.0
@@ -18,19 +19,26 @@ class AppError extends Error {
 // ==================== ERROR LOGGER ====================
 
 const logError = (err, req) => {
-  const errorLog = {
-    timestamp: new Date().toISOString(),
+  const errorMeta = {
     method: req.method,
     url: req.originalUrl,
     statusCode: err.statusCode || 500,
-    message: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
-    user: req.user?.id || 'anonymous',
+    userId: req.user?._id?.toString() || 'anonymous',
     ip: req.ip,
-    userAgent: req.get('user-agent')
+    userAgent: req.get('user-agent'),
+    salonId: req.user?.salonId?.toString()
   };
 
-  logger.error('❌ ERROR LOG:', errorLog);
+  // Use structured logger
+  logger.error(`${req.method} ${req.originalUrl} - ${err.message}`, err);
+  
+  // Log security events for certain error types
+  if (err.statusCode === 401 || err.statusCode === 403) {
+    logger.security('Auth failure', {
+      ...errorMeta,
+      errorType: err.name
+    });
+  }
 };
 
 // ==================== ERROR HANDLERS ====================
@@ -253,6 +261,12 @@ const globalErrorHandler = (err, req, res, _next) => {
   err.message = err.message || 'Interner Serverfehler';
 
   logError(err, req);
+
+  // Track errors for alerting
+  if (err.statusCode >= 500) {
+    alertingService.record5xxError(err, req);
+    alertingService.recordConsecutiveError(err);
+  }
 
   if (err.name === 'CastError') {
     err = handleCastError(err);

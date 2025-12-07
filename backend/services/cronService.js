@@ -1,5 +1,91 @@
 import cron from 'node-cron';
 import logger from '../utils/logger.js';
+import Booking from '../models/Booking.js';
+import Salon from '../models/Salon.js';
+import { sendBookingReminder, sendReviewRequest } from './emailService.js';
+
+// ==================== BOOKING REMINDER & REVIEW JOBS ====================
+
+/**
+ * Send booking reminders 24h before appointment
+ * Runs every hour to catch all upcoming bookings
+ */
+const sendBookingReminders = async () => {
+  try {
+    const now = new Date();
+    const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const in25Hours = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+
+    // Find confirmed bookings in the next 24-25 hours that haven't been reminded
+    const bookings = await Booking.find({
+      status: 'confirmed',
+      bookingDate: { $gte: in24Hours, $lt: in25Hours },
+      'emailsSent.reminder': { $ne: true }
+    }).populate('salonId serviceId');
+
+    logger.info(`📧 Reminder check: Found ${bookings.length} bookings to remind`);
+
+    for (const booking of bookings) {
+      try {
+        if (!booking.salonId) continue;
+
+        // Send reminder email using email service
+        await sendBookingReminder(booking);
+
+        // Mark as reminded
+        booking.emailsSent.reminder = true;
+        await booking.save();
+
+        logger.info(`✅ Reminder sent to ${booking.customerEmail} for booking ${booking._id}`);
+      } catch (emailError) {
+        logger.error(`❌ Failed to send reminder for booking ${booking._id}:`, emailError.message);
+      }
+    }
+  } catch (err) {
+    logger.error('❌ sendBookingReminders failed:', err.message);
+  }
+};
+
+/**
+ * Send review requests 2h after completed appointments
+ * Runs every hour
+ */
+const sendReviewRequests = async () => {
+  try {
+    const now = new Date();
+    const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+    const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+
+    // Find completed bookings from 2-3 hours ago that haven't received review request
+    const bookings = await Booking.find({
+      status: 'completed',
+      bookingDate: { $gte: threeHoursAgo, $lt: twoHoursAgo },
+      'emailsSent.review': { $ne: true }
+    }).populate('salonId serviceId');
+
+    logger.info(`⭐ Review check: Found ${bookings.length} bookings for review request`);
+
+    for (const booking of bookings) {
+      try {
+        const salon = booking.salonId;
+        if (!salon || !salon.googleReviewUrl) continue;
+
+        // Send review request email using email service
+        await sendReviewRequest(booking);
+
+        // Mark as sent
+        booking.emailsSent.review = true;
+        await booking.save();
+
+        logger.info(`✅ Review request sent to ${booking.customerEmail} for booking ${booking._id}`);
+      } catch (emailError) {
+        logger.error(`❌ Failed to send review request for booking ${booking._id}:`, emailError.message);
+      }
+    }
+  } catch (err) {
+    logger.error('❌ sendReviewRequests failed:', err.message);
+  }
+};
 
 // ==================== CLEANUP JOBS ====================
 
@@ -120,6 +206,13 @@ export const initializeCronJobs = () => {
 
     // Every Monday at 9 AM - Send weekly digest
     cron.schedule('0 9 * * 1', sendWeeklyDigest);
+
+    // ✅ Booking Notification Jobs
+    // Every hour - Send 24h booking reminders
+    cron.schedule('0 * * * *', sendBookingReminders);
+
+    // Every hour - Send review requests (2h after appointment)
+    cron.schedule('30 * * * *', sendReviewRequests);
 
     logger.log('✅ All Cron Jobs initialized successfully');
   } catch (err) {

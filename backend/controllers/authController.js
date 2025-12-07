@@ -164,44 +164,132 @@ export const login = async (req, res) => {
 };
 
 // ==================== CEO LOGIN ====================
+// SECURITY: This endpoint is heavily protected
+// - IP Whitelist (only allowed IPs can access)
+// - 2FA mandatory for CEO access
+// - Only allows users with role 'ceo'
+// - Logs all access attempts with IP
+// - Implements progressive delay on failed attempts
+// - Account lockout after multiple failures
+
+// Track failed CEO login attempts by IP
+const ceoLoginAttempts = new Map();
+
+// CEO IP Whitelist - Add allowed IPs here
+// Set to empty array [] to disable whitelist (allow all IPs)
+// In production, add specific IPs like: ['123.45.67.89', '98.76.54.32']
+const CEO_IP_WHITELIST = process.env.CEO_IP_WHITELIST 
+  ? process.env.CEO_IP_WHITELIST.split(',').map(ip => ip.trim())
+  : []; // Empty = disabled, add IPs to enable
+
+// Helper to check if IP is whitelisted
+const isIPWhitelisted = (clientIP) => {
+  // If whitelist is empty, allow all (disabled)
+  if (CEO_IP_WHITELIST.length === 0) return true;
+  
+  // Normalize IP for comparison
+  const normalizedIP = clientIP.replace('::ffff:', '');
+  
+  // Check exact match or localhost variations
+  return CEO_IP_WHITELIST.some(allowedIP => {
+    const normalizedAllowed = allowedIP.replace('::ffff:', '');
+    return normalizedIP === normalizedAllowed || 
+           normalizedIP === '127.0.0.1' || 
+           normalizedIP === '::1' ||
+           normalizedIP === 'localhost';
+  });
+};
 
 export const ceoLogin = async (req, res) => {
+  const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+  const userAgent = req.headers['user-agent'] || 'unknown';
+  
   try {
-    const { email, password } = req.body;
+    const { email, password, twoFactorCode } = req.body;
+
+    // SECURITY: Log all CEO login attempts with full details
+    logger.warn(`[CEO-SECURITY] Login attempt - IP: ${clientIP}, Email: ${email || 'not provided'}, UA: ${userAgent.substring(0, 50)}`);
+
+    // SECURITY: Check IP Whitelist FIRST
+    if (!isIPWhitelisted(clientIP)) {
+      logger.error(`[CEO-SECURITY] ⛔ BLOCKED - IP not whitelisted: ${clientIP}`);
+      // Don't reveal that it's an IP block - generic message
+      return res.status(403).json({
+        success: false,
+        message: 'Zugriff verweigert'
+      });
+    }
+
+    // Check for brute force from this IP
+    const ipAttempts = ceoLoginAttempts.get(clientIP) || { count: 0, lastAttempt: 0 };
+    const now = Date.now();
+    
+    // Reset counter after 30 minutes
+    if (now - ipAttempts.lastAttempt > 30 * 60 * 1000) {
+      ipAttempts.count = 0;
+    }
+    
+    // Block if too many attempts (more than 5 in 30 min)
+    if (ipAttempts.count >= 5) {
+      const waitTime = Math.min(ipAttempts.count * 60, 300); // Max 5 min wait
+      logger.error(`[CEO-SECURITY] BLOCKED - Too many attempts from IP: ${clientIP}`);
+      return res.status(429).json({
+        success: false,
+        message: `Zu viele Versuche. Bitte warten Sie ${waitTime} Sekunden.`
+      });
+    }
 
     // Validate input
     if (!email || !password) {
+      ipAttempts.count++;
+      ipAttempts.lastAttempt = now;
+      ceoLoginAttempts.set(clientIP, ipAttempts);
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: 'Bitte E-Mail und Passwort angeben'
       });
     }
 
-    // Find user with password field
-    const user = await User.findOne({ email }).select('+password');
+    // Find user with password field AND 2FA fields (twoFactorSecret has select: false)
+    const user = await User.findOne({ email }).select('+password +twoFactorSecret');
 
     if (!user) {
-      logger.warn(`⚠️ CEO login attempt with non-existent email: ${email}`);
+      ipAttempts.count++;
+      ipAttempts.lastAttempt = now;
+      ceoLoginAttempts.set(clientIP, ipAttempts);
+      logger.warn(`[CEO-SECURITY] Failed - Email not found: ${email}, IP: ${clientIP}`);
+      
+      // Add delay to slow down brute force
+      await new Promise(resolve => setTimeout(resolve, 1000 * ipAttempts.count));
+      
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Ungültige Anmeldedaten'
       });
     }
 
-    // Verify user is CEO
+    // SECURITY: Verify user is CEO - no other role allowed
     if (user.role !== 'ceo') {
-      logger.warn(`⚠️ Non-CEO user attempted CEO login: ${email} (role: ${user.role})`);
+      ipAttempts.count += 2; // Double penalty for wrong role attempt
+      ipAttempts.lastAttempt = now;
+      ceoLoginAttempts.set(clientIP, ipAttempts);
+      logger.error(`[CEO-SECURITY] ALERT - Non-CEO attempted access: ${email} (role: ${user.role}), IP: ${clientIP}`);
+      
+      // Add significant delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
       return res.status(403).json({
         success: false,
-        message: 'Access denied. CEO credentials required.'
+        message: 'Zugriff verweigert'
       });
     }
 
     // Check if account is locked
     if (user.isLocked) {
+      logger.warn(`[CEO-SECURITY] Locked account attempt: ${email}, IP: ${clientIP}`);
       return res.status(403).json({
         success: false,
-        message: 'Account is locked. Too many failed login attempts.'
+        message: 'Konto gesperrt. Zu viele Fehlversuche.'
       });
     }
 
@@ -209,33 +297,150 @@ export const ceoLogin = async (req, res) => {
     const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
-      logger.warn(`⚠️ Invalid password for CEO: ${email}`);
+      ipAttempts.count++;
+      ipAttempts.lastAttempt = now;
+      ceoLoginAttempts.set(clientIP, ipAttempts);
+      logger.warn(`[CEO-SECURITY] Failed - Wrong password: ${email}, IP: ${clientIP}`);
       await user.incLoginAttempts();
+      
+      // Add delay
+      await new Promise(resolve => setTimeout(resolve, 1000 * ipAttempts.count));
+      
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Ungültige Anmeldedaten'
       });
     }
 
-    // Reset login attempts and update last login
+    // ==================== 2FA MANDATORY FOR CEO ====================
+    // CEO MUST have 2FA enabled - no exceptions
+    
+    logger.log(`[CEO-SECURITY] 2FA Check - twoFactorEnabled: ${user.twoFactorEnabled}, twoFactorSecret: ${user.twoFactorSecret ? 'exists' : 'null'}, twoFactorCode provided: ${twoFactorCode ? 'yes' : 'no'}`);
+    
+    // If 2FA is not enabled yet
+    if (!user.twoFactorEnabled) {
+      // Check if user is trying to verify a setup code
+      if (twoFactorCode && user.twoFactorSecret) {
+        logger.log(`[CEO-SECURITY] Attempting 2FA setup verification with code: ${twoFactorCode}`);
+        // User has a secret and is sending a code - verify it to complete setup
+        const isValidToken = authenticator.verify({
+          token: twoFactorCode.toString().replace(/\s/g, ''),
+          secret: user.twoFactorSecret
+        });
+
+        if (isValidToken) {
+          // Code is valid - enable 2FA and complete login
+          user.twoFactorEnabled = true;
+          await user.save();
+          
+          // Reset counters and generate token
+          ceoLoginAttempts.delete(clientIP);
+          await user.resetLoginAttempts();
+          const token = generateToken(user._id, '30d');
+          
+          logger.log(`[CEO-SECURITY] ✅ 2FA setup completed and CEO logged in: ${user.email}, IP: ${clientIP}`);
+          
+          return res.status(200).json({
+            success: true,
+            token,
+            user: user.toJSON(),
+            message: '2FA erfolgreich eingerichtet. Willkommen im CEO Bereich!'
+          });
+        } else {
+          // Invalid code during setup
+          logger.warn(`[CEO-SECURITY] Invalid 2FA code during setup: ${email}, IP: ${clientIP}`);
+          return res.status(401).json({
+            success: false,
+            message: 'Ungültiger 2FA-Code. Bitte versuchen Sie es erneut.'
+          });
+        }
+      }
+      
+      // No code provided or no secret yet - generate/show setup
+      logger.warn(`[CEO-SECURITY] 2FA not enabled for CEO: ${email}, IP: ${clientIP}`);
+      
+      // Only generate new secret if none exists
+      let secret = user.twoFactorSecret;
+      if (!secret) {
+        secret = authenticator.generateSecret();
+        user.twoFactorSecret = secret;
+        await user.save();
+      }
+      
+      const otpauth = authenticator.keyuri(user.email, 'JN-Automation-CEO', secret);
+      const qrCode = await QRCode.toDataURL(otpauth);
+      
+      return res.status(200).json({
+        success: false,
+        requiresTwoFactorSetup: true,
+        message: '2FA ist für CEO-Zugang Pflicht. Bitte richten Sie die Zwei-Faktor-Authentifizierung ein.',
+        qrCode,
+        secret, // Allow manual entry
+        setupInstructions: 'Scannen Sie den QR-Code mit einer Authenticator-App (Google Authenticator, Authy, etc.)'
+      });
+    }
+
+    // 2FA is enabled - verify code
+    if (!twoFactorCode) {
+      logger.log(`[CEO-SECURITY] 2FA code required for: ${email}, IP: ${clientIP}`);
+      return res.status(200).json({
+        success: false,
+        requiresTwoFactor: true,
+        message: 'Bitte geben Sie Ihren 2FA-Code ein'
+      });
+    }
+
+    // Verify 2FA code - clean up the code first (remove spaces, ensure string)
+    const cleanCode = twoFactorCode.toString().replace(/\s/g, '');
+    const isValidToken = authenticator.verify({
+      token: cleanCode,
+      secret: user.twoFactorSecret
+    });
+
+    if (!isValidToken) {
+      ipAttempts.count++;
+      ipAttempts.lastAttempt = now;
+      ceoLoginAttempts.set(clientIP, ipAttempts);
+      logger.warn(`[CEO-SECURITY] Failed - Invalid 2FA code: ${email}, Code: ${cleanCode}, IP: ${clientIP}`);
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      return res.status(401).json({
+        success: false,
+        message: 'Ungültiger 2FA-Code'
+      });
+    }
+
+    // ==================== FULL SUCCESS ====================
+    // Password correct + 2FA verified
+    
+    // If 2FA was just set up (twoFactorEnabled was false), enable it now
+    if (!user.twoFactorEnabled) {
+      user.twoFactorEnabled = true;
+      await user.save();
+      logger.log(`[CEO-SECURITY] 2FA activated for CEO: ${user.email}`);
+    }
+    
+    // Reset all counters
+    ceoLoginAttempts.delete(clientIP);
     await user.resetLoginAttempts();
 
     // Generate token (CEO gets longer session)
     const token = generateToken(user._id, '30d');
 
-    logger.log(`✅ CEO logged in: ${user.email}`);
+    logger.log(`[CEO-SECURITY] ✅ SUCCESS - CEO logged in with 2FA: ${user.email}, IP: ${clientIP}`);
 
     res.status(200).json({
       success: true,
       token,
       user: user.toJSON(),
-      message: 'Welcome, CEO!'
+      message: 'Willkommen im CEO Bereich'
     });
   } catch (error) {
-    logger.error('❌ CEO Login Error:', error);
+    logger.error(`[CEO-SECURITY] ERROR: ${error.message}, IP: ${clientIP}`);
     res.status(500).json({
       success: false,
-      message: 'Login failed'
+      message: 'Login fehlgeschlagen'
     });
   }
 };

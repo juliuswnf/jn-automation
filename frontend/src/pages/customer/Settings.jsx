@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNotification } from '../../context/NotificationContext';
+
+// API Base URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * CUSTOMER SETTINGS & PROFILE PAGE
@@ -9,17 +12,18 @@ export default function Settings() {
   const { showNotification } = useNotification();
   const [activeTab, setActiveTab] = useState('profile');
   const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   const [profile, setProfile] = useState({
-    firstName: 'Max',
-    lastName: 'Mustermann',
-    email: 'max@beispiel.de',
-    phone: '+49 123 456789',
-    birthDate: '1990-05-15',
-    gender: 'male',
-    address: 'Hauptstraße 123',
-    city: 'Berlin',
-    zipCode: '10115',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    birthDate: '',
+    gender: '',
+    address: '',
+    city: '',
+    zipCode: '',
     country: 'Deutschland'
   });
 
@@ -37,35 +41,79 @@ export default function Settings() {
     newsletter: true
   });
 
-  const [bookingHistory] = useState([
-    {
-      id: 1,
-      service: 'Haarschnitt',
-      date: '2025-11-15',
-      time: '14:00',
-      employee: 'Sarah Johnson',
-      status: 'confirmed',
-      price: '25€'
-    },
-    {
-      id: 2,
-      service: 'Haarfarbe',
-      date: '2025-11-08',
-      time: '10:00',
-      employee: 'Emma Wilson',
-      status: 'completed',
-      price: '50€'
-    },
-    {
-      id: 3,
-      service: 'Styling',
-      date: '2025-10-28',
-      time: '16:30',
-      employee: 'Lisa Anderson',
-      status: 'completed',
-      price: '35€'
+  const [bookingHistory, setBookingHistory] = useState([]);
+
+  // Get auth token
+  const getToken = () => {
+    return localStorage.getItem('jnAuthToken') || localStorage.getItem('token');
+  };
+
+  // Fetch user profile and bookings on mount
+  useEffect(() => {
+    fetchProfileAndBookings();
+  }, []);
+
+  const fetchProfileAndBookings = async () => {
+    setLoading(true);
+    const token = getToken();
+
+    if (!token) {
+      setLoading(false);
+      return;
     }
-  ]);
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      // Fetch profile
+      const profileRes = await fetch(`${API_URL}/auth/profile`, { headers });
+      if (profileRes.ok) {
+        const profileData = await profileRes.json();
+        if (profileData.success && profileData.user) {
+          const user = profileData.user;
+          const nameParts = (user.name || '').split(' ');
+          setProfile({
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' ') || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            birthDate: user.birthDate || '',
+            gender: user.gender || '',
+            address: user.address || '',
+            city: user.city || '',
+            zipCode: user.zipCode || '',
+            country: user.country || 'Deutschland'
+          });
+        }
+      }
+
+      // Fetch booking history
+      const bookingsRes = await fetch(`${API_URL}/bookings?limit=20`, { headers });
+      if (bookingsRes.ok) {
+        const bookingsData = await bookingsRes.json();
+        if (bookingsData.success && bookingsData.bookings) {
+          const formattedBookings = bookingsData.bookings.map(b => ({
+            id: b._id,
+            service: b.serviceId?.name || 'Service',
+            date: new Date(b.bookingDate).toLocaleDateString('de-DE'),
+            time: new Date(b.bookingDate).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+            employee: b.employeeId?.name || 'Mitarbeiter',
+            status: b.status,
+            price: b.totalAmount ? `${b.totalAmount}€` : (b.serviceId?.price ? `${b.serviceId.price}€` : '-')
+          }));
+          setBookingHistory(formattedBookings);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      showNotification('Fehler beim Laden der Daten', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -81,26 +129,91 @@ export default function Settings() {
     setPasswords(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveProfile = () => {
-    console.log('Profile gespeichert:', profile);
-    setEditMode(false);
-    showNotification('Profil erfolgreich aktualisiert', 'success');
+  const handleSaveProfile = async () => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: `${profile.firstName} ${profile.lastName}`.trim(),
+          phone: profile.phone,
+          birthDate: profile.birthDate,
+          gender: profile.gender,
+          address: profile.address,
+          city: profile.city,
+          zipCode: profile.zipCode,
+          country: profile.country
+        })
+      });
+
+      if (res.ok) {
+        setEditMode(false);
+        showNotification('Profil erfolgreich aktualisiert', 'success');
+      } else {
+        showNotification('Fehler beim Speichern', 'error');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      showNotification('Fehler beim Speichern', 'error');
+    }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (passwords.new !== passwords.confirm) {
       showNotification('Passwörter stimmen nicht überein', 'error');
       return;
     }
-    console.log('Passwort geändert');
-    showNotification('Passwort erfolgreich geändert', 'success');
-    setPasswords({ current: '', new: '', confirm: '' });
+
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentPassword: passwords.current,
+          newPassword: passwords.new
+        })
+      });
+
+      if (res.ok) {
+        showNotification('Passwort erfolgreich geändert', 'success');
+        setPasswords({ current: '', new: '', confirm: '' });
+      } else {
+        const data = await res.json();
+        showNotification(data.message || 'Fehler beim Ändern des Passworts', 'error');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      showNotification('Fehler beim Ändern des Passworts', 'error');
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          <p className="text-gray-400 mt-4">Lade Profil...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="text-white">
       {/* Header */}
-      <div className="border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black sticky top-0 z-40">
+      <div className="border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <h1 className="text-3xl font-bold">Einstellungen & Profil</h1>
           <p className="text-gray-400 text-sm mt-1">Verwalte dein Konto und deine Präferenzen</p>
@@ -112,10 +225,10 @@ export default function Settings() {
         {/* Tab Navigation */}
         <div className="flex gap-4 mb-8 border-b border-gray-800 overflow-x-auto">
           {[
-            { key: 'profile', label: '👤 Profil', icon: '👤' },
-            { key: 'bookings', label: '📅 Buchungshistorie', icon: '📅' },
-            { key: 'preferences', label: '🔔 Benachrichtigungen', icon: '🔔' },
-            { key: 'security', label: '🔐 Sicherheit', icon: '🔐' }
+            { key: 'profile', label: 'Profil' },
+            { key: 'bookings', label: 'Buchungshistorie' },
+            { key: 'preferences', label: 'Benachrichtigungen' },
+            { key: 'security', label: 'Sicherheit' }
           ].map(tab => (
             <button
               key={tab.key}
@@ -144,7 +257,7 @@ export default function Settings() {
                     : 'bg-purple-600 hover:bg-purple-700'
                 }`}
               >
-                {editMode ? '❌ Abbrechen' : '✏️ Bearbeiten'}
+                {editMode ? 'Abbrechen' : 'Bearbeiten'}
               </button>
             </div>
 

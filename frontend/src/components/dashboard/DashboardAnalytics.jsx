@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { dashboardAPI, formatError } from '../../utils/api';
-import { LoadingSpinner, StatsCard } from '../common';
+import { LoadingSpinner } from '../common';
+import { StatsCard } from './index';
 import './DashboardAnalytics.css';
 
 export default function DashboardAnalytics() {

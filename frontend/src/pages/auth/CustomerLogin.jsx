@@ -7,6 +7,7 @@ const CustomerLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const notification = useNotification();
 
   // No auto-redirect - allow users to log in as different account
@@ -16,6 +17,7 @@ const CustomerLogin = () => {
     
     if (loading) return;
     setLoading(true);
+    setError('');
     
     console.log('Login attempt with:', email);
 
@@ -47,12 +49,15 @@ const CustomerLogin = () => {
         return; // Stop execution after redirect
       } else {
         console.log('Login failed:', data.message);
-        notification.error(data.message || 'Login fehlgeschlagen');
+        const msg = data.message || 'Login fehlgeschlagen';
+        setError(msg);
+        notification.error(msg);
         setLoading(false);
       }
-    } catch (error) {
-      console.error('Customer login error:', error);
-      const errorMsg = error.response?.data?.message || 'Verbindungsfehler. Bitte versuchen Sie es erneut.';
+    } catch (err) {
+      console.error('Customer login error:', err);
+      const errorMsg = err.response?.data?.message || 'Verbindungsfehler. Bitte versuchen Sie es erneut.';
+      setError(errorMsg);
       notification.error(errorMsg);
       setLoading(false);
     }
@@ -71,6 +76,11 @@ const CustomerLogin = () => {
         </div>
 
         <div className="card p-6">
+          {error && (
+            <div className="mb-4 p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200 text-sm">
+              <span className="font-medium">Fehler:</span> {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">E‑Mail Adresse</label>

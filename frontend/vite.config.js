@@ -25,14 +25,58 @@ export default defineConfig({
     minify: 'terser',
     target: 'ES2020',
     cssCodeSplit: true,
+    // Optimize chunk size
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom', 'axios'],
-          'ui': ['@heroicons/react'],
+        manualChunks: (id) => {
+          // Core React libraries
+          if (id.includes('node_modules/react') || 
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react-router-dom')) {
+            return 'react-vendor';
+          }
+          // UI libraries
+          if (id.includes('node_modules/@heroicons') ||
+              id.includes('node_modules/lucide-react') ||
+              id.includes('node_modules/react-icons')) {
+            return 'icons';
+          }
+          // Charts
+          if (id.includes('node_modules/recharts') ||
+              id.includes('node_modules/d3')) {
+            return 'charts';
+          }
+          // Utils
+          if (id.includes('node_modules/axios') ||
+              id.includes('node_modules/date-fns') ||
+              id.includes('node_modules/clsx')) {
+            return 'utils';
+          }
+          // Stripe
+          if (id.includes('node_modules/@stripe')) {
+            return 'stripe';
+          }
+          // i18n
+          if (id.includes('node_modules/i18next')) {
+            return 'i18n';
+          }
         },
       },
     },
+    // Terser options for better minification
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
+
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'axios'],
+    exclude: ['@sentry/react'], // Lazy loaded
   },
 
   resolve: {

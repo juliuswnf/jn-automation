@@ -258,6 +258,32 @@ export const createPublicBooking = async (req, res) => {
       });
     }
 
+    // Check booking limits for Starter plan
+    const planId = (salon.subscription?.planId || '').toLowerCase();
+    const isStarterPlan = planId.includes('starter') || (!planId.includes('pro') && salon.subscription?.status !== 'trial');
+    
+    if (isStarterPlan || salon.subscription?.status === 'trial') {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      
+      const bookingsThisMonth = await Booking.countDocuments({
+        salonId: salon._id,
+        createdAt: { $gte: startOfMonth },
+        status: { $ne: 'cancelled' }
+      });
+      
+      const limit = salon.subscription?.status === 'trial' ? 50 : 100;
+      
+      if (bookingsThisMonth >= limit) {
+        return res.status(403).json({
+          success: false,
+          message: 'Monatliches Buchungslimit erreicht. Der Saloninhaber muss upgraden.',
+          code: 'BOOKING_LIMIT_EXCEEDED'
+        });
+      }
+    }
+
     // Get service
     const service = await Service.findById(serviceId);
 

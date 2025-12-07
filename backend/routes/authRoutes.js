@@ -2,26 +2,33 @@ import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 import ceoMiddleware from '../middleware/ceoMiddleware.js';
 import authController from '../controllers/authController.js';
+import {
+  authLimiter,
+  ceoLoginLimiter,
+  passwordResetLimiter,
+  registrationLimiter,
+  emailLimiter
+} from '../middleware/rateLimiterMiddleware.js';
 
 const router = express.Router();
 
 // ==================== PUBLIC ROUTES ====================
 
-// Register
-router.post('/register', authController.register);
+// Register - Rate limited to prevent spam
+router.post('/register', registrationLimiter, authController.register);
 
-// Login - Standard (Customer/Admin)
-router.post('/login', authController.login);
+// Login - Standard (Customer/Admin) - Rate limited
+router.post('/login', authLimiter, authController.login);
 
-// CEO Login - Dedicated endpoint with role verification
-router.post('/ceo-login', authController.ceoLogin);
+// CEO Login - Extra strict rate limiting
+router.post('/ceo-login', ceoLoginLimiter, authController.ceoLogin);
 
-// Employee Login - Dedicated endpoint with company verification
-router.post('/employee-login', authController.employeeLogin);
+// Employee Login - Rate limited
+router.post('/employee-login', authLimiter, authController.employeeLogin);
 
-// Password Management
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+// Password Management - Strict rate limiting
+router.post('/forgot-password', passwordResetLimiter, authController.forgotPassword);
+router.post('/reset-password', passwordResetLimiter, authController.resetPassword);
 
 // Refresh Token (public - accepts expired token)
 router.post('/refresh-token', authController.refreshToken);
@@ -48,7 +55,7 @@ router.post('/logout', authMiddleware.protect, authController.logout);
 router.get('/verify-token', authMiddleware.protect, authController.verifyToken);
 
 // Email Verification Request (protected - requires login)
-router.post('/send-verification-email', authMiddleware.protect, authController.sendVerificationEmail);
+router.post('/send-verification-email', authMiddleware.protect, emailLimiter, authController.sendVerificationEmail);
 
 // ==================== 2FA ROUTES (Protected) ====================
 

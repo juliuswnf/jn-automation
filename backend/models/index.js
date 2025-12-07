@@ -8,6 +8,12 @@ export { default as Payment } from './Payment.js';
 export { default as EmailQueue } from './EmailQueue.js';
 export { default as EmailLog } from './EmailLog.js';
 
+// ==================== CEO MANAGEMENT MODELS ====================
+export { default as SupportTicket } from './SupportTicket.js';
+export { default as AuditLog } from './AuditLog.js';
+export { default as FeatureFlag } from './FeatureFlag.js';
+export { default as Backup } from './Backup.js';
+
 // ==================== DEFAULT EXPORT ====================
 
 export default {
@@ -17,5 +23,9 @@ export default {
   Booking: () => import('./Booking.js'),
   Payment: () => import('./Payment.js'),
   EmailQueue: () => import('./EmailQueue.js'),
-  EmailLog: () => import('./EmailLog.js')
+  EmailLog: () => import('./EmailLog.js'),
+  SupportTicket: () => import('./SupportTicket.js'),
+  AuditLog: () => import('./AuditLog.js'),
+  FeatureFlag: () => import('./FeatureFlag.js'),
+  Backup: () => import('./Backup.js')
 };

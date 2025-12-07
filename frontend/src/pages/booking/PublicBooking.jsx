@@ -1,52 +1,207 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { useNotification } from '../../hooks/useNotification';
 import { FiClock, FiStar, FiInfo } from 'react-icons/fi';
+
+// API Base URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 /**
  * PUBLIC BOOKING - Ohne Anmeldung
- * Link den Salon teilt: /booking/public?salon=xyz
+ * Unterstützt zwei Formate:
+ * - /s/:slug (Route Parameter)
+ * - /booking/public?salon=xyz (Query Parameter)
  */
 export default function PublicBooking() {
+  const [searchParams] = useSearchParams();
+  const { slug } = useParams();
+  // Support both route param (/s/:slug) and query param (?salon=xyz)
+  const salonSlug = slug || searchParams.get('salon');
+  
+  const [loading, setLoading] = useState(true);
+  const [salonInfo, setSalonInfo] = useState(null);
+  const [services, setServices] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingData, setBookingData] = useState({
     customerName: '',
     customerEmail: '',
     customerPhone: '',
     service: '',
+    serviceId: '',
     date: '',
     time: '',
     employee: '',
+    employeeId: '',
   });
 
   const { showNotification } = useNotification();
 
-  const services = [
-    { id: 1, name: 'Haarschnitt', duration: '30 min', price: '25€' },
-    { id: 2, name: 'Haarfarbe', duration: '90 min', price: '50€' },
-    { id: 3, name: 'Styling', duration: '45 min', price: '35€' },
-    { id: 4, name: 'Frisur & Makeup', duration: '120 min', price: '75€' },
-  ];
-
-  const employees = [
-    { id: 1, name: 'Sarah Johnson', rating: 4.9 },
-    { id: 2, name: 'Emma Wilson', rating: 4.8 },
-    { id: 3, name: 'Lisa Anderson', rating: 4.7 },
-  ];
-
-  const timeSlots = [
+  // Default time slots (fallback)
+  const defaultTimeSlots = [
     '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
     '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
     '16:00', '16:30', '17:00', '17:30'
   ];
+
+  // Fetch salon data on mount
+  useEffect(() => {
+    if (salonSlug) {
+      fetchSalonData();
+    } else {
+      setLoading(false);
+    }
+  }, [salonSlug]);
+
+  const fetchSalonData = async () => {
+    setLoading(true);
+    try {
+      // Fetch salon info and services via public widget API
+      const res = await fetch(`${API_URL}/widget/${salonSlug}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setSalonInfo(data.salon || { name: 'Salon' });
+          
+          // Map services
+          if (data.services) {
+            setServices(data.services.map(s => ({
+              id: s._id,
+              name: s.name,
+              duration: `${s.duration || 30} min`,
+              price: `${s.price || 0}€`
+            })));
+          }
+          
+          // Map employees if available
+          if (data.employees) {
+            setEmployees(data.employees.map(e => ({
+              id: e._id,
+              name: e.name,
+              rating: e.rating || 4.5
+            })));
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching salon data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch available slots when date changes
+  useEffect(() => {
+    if (bookingData.date && bookingData.serviceId && salonSlug) {
+      fetchAvailableSlots();
+    }
+  }, [bookingData.date, bookingData.serviceId]);
+
+  const fetchAvailableSlots = async () => {
+    try {
+      const res = await fetch(
+        `${API_URL}/widget/${salonSlug}/available-slots?date=${bookingData.date}&serviceId=${bookingData.serviceId}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.slots) {
+          setAvailableSlots(data.slots);
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('Available slots not available, using defaults');
+    }
+    setAvailableSlots(defaultTimeSlots);
+  };
+
+  const timeSlots = availableSlots.length > 0 ? availableSlots : defaultTimeSlots;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBookingData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-    if (import.meta.env.DEV) console.log('Guest Booking:', bookingData);
-    showNotification('Termin bestätigt. Ein Bestätigungslink wurde an ' + bookingData.customerEmail + ' gesendet.', 'success');
+  const handleServiceSelect = (service) => {
+    setBookingData(prev => ({ 
+      ...prev, 
+      service: service.name,
+      serviceId: service.id
+    }));
   };
+
+  const handleEmployeeSelect = (emp) => {
+    setBookingData(prev => ({ 
+      ...prev, 
+      employee: emp.name,
+      employeeId: emp.id
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const bookingDateTime = new Date(`${bookingData.date}T${bookingData.time}:00`);
+      
+      const res = await fetch(`${API_URL}/widget/${salonSlug}/book`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          serviceId: bookingData.serviceId,
+          employeeId: bookingData.employeeId || undefined,
+          bookingDate: bookingDateTime.toISOString(),
+          customerName: bookingData.customerName,
+          customerEmail: bookingData.customerEmail,
+          customerPhone: bookingData.customerPhone
+        })
+      });
+
+      if (res.ok) {
+        showNotification('Termin bestätigt. Ein Bestätigungslink wurde an ' + bookingData.customerEmail + ' gesendet.', 'success');
+        // Reset form
+        setBookingStep(1);
+        setBookingData({
+          customerName: '',
+          customerEmail: '',
+          customerPhone: '',
+          service: '',
+          serviceId: '',
+          date: '',
+          time: '',
+          employee: '',
+          employeeId: '',
+        });
+      } else {
+        const data = await res.json();
+        showNotification(data.message || 'Fehler beim Buchen', 'error');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      showNotification('Fehler beim Buchen des Termins', 'error');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          <p className="text-gray-400 mt-4">Lade Salon-Daten...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!salonSlug) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400">Kein Salon angegeben. Bitte verwenden Sie einen gültigen Buchungslink.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -54,7 +209,9 @@ export default function PublicBooking() {
       <div className="border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <h1 className="text-3xl font-bold mb-1">Termin buchen</h1>
-          <p className="text-gray-400 text-sm">Jetzt einen Termin im Salon reservieren</p>
+          <p className="text-gray-400 text-sm">
+            {salonInfo?.name ? `Bei ${salonInfo.name}` : 'Jetzt einen Termin im Salon reservieren'}
+          </p>
         </div>
       </div>
 
@@ -151,44 +308,56 @@ export default function PublicBooking() {
             <h2 className="text-2xl font-bold mb-6">Service wählen</h2>
             
             <div className="grid md:grid-cols-2 gap-4 mb-6">
-              {services.map((service) => (
-                <div
-                  key={service.id}
-                  onClick={() => setBookingData(prev => ({ ...prev, service: service.name }))}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition ${
-                    bookingData.service === service.name
-                      ? 'border-purple-600 bg-purple-900 bg-opacity-20'
-                      : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
-                  }`}
-                >
-                  <h3 className="font-semibold mb-2">{service.name}</h3>
-                  <div className="flex justify-between text-sm text-gray-300">
-                    <span className="flex items-center gap-2"><FiClock className="text-gray-400" /> {service.duration}</span>
-                    <span className="text-purple-400 font-bold">{service.price}</span>
+              {services.length === 0 ? (
+                <p className="text-gray-400 col-span-2">Keine Services verfügbar</p>
+              ) : (
+                services.map((service) => (
+                  <div
+                    key={service.id}
+                    onClick={() => handleServiceSelect(service)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition ${
+                      bookingData.service === service.name
+                        ? 'border-purple-600 bg-purple-900 bg-opacity-20'
+                        : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
+                    }`}
+                  >
+                    <h3 className="font-semibold mb-2">{service.name}</h3>
+                    <div className="flex justify-between text-sm text-gray-300">
+                      <span className="flex items-center gap-2"><FiClock className="text-gray-400" /> {service.duration}</span>
+                      <span className="text-purple-400 font-bold">{service.price}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
             <h3 className="text-xl font-bold mb-4 mt-8">Friseur wählen</h3>
-            <div className="space-y-3 mb-6">
-              {employees.map((emp) => (
-                <div
-                  key={emp.id}
-                  onClick={() => setBookingData(prev => ({ ...prev, employee: emp.name }))}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition ${
-                    bookingData.employee === emp.name
-                      ? 'border-white bg-white/5'
-                      : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
-                  }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">{emp.name}</span>
-                    <div className="flex items-center text-sm text-gray-300 gap-2"><FiStar className="text-yellow-400" /> {emp.rating.toFixed(1)}</div>
+            {employees.length === 0 ? (
+              <p className="text-gray-400 mb-6">Mitarbeiter wird automatisch zugewiesen</p>
+            ) : (
+              <div className="space-y-3 mb-6">
+                {employees.map((emp) => (
+                  <div
+                    key={emp.id}
+                    onClick={() => handleEmployeeSelect(emp)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition ${
+                      bookingData.employee === emp.name
+                        ? 'border-white bg-white/5'
+                        : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">{emp.name}</span>
+                      {emp.rating > 0 && (
+                        <div className="flex items-center text-sm text-gray-300 gap-2">
+                          <FiStar className="text-yellow-400" /> {emp.rating.toFixed(1)}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex gap-4">
               <button
@@ -199,7 +368,7 @@ export default function PublicBooking() {
               </button>
               <button
                 onClick={() => setBookingStep(3)}
-                disabled={!bookingData.service || !bookingData.employee}
+                disabled={!bookingData.service}
                 className="flex-1 px-6 py-3 bg-white text-black rounded-full font-semibold hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-md"
               >
                 Zeit wählen

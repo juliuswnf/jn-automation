@@ -163,7 +163,7 @@ const BookingFlow = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Buchung bestätigt</h2>
             <p className="text-gray-600">Ihr Termin wurde erfolgreich gebucht. Sie erhalten eine Bestätigungs-Email.</p>
             <Link
-              to="/dashboard/customer"
+              to="/customer/dashboard"
               className="mt-4 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Zu meinem Dashboard

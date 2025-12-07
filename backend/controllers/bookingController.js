@@ -1,4 +1,5 @@
 import logger from '../utils/logger.js';
+import cacheService from '../services/cacheService.js';
 /**
  * Booking Controller - MVP Simplified
  * Essential booking operations only
@@ -57,6 +58,9 @@ export const createBooking = async (req, res) => {
     });
 
     await booking.populate('serviceId');
+
+    // Invalidate related caches
+    cacheService.invalidate('bookings', booking.salonId?.toString());
 
     res.status(201).json({
       success: true,

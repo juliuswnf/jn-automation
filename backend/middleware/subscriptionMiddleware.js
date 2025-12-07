@@ -5,6 +5,106 @@ import logger from '../utils/logger.js';
  */
 
 import Salon from '../models/Salon.js';
+import Booking from '../models/Booking.js';
+
+// Plan limits configuration
+const PLAN_LIMITS = {
+  starter: {
+    monthlyBookings: 100,
+    employees: 1
+  },
+  pro: {
+    monthlyBookings: Infinity,
+    employees: 10
+  },
+  trial: {
+    monthlyBookings: 50, // Limited during trial
+    employees: 3
+  }
+};
+
+/**
+ * Get plan type from subscription
+ */
+const getPlanType = (subscription) => {
+  if (!subscription) return 'trial';
+  
+  const planId = (subscription.planId || '').toLowerCase();
+  
+  if (planId.includes('pro')) return 'pro';
+  if (planId.includes('starter')) return 'starter';
+  if (subscription.status === 'trial') return 'trial';
+  
+  return 'starter'; // Default to starter
+};
+
+/**
+ * Check booking limits for Starter plan
+ * Returns warning or blocks if limit exceeded
+ */
+export const checkBookingLimits = async (req, res, next) => {
+  try {
+    const salon = req.salon;
+    
+    if (!salon) {
+      return next(); // Let other middleware handle missing salon
+    }
+    
+    const planType = getPlanType(salon.subscription);
+    const limits = PLAN_LIMITS[planType];
+    
+    // Pro plan has no limits
+    if (planType === 'pro') {
+      req.bookingLimits = { unlimited: true };
+      return next();
+    }
+    
+    // Count bookings this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+    const bookingsThisMonth = await Booking.countDocuments({
+      salonId: salon._id,
+      createdAt: { $gte: startOfMonth },
+      status: { $ne: 'cancelled' }
+    });
+    
+    const remaining = limits.monthlyBookings - bookingsThisMonth;
+    
+    // Attach limits info to request
+    req.bookingLimits = {
+      used: bookingsThisMonth,
+      limit: limits.monthlyBookings,
+      remaining: Math.max(0, remaining),
+      planType,
+      percentUsed: Math.round((bookingsThisMonth / limits.monthlyBookings) * 100)
+    };
+    
+    // Block if limit exceeded
+    if (remaining <= 0) {
+      return res.status(403).json({
+        success: false,
+        message: planType === 'starter' 
+          ? 'Monatliches Buchungslimit erreicht. Bitte auf Pro upgraden.'
+          : 'Buchungslimit für Testphase erreicht.',
+        code: 'BOOKING_LIMIT_EXCEEDED',
+        bookingLimits: req.bookingLimits,
+        upgradeUrl: '/pricing'
+      });
+    }
+    
+    // Warn if approaching limit (80%)
+    if (remaining <= limits.monthlyBookings * 0.2 && remaining > 0) {
+      res.set('X-Booking-Limit-Warning', `${remaining} Buchungen verbleibend`);
+    }
+    
+    next();
+  } catch (error) {
+    logger.error('Check booking limits error:', error);
+    next(); // Don't block on error
+  }
+};
 
 /**
  * Verify salon has active subscription
@@ -200,5 +300,7 @@ export default {
   requireActiveSubscription,
   checkSubscriptionStatus,
   requireTrialOrActive,
-  isInTrial
+  isInTrial,
+  checkBookingLimits,
+  PLAN_LIMITS
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, Star, Briefcase, Plus, ArrowRight, Clock, Settings } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { OnboardingChecklist } from '../../components/dashboard';
 import { useNotification } from '../../hooks/useNotification';
 import { salonAPI, bookingAPI } from '../../utils/api';
 
@@ -16,6 +17,7 @@ export default function StudioDashboard() {
   });
   const [recentBookings, setRecentBookings] = useState([]);
   const [studioName, setStudioName] = useState('Mein Studio');
+  const [bookingLimits, setBookingLimits] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -31,14 +33,19 @@ export default function StudioDashboard() {
       ]);
 
       if (statsResponse.data) {
+        const dashboard = statsResponse.data.dashboard || statsResponse.data;
         setStats({
-          todayBookings: statsResponse.data.todayBookings || 0,
-          weekBookings: statsResponse.data.weekBookings || 0,
+          todayBookings: dashboard.stats?.todayBookings || statsResponse.data.todayBookings || 0,
+          weekBookings: dashboard.stats?.upcomingBookings || statsResponse.data.weekBookings || 0,
           avgRating: statsResponse.data.avgRating || 4.8,
-          activeServices: statsResponse.data.activeServices || 0
+          activeServices: dashboard.stats?.totalServices || statsResponse.data.activeServices || 0
         });
-        if (statsResponse.data.studioName) {
-          setStudioName(statsResponse.data.studioName);
+        if (dashboard.salon?.name || statsResponse.data.studioName) {
+          setStudioName(dashboard.salon?.name || statsResponse.data.studioName);
+        }
+        // Set booking limits if available
+        if (dashboard.bookingLimits) {
+          setBookingLimits(dashboard.bookingLimits);
         }
       }
 
@@ -77,6 +84,44 @@ export default function StudioDashboard() {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Onboarding Checklist */}
+      <OnboardingChecklist />
+
+      {/* Booking Limit Warning */}
+      {bookingLimits && bookingLimits.percentUsed >= 80 && (
+        <div className={`mb-6 p-4 rounded-xl border ${
+          bookingLimits.percentUsed >= 100 
+            ? 'bg-red-500/10 border-red-500/30' 
+            : 'bg-yellow-500/10 border-yellow-500/30'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className={`font-semibold ${bookingLimits.percentUsed >= 100 ? 'text-red-400' : 'text-yellow-400'}`}>
+                {bookingLimits.percentUsed >= 100 
+                  ? '⚠️ Buchungslimit erreicht!' 
+                  : `⚠️ ${bookingLimits.remaining} Buchungen verbleibend`}
+              </h3>
+              <p className="text-sm text-zinc-400 mt-1">
+                {bookingLimits.used} von {bookingLimits.limit} Buchungen diesen Monat 
+                ({bookingLimits.planType === 'trial' ? 'Testphase' : 'Starter Plan'})
+              </p>
+            </div>
+            <a 
+              href="/pricing" 
+              className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-zinc-200 transition"
+            >
+              Auf Pro upgraden
+            </a>
+          </div>
+          <div className="mt-3 h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all ${bookingLimits.percentUsed >= 100 ? 'bg-red-500' : 'bg-yellow-500'}`}
+              style={{ width: `${Math.min(100, bookingLimits.percentUsed)}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Welcome Header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">

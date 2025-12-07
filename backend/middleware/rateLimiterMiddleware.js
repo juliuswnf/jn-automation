@@ -240,6 +240,109 @@ const reviewLimiter = rateLimit({
   keyGenerator: (req) => req.user?.id || req.ip
 });
 
+// ==================== CEO LOGIN LIMITER (Extra Strict) ====================
+
+const ceoLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3, // Only 3 attempts per 15 minutes
+  skipSuccessfulRequests: true,
+  message: {
+    success: false,
+    message: 'Zu viele CEO-Login-Versuche. Bitte warten Sie 15 Minuten.'
+  },
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => `ceo:${req.body?.email || req.ip}`,
+  handler: (req, res) => {
+    logger.warn(`🚨 CEO login rate limit exceeded for ${req.body?.email || req.ip}`);
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele CEO-Login-Versuche. Aus Sicherheitsgründen bitte 15 Minuten warten.',
+      retryAfter: 900
+    });
+  }
+});
+
+// ==================== PASSWORD RESET LIMITER ====================
+
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Only 3 password reset requests per hour
+  message: {
+    success: false,
+    message: 'Zu viele Passwort-Reset-Anfragen. Bitte versuchen Sie es in einer Stunde erneut.'
+  },
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => `pwreset:${req.body?.email || req.ip}`,
+  handler: (req, res) => {
+    logger.warn(`⚠️ Password reset rate limit exceeded for ${req.body?.email || req.ip}`);
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele Passwort-Reset-Anfragen. Bitte überprüfen Sie Ihre E-Mails oder warten Sie eine Stunde.',
+      retryAfter: 3600
+    });
+  }
+});
+
+// ==================== REGISTRATION LIMITER ====================
+
+const registrationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // 5 registrations per hour per IP
+  message: {
+    success: false,
+    message: 'Zu viele Registrierungen von dieser IP. Bitte später versuchen.'
+  },
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => `register:${req.ip}`,
+  handler: (req, res) => {
+    logger.warn(`⚠️ Registration rate limit exceeded for IP ${req.ip}`);
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele Registrierungsversuche. Bitte versuchen Sie es später erneut.',
+      retryAfter: 3600
+    });
+  }
+});
+
+// ==================== WIDGET/PUBLIC BOOKING LIMITER ====================
+
+const widgetLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 30, // 30 requests per minute per IP
+  message: {
+    success: false,
+    message: 'Zu viele Anfragen. Bitte warten Sie einen Moment.'
+  },
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => `widget:${req.ip}`,
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+      retryAfter: 60
+    });
+  }
+});
+
+const publicBookingLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 bookings per hour per IP
+  message: {
+    success: false,
+    message: 'Zu viele Buchungen. Bitte versuchen Sie es später erneut.'
+  },
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => `publicbook:${req.ip}:${req.body?.customerEmail || 'unknown'}`,
+  handler: (req, res) => {
+    logger.warn(`⚠️ Public booking rate limit exceeded for IP ${req.ip}`);
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele Buchungsversuche. Bitte versuchen Sie es in einer Stunde erneut.',
+      retryAfter: 3600
+    });
+  }
+});
+
 // ==================== UTILITY FUNCTIONS ====================
 
 const customLimiter = (windowMs, max, prefix = 'custom') => {
@@ -384,6 +487,11 @@ export {
   exportLimiter,
   bookingLimiter,
   reviewLimiter,
+  ceoLoginLimiter,
+  passwordResetLimiter,
+  registrationLimiter,
+  widgetLimiter,
+  publicBookingLimiter,
   customLimiter,
   adminBypass,
   createRateLimiter,

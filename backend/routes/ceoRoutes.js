@@ -5,6 +5,13 @@ import ceoMiddleware from '../middleware/ceoMiddleware.js';
 import ceoController from '../controllers/ceoController.js';
 import ceoSubscriptionController from '../controllers/ceoSubscriptionController.js';
 import * as systemController from '../controllers/systemController.js';
+import * as ceoAnalyticsController from '../controllers/ceoAnalyticsController.js';
+import * as ceoEmailController from '../controllers/ceoEmailController.js';
+import * as ceoPaymentsController from '../controllers/ceoPaymentsController.js';
+import * as ceoSupportController from '../controllers/ceoSupportController.js';
+import * as ceoAuditController from '../controllers/ceoAuditController.js';
+import * as ceoFeatureFlagsController from '../controllers/ceoFeatureFlagsController.js';
+import * as ceoBackupsController from '../controllers/ceoBackupsController.js';
 
 const router = express.Router();
 
@@ -120,5 +127,65 @@ router.post('/system/start-all', ceoMiddleware.verifyCEOAuth, systemController.s
 
 // Stop all services
 router.post('/system/stop-all', ceoMiddleware.verifyCEOAuth, systemController.stopAllServices);
+
+// ==================== ANALYTICS ROUTES ====================
+router.get('/analytics/overview', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getAnalyticsOverview);
+router.get('/analytics/revenue-chart', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getRevenueChart);
+router.get('/analytics/customer-growth', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getCustomerGrowthChart);
+router.get('/analytics/cohorts', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getCohortAnalysis);
+router.get('/analytics/churn', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getChurnAnalysis);
+
+// ==================== EMAIL CAMPAIGNS ROUTES ====================
+router.get('/email/campaigns', ceoMiddleware.verifyCEOAuth, ceoEmailController.getAllCampaigns);
+router.post('/email/campaigns', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoEmailController.createCampaign);
+router.get('/email/campaigns/:campaignId', ceoMiddleware.verifyCEOAuth, ceoEmailController.getCampaignDetails);
+router.post('/email/campaigns/:campaignId/send', ceoMiddleware.verifyCEOAuth, ceoEmailController.sendCampaign);
+router.post('/email/campaigns/:campaignId/cancel', ceoMiddleware.verifyCEOAuth, ceoEmailController.cancelCampaign);
+router.delete('/email/campaigns/:campaignId', ceoMiddleware.verifyCEOAuth, ceoEmailController.deleteCampaign);
+router.get('/email/templates', ceoMiddleware.verifyCEOAuth, ceoEmailController.getEmailTemplates);
+router.get('/email/stats', ceoMiddleware.verifyCEOAuth, ceoEmailController.getEmailStats);
+
+// ==================== PAYMENTS ROUTES ====================
+router.get('/payments/transactions', ceoMiddleware.verifyCEOAuth, ceoPaymentsController.getAllTransactions);
+router.get('/payments/overview', ceoMiddleware.verifyCEOAuth, ceoPaymentsController.getPaymentOverview);
+router.get('/payments/transactions/:transactionId', ceoMiddleware.verifyCEOAuth, ceoPaymentsController.getTransactionDetails);
+router.post('/payments/transactions/:transactionId/refund', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoPaymentsController.processRefund);
+router.get('/payments/payouts', ceoMiddleware.verifyCEOAuth, ceoPaymentsController.getPayoutSchedule);
+router.get('/payments/by-plan', ceoMiddleware.verifyCEOAuth, ceoPaymentsController.getRevenueByPlan);
+
+// ==================== SUPPORT TICKETS ROUTES ====================
+router.get('/support/tickets', ceoMiddleware.verifyCEOAuth, ceoSupportController.getAllTickets);
+router.post('/support/tickets', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoSupportController.createTicket);
+router.get('/support/tickets/stats', ceoMiddleware.verifyCEOAuth, ceoSupportController.getTicketStats);
+router.get('/support/tickets/:ticketId', ceoMiddleware.verifyCEOAuth, ceoSupportController.getTicketDetails);
+router.patch('/support/tickets/:ticketId', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoSupportController.updateTicket);
+router.post('/support/tickets/:ticketId/reply', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoSupportController.addReply);
+
+// ==================== AUDIT LOG ROUTES ====================
+router.get('/audit/logs', ceoMiddleware.verifyCEOAuth, ceoAuditController.getAuditLogs);
+router.get('/audit/logs/:logId', ceoMiddleware.verifyCEOAuth, ceoAuditController.getLogDetails);
+router.get('/audit/stats', ceoMiddleware.verifyCEOAuth, ceoAuditController.getAuditStats);
+router.get('/audit/alerts', ceoMiddleware.verifyCEOAuth, ceoAuditController.getSecurityAlerts);
+router.get('/audit/export', ceoMiddleware.verifyCEOAuth, ceoAuditController.exportAuditLogs);
+
+// ==================== FEATURE FLAGS ROUTES ====================
+router.get('/feature-flags', ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.getAllFlags);
+router.post('/feature-flags', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.createFlag);
+router.get('/feature-flags/:flagId', ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.getFlagDetails);
+router.patch('/feature-flags/:flagId', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.updateFlag);
+router.post('/feature-flags/:flagId/toggle', ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.toggleFlag);
+router.delete('/feature-flags/:flagId', ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.deleteFlag);
+router.post('/feature-flags/:flagId/customer', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.updateCustomerFlag);
+router.get('/feature-flags/check/:flagKey/:salonId', ceoMiddleware.verifyCEOAuth, ceoFeatureFlagsController.checkFlagForCustomer);
+
+// ==================== BACKUPS ROUTES ====================
+router.get('/backups', ceoMiddleware.verifyCEOAuth, ceoBackupsController.getAllBackups);
+router.post('/backups', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoBackupsController.createBackup);
+router.get('/backups/schedule', ceoMiddleware.verifyCEOAuth, ceoBackupsController.getBackupSchedule);
+router.put('/backups/schedule', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoBackupsController.updateBackupSchedule);
+router.get('/backups/:backupId', ceoMiddleware.verifyCEOAuth, ceoBackupsController.getBackupDetails);
+router.delete('/backups/:backupId', ceoMiddleware.verifyCEOAuth, ceoBackupsController.deleteBackup);
+router.post('/backups/:backupId/restore', securityMiddleware.validateContentType, ceoMiddleware.verifyCEOAuth, ceoBackupsController.restoreBackup);
+router.get('/backups/:backupId/download', ceoMiddleware.verifyCEOAuth, ceoBackupsController.downloadBackup);
 
 export default router;

@@ -1,12 +1,13 @@
 /**
  * Public Booking Routes
  * No authentication required - for customer-facing booking
+ * Rate-limited for spam protection
  */
 
 import express from 'express';
 import publicBookingController from '../controllers/publicBookingController.js';
 import securityMiddleware from '../middleware/securityMiddleware.js';
-import { strictLimiter } from '../middleware/rateLimiterMiddleware.js';
+import { widgetLimiter, publicBookingLimiter } from '../middleware/rateLimiterMiddleware.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ const router = express.Router();
 // GET /api/public/s/:slug
 router.get(
   '/s/:slug',
-  strictLimiter,
+  widgetLimiter,
   publicBookingController.getSalonBySlug
 );
 
@@ -23,16 +24,16 @@ router.get(
 router.post(
   '/s/:slug/available-slots',
   securityMiddleware.validateContentType,
-  strictLimiter,
+  widgetLimiter,
   publicBookingController.getAvailableSlots
 );
 
 // Create public booking (no auth required)
-// POST /api/public/s/:slug/book
+// POST /api/public/s/:slug/book - Extra strict rate limiting
 router.post(
   '/s/:slug/book',
   securityMiddleware.validateContentType,
-  strictLimiter,
+  publicBookingLimiter,
   publicBookingController.createPublicBooking
 );
 
