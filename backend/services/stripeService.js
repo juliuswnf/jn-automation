@@ -349,7 +349,7 @@ export const createCheckoutSession = async (salon, priceId, successUrl, cancelUr
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
-      payment_method_types: ['card'],
+      payment_method_types: ['card', 'sepa_debit'],
       line_items: [
         {
           price: priceId,
@@ -357,7 +357,7 @@ export const createCheckoutSession = async (salon, priceId, successUrl, cancelUr
         }
       ],
       subscription_data: {
-        trial_period_days: 14,
+        trial_period_days: 30,
         metadata: {
           salonId: salon._id.toString(),
           salonSlug: salon.slug
@@ -368,7 +368,9 @@ export const createCheckoutSession = async (salon, priceId, successUrl, cancelUr
       metadata: {
         salonId: salon._id.toString(),
         salonSlug: salon.slug
-      }
+      },
+      // German locale for SEPA
+      locale: 'de'
     });
 
     logger.log(`✅ Created checkout session for salon ${salon.slug}`);

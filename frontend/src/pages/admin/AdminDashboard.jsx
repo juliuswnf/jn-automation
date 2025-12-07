@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarIcon, UsersIcon, CogIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, UsersIcon, CogIcon, CodeBracketIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -15,6 +16,14 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [recentBookings, setRecentBookings] = useState([]);
+  const [setupProgress, setSetupProgress] = useState({
+    hasServices: false,
+    hasOpeningHours: false,
+    hasAddress: false,
+    hasGoogleReview: false,
+    hasFirstBooking: false
+  });
+  const [showSetup, setShowSetup] = useState(true);
   const user = JSON.parse(localStorage.getItem('jnUser') || localStorage.getItem('user') || '{}');
 
   // Get auth token
@@ -24,7 +33,57 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchStats();
+    fetchSetupProgress();
   }, []);
+
+  const fetchSetupProgress = async () => {
+    const token = getToken();
+    if (!token) return;
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      // Check salon info
+      const salonRes = await fetch(`${API_URL}/salons/my-salon`, { headers }).catch(() => null);
+      if (salonRes?.ok) {
+        const salonData = await salonRes.json();
+        const salon = salonData.data || salonData.salon || salonData;
+        setSetupProgress(prev => ({
+          ...prev,
+          hasAddress: !!(salon.address?.city || salon.address?.street),
+          hasOpeningHours: !!(salon.businessHours || salon.openingHours),
+          hasGoogleReview: !!salon.googleReviewUrl
+        }));
+      }
+
+      // Check services
+      const servicesRes = await fetch(`${API_URL}/services`, { headers }).catch(() => null);
+      if (servicesRes?.ok) {
+        const servicesData = await servicesRes.json();
+        const services = servicesData.data || servicesData.services || [];
+        setSetupProgress(prev => ({
+          ...prev,
+          hasServices: services.length > 0
+        }));
+      }
+
+      // Check bookings
+      const bookingsRes = await fetch(`${API_URL}/bookings?limit=1`, { headers }).catch(() => null);
+      if (bookingsRes?.ok) {
+        const bookingsData = await bookingsRes.json();
+        const bookings = bookingsData.bookings || bookingsData.data || [];
+        setSetupProgress(prev => ({
+          ...prev,
+          hasFirstBooking: bookings.length > 0
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching setup progress:', error);
+    }
+  };
 
   const fetchStats = async () => {
     setLoading(true);
@@ -104,6 +163,146 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <>
+            {/* Setup Checklist */}
+            {showSetup && !Object.values(setupProgress).every(v => v) && (
+              <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-500/30 rounded-xl p-6 mb-8">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                      🚀 Studio-Setup abschließen
+                    </h2>
+                    <p className="text-indigo-200 text-sm mt-1">
+                      Schließe diese Schritte ab, um dein Studio optimal einzurichten
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setShowSetup(false)}
+                    className="text-indigo-300 hover:text-white text-sm"
+                  >
+                    Ausblenden
+                  </button>
+                </div>
+                
+                <div className="grid md:grid-cols-5 gap-4">
+                  <Link 
+                    to="/dashboard/services"
+                    className={`p-4 rounded-lg border transition ${
+                      setupProgress.hasServices 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-black/30 border-indigo-500/30 hover:border-indigo-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {setupProgress.hasServices ? (
+                        <CheckCircleSolid className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <ExclamationCircleIcon className="w-5 h-5 text-yellow-400" />
+                      )}
+                      <span className="font-medium text-white text-sm">Services</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {setupProgress.hasServices ? 'Erledigt ✓' : 'Services hinzufügen'}
+                    </p>
+                  </Link>
+
+                  <Link 
+                    to="/onboarding"
+                    className={`p-4 rounded-lg border transition ${
+                      setupProgress.hasOpeningHours 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-black/30 border-indigo-500/30 hover:border-indigo-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {setupProgress.hasOpeningHours ? (
+                        <CheckCircleSolid className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <ExclamationCircleIcon className="w-5 h-5 text-yellow-400" />
+                      )}
+                      <span className="font-medium text-white text-sm">Öffnungszeiten</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {setupProgress.hasOpeningHours ? 'Erledigt ✓' : 'Zeiten festlegen'}
+                    </p>
+                  </Link>
+
+                  <Link 
+                    to="/onboarding"
+                    className={`p-4 rounded-lg border transition ${
+                      setupProgress.hasAddress 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-black/30 border-indigo-500/30 hover:border-indigo-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {setupProgress.hasAddress ? (
+                        <CheckCircleSolid className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <ExclamationCircleIcon className="w-5 h-5 text-yellow-400" />
+                      )}
+                      <span className="font-medium text-white text-sm">Adresse</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {setupProgress.hasAddress ? 'Erledigt ✓' : 'Standort eintragen'}
+                    </p>
+                  </Link>
+
+                  <Link 
+                    to="/onboarding"
+                    className={`p-4 rounded-lg border transition ${
+                      setupProgress.hasGoogleReview 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-black/30 border-indigo-500/30 hover:border-indigo-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {setupProgress.hasGoogleReview ? (
+                        <CheckCircleSolid className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <ExclamationCircleIcon className="w-5 h-5 text-yellow-400" />
+                      )}
+                      <span className="font-medium text-white text-sm">Google Reviews</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {setupProgress.hasGoogleReview ? 'Erledigt ✓' : 'Link hinzufügen'}
+                    </p>
+                  </Link>
+
+                  <div 
+                    className={`p-4 rounded-lg border ${
+                      setupProgress.hasFirstBooking 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-black/30 border-gray-700'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {setupProgress.hasFirstBooking ? (
+                        <CheckCircleSolid className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <CheckCircleIcon className="w-5 h-5 text-gray-500" />
+                      )}
+                      <span className="font-medium text-white text-sm">Erste Buchung</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {setupProgress.hasFirstBooking ? 'Erledigt ✓' : 'Warte auf Kunden'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center gap-4">
+                  <div className="flex-1 bg-black/30 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${(Object.values(setupProgress).filter(v => v).length / 5) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-indigo-200 text-sm font-medium">
+                    {Object.values(setupProgress).filter(v => v).length}/5 erledigt
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Stats Grid */}
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">

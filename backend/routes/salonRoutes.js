@@ -1,5 +1,6 @@
 import express from 'express';
 import salonController from '../controllers/salonController.js';
+import salonAnalyticsController from '../controllers/salonAnalyticsController.js';
 import { checkSalonOwnership, enforceTenantFilter } from '../middleware/tenantMiddleware.js';
 
 const router = express.Router();
@@ -14,6 +15,23 @@ router.use(enforceTenantFilter);
 
 // Salon dashboard - returns complete dashboard with stats, recent bookings
 router.get('/dashboard', salonController.getSalonDashboard);
+
+// ==================== SUCCESS METRICS / ANALYTICS ====================
+
+// Overview metrics (KPIs)
+router.get('/analytics/overview', salonAnalyticsController.getMetricsOverview);
+
+// Booking trends chart
+router.get('/analytics/trends', salonAnalyticsController.getBookingTrends);
+
+// Top performing services
+router.get('/analytics/top-services', salonAnalyticsController.getTopServices);
+
+// Peak hours analysis
+router.get('/analytics/peak-hours', salonAnalyticsController.getPeakHours);
+
+// Customer insights
+router.get('/analytics/customers', salonAnalyticsController.getCustomerInsights);
 
 // ==================== SALON MANAGEMENT ====================
 

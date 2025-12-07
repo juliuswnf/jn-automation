@@ -19,6 +19,7 @@ import salonRoutes from './routes/salonRoutes.js';
 import publicBookingRoutes from './routes/publicBookingRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import ceoRoutes from './routes/ceoRoutes.js';
 import widgetRoutes from './routes/widgetRoutes.js';
 import employeeRoutes from './routes/employeeRoutes.js';
@@ -36,6 +37,7 @@ import stripeWebhookController from './controllers/stripeWebhookController.js';
 // Import Services
 import { initializeCronJobs } from './services/cronService.js';
 import emailQueueWorker from './workers/emailQueueWorker.js';
+import lifecycleEmailWorker from './workers/lifecycleEmailWorker.js';
 import logger from './utils/logger.js';
 import { requestTimingMiddleware, getHealthStatus, getMetrics } from './services/monitoringService.js';
 import alertingService from './services/alertingService.js';
@@ -70,6 +72,7 @@ app.set('io', io);
 
 // Email Worker Intervals (for graceful shutdown)
 let emailWorkerIntervals = null;
+let lifecycleWorkerIntervalId = null;
 
 // ==================== GLOBAL MIDDLEWARE ====================
 
@@ -160,6 +163,7 @@ app.get('/', (req, res) => {
       publicBooking: '/api/bookings/public/s/:slug',
       widget: '/api/widget',
       payments: '/api/payments',
+      subscriptions: '/api/subscriptions',
       webhooks: '/api/webhooks/stripe'
     }
   });
@@ -170,7 +174,8 @@ app.get('/', (req, res) => {
 // Public Routes (No Auth Required)
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings/public', publicBookingRoutes);
-app.use('/api/widget', widgetRoutes); // NEW: Embeddable Widget API
+app.use('/api/widget', widgetRoutes); // Embeddable Widget API
+app.use('/api/subscriptions', subscriptionRoutes); // Stripe Subscription Management
 
 // Protected Routes (Auth Required)
 app.use('/api/salon', authMiddleware.protect, salonRoutes);
@@ -279,6 +284,16 @@ const startEmailWorker = () => {
   }
 };
 
+// ==================== LIFECYCLE EMAIL WORKER ====================
+const startLifecycleWorker = () => {
+  try {
+    lifecycleWorkerIntervalId = lifecycleEmailWorker.startLifecycleEmailWorker();
+    logger.info('✅ Lifecycle email worker started');
+  } catch (error) {
+    logger.error('⚠️ Lifecycle email worker initialization error:', error.message);
+  }
+};
+
 // ==================== ALERTING SERVICE ====================
 const startAlertingService = () => {
   try {
@@ -302,6 +317,7 @@ const startServer = async () => {
 
     await initializeCrons();
     startEmailWorker();
+    startLifecycleWorker();
     startAlertingService();
 
     server.listen(PORT, () => {
@@ -315,6 +331,7 @@ const startServer = async () => {
       logger.info('Auth: JWT + Role-based Access Control');
       logger.info('Stripe: Subscriptions + Webhooks');
       logger.info('Email Worker: Active (checks every 60s)');
+      logger.info('Lifecycle Emails: Active (checks every hour)');
       logger.info(`Started at: ${new Date().toISOString()}\n`);
       logger.info('Socket.IO Events:');
       logger.info('   - bookingCreated, bookingUpdated, bookingDeleted');
@@ -350,6 +367,9 @@ process.on('SIGTERM', async () => {
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
   }
+  if (lifecycleWorkerIntervalId) {
+    lifecycleEmailWorker.stopLifecycleEmailWorker();
+  }
   server.close(async () => {
     logger.info('✅ HTTP server closed');
     await mongoose.connection.close();
@@ -362,6 +382,9 @@ process.on('SIGINT', async () => {
   logger.info('\n⚠️ SIGINT signal received: Closing HTTP server');
   if (emailWorkerIntervals) {
     emailQueueWorker.stopWorker(emailWorkerIntervals);
+  }
+  if (lifecycleWorkerIntervalId) {
+    lifecycleEmailWorker.stopLifecycleEmailWorker();
   }
   server.close(async () => {
     logger.info('✅ HTTP server closed');

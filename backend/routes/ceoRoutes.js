@@ -134,6 +134,8 @@ router.get('/analytics/revenue-chart', ceoMiddleware.verifyCEOAuth, ceoAnalytics
 router.get('/analytics/customer-growth', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getCustomerGrowthChart);
 router.get('/analytics/cohorts', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getCohortAnalysis);
 router.get('/analytics/churn', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getChurnAnalysis);
+router.get('/analytics/at-risk', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getAtRiskStudios);
+router.get('/analytics/lifecycle-emails', ceoMiddleware.verifyCEOAuth, ceoAnalyticsController.getLifecycleEmailStats);
 
 // ==================== EMAIL CAMPAIGNS ROUTES ====================
 router.get('/email/campaigns', ceoMiddleware.verifyCEOAuth, ceoEmailController.getAllCampaigns);

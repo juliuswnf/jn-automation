@@ -17,7 +17,8 @@
     "create:ceo": "node scripts/createCEO.js",
     "validate-env": "node scripts/validateEnv.js",
     "pre-launch": "node scripts/preLaunchCheck.js",
-    "migrate": "node scripts/migrateData.js"
+    "migrate": "node scripts/migrateData.js",
+    "test:email": "node scripts/emailDeliverabilityTest.js"
   },
   "dependencies": {
     "axios": "^1.6.2",

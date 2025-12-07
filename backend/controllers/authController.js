@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import logger from '../utils/logger.js';
 import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
+import LifecycleEmail from '../models/LifecycleEmail.js';
 
 /**
  * Auth Controller - MVP Version
@@ -23,7 +24,10 @@ const generateToken = (id, expiresIn = process.env.JWT_EXPIRE || '7d') => {
 
 export const register = async (req, res) => {
   try {
-    const { email, password, firstName, lastName, name, role, phone, companyName } = req.body;
+    const { 
+      email, password, firstName, lastName, name, role, phone, 
+      companyName, companyAddress, companyCity, companyZip, plan 
+    } = req.body;
 
     // Combine firstName + lastName OR use name
     const fullName = name || (firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName);
@@ -76,6 +80,65 @@ export const register = async (req, res) => {
     // Create user (password auto-hashed by mongoose pre-hook)
     const user = await User.create(userData);
 
+    // If salon_owner, automatically create a Salon with 30-day trial
+    let salon = null;
+    if (userRole === 'salon_owner' && companyName) {
+      const Salon = (await import('../models/Salon.js')).default;
+      
+      // Generate unique slug
+      let slug = companyName.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      
+      // Check for existing slug and add number if needed
+      const existingSlug = await Salon.findOne({ slug });
+      if (existingSlug) {
+        slug = `${slug}-${Date.now().toString(36)}`;
+      }
+
+      salon = await Salon.create({
+        name: companyName,
+        slug,
+        owner: user._id,
+        email: email,
+        phone: phone || '',
+        address: {
+          street: companyAddress || '',
+          city: companyCity || '',
+          postalCode: companyZip || '',
+          country: 'Deutschland'
+        },
+        isActive: true,
+        subscription: {
+          status: 'trial',
+          plan: plan || 'starter',
+          trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days trial
+        }
+      });
+
+      // Link salon to user
+      user.salonId = salon._id;
+      await user.save();
+
+      logger.log(`✅ Salon created for new owner: ${salon.name} (${salon.slug})`);
+
+      // Queue welcome email
+      try {
+        const emailService = (await import('../services/emailService.js')).default;
+        await emailService.sendWelcomeEmail(user, salon);
+      } catch (emailError) {
+        logger.warn('Welcome email failed:', emailError.message);
+      }
+
+      // Schedule lifecycle emails for trial nurturing
+      try {
+        await LifecycleEmail.scheduleForNewSalon(salon, user);
+        logger.log(`✅ Lifecycle emails scheduled for: ${salon.name}`);
+      } catch (lifecycleError) {
+        logger.warn('Lifecycle email scheduling failed:', lifecycleError.message);
+      }
+    }
+
     // Generate token
     const token = generateToken(user._id);
 
@@ -84,7 +147,13 @@ export const register = async (req, res) => {
     res.status(201).json({
       success: true,
       token,
-      user: user.toJSON()
+      user: user.toJSON(),
+      salon: salon ? {
+        id: salon._id,
+        name: salon.name,
+        slug: salon.slug,
+        trialEndsAt: salon.subscription?.trialEndsAt
+      } : null
     });
   } catch (error) {
     logger.error('❌ Register Error:', error);

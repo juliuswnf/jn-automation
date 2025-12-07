@@ -13,6 +13,9 @@ import AppLayout from './layouts/AppLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import CustomerLayout from './components/layout/CustomerLayout';
 
+// Support Widget
+import TawkToWidget from './components/support/TawkToWidget';
+
 // Lazy loaded pages - less critical
 const CustomerRegister = lazy(() => import('./pages/auth/CustomerRegister'));
 const Register = lazy(() => import('./pages/auth/Register'));
@@ -20,6 +23,7 @@ const EmployeeLogin = lazy(() => import('./pages/auth/EmployeeLogin'));
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const Pricing = lazy(() => import('./pages/Pricing'));
+const Demo = lazy(() => import('./pages/Demo'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Impressum = lazy(() => import('./pages/legal/Impressum'));
 const Datenschutz = lazy(() => import('./pages/legal/Datenschutz'));
@@ -37,6 +41,8 @@ const Employees = lazy(() => import('./pages/dashboard/Employees'));
 const Customers = lazy(() => import('./pages/company/Customers'));
 const WidgetSetup = lazy(() => import('./pages/dashboard/WidgetSetup'));
 const Settings = lazy(() => import('./pages/dashboard/Settings'));
+const SuccessMetrics = lazy(() => import('./pages/dashboard/SuccessMetrics'));
+const GettingStarted = lazy(() => import('./pages/help/GettingStarted'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const CEODashboard = lazy(() => import('./pages/CEODashboard'));
 const CEOSettings = lazy(() => import('./pages/ceo/CEOSettings'));
@@ -45,6 +51,7 @@ const CEOEmailCampaigns = lazy(() => import('./pages/ceo/EmailCampaigns'));
 const CEOPayments = lazy(() => import('./pages/ceo/Payments'));
 const CEOSupportTickets = lazy(() => import('./pages/ceo/SupportTickets'));
 const CEOAuditLog = lazy(() => import('./pages/ceo/AuditLog'));
+const CEOLifecycleEmails = lazy(() => import('./pages/ceo/LifecycleEmails'));
 const CEOFeatureFlags = lazy(() => import('./pages/ceo/FeatureFlags'));
 const CEOBackups = lazy(() => import('./pages/ceo/Backups'));
 const EmployeeDashboard = lazy(() => import('./pages/employee/Dashboard'));
@@ -162,9 +169,11 @@ function App() {
   return (
     <Router>
       <KeyboardShortcuts />
+      <TawkToWidget />
       <Routes>
         {/* ==================== PUBLIC ROUTES (wrapped in AppLayout) ==================== */}
         <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+        <Route path="/demo" element={<AppLayout><LazyPage><Demo /></LazyPage></AppLayout>} />
         <Route path="/pricing" element={<AppLayout><LazyPage><Pricing /></LazyPage></AppLayout>} />
         <Route path="/checkout/:planId" element={<AppLayout><LazyPage><Checkout /></LazyPage></AppLayout>} />
         <Route path="/login" element={<AppLayout><LoginSelection /></AppLayout>} />
@@ -330,6 +339,26 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/success-metrics"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin']}>
+              <DashboardLayout>
+                <LazyPage><SuccessMetrics /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/help"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <LazyPage><GettingStarted /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
         
         {/* ==================== BUSINESS ROUTES ==================== */}
         <Route 
@@ -395,6 +424,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="ceo">
               <LazyPage><CEOAuditLog /></LazyPage>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/ceo/lifecycle-emails" 
+          element={
+            <ProtectedRoute requiredRole="ceo">
+              <LazyPage><CEOLifecycleEmails /></LazyPage>
             </ProtectedRoute>
           } 
         />

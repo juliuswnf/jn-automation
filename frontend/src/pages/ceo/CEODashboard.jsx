@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { BuildingStorefrontIcon, UsersIcon, CurrencyEuroIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
+import { BuildingStorefrontIcon, UsersIcon, CurrencyEuroIcon, ChartBarIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { ceoAPI, formatError } from '../../utils/api';
 import { useNotification } from '../../hooks/useNotification';
 
@@ -10,21 +11,23 @@ const CEODashboard = () => {
     monthlyRevenue: 0,
     activeSubscriptions: 0
   });
+  const [atRiskStudios, setAtRiskStudios] = useState([]);
+  const [atRiskSummary, setAtRiskSummary] = useState({ total: 0, highRisk: 0 });
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   const { error } = useNotification();
 
   useEffect(() => {
     fetchCEOStats();
+    fetchAtRiskStudios();
   }, []);
 
   const fetchCEOStats = async () => {
     try {
       const data = await ceoAPI.getStats();
       setStats(data.stats || stats);
-    } catch (error) {
-      if (import.meta.env.DEV) console.error('Error fetching CEO stats:', error);
-      error(formatError(error));
+    } catch (err) {
+      if (import.meta.env.DEV) console.error('Error fetching CEO stats:', err);
       // Mock data for development
       setStats({
         totalSalons: 12,
@@ -32,6 +35,26 @@ const CEODashboard = () => {
         monthlyRevenue: 4580,
         activeSubscriptions: 11
       });
+    }
+  };
+
+  const fetchAtRiskStudios = async () => {
+    try {
+      const res = await ceoAPI.getAtRiskStudios();
+      if (res.data?.success) {
+        setAtRiskStudios(res.data.studios?.slice(0, 5) || []);
+        setAtRiskSummary(res.data.summary || { total: 0, highRisk: 0 });
+      }
+    } catch (err) {
+      if (import.meta.env.DEV) console.error('Error fetching at-risk studios:', err);
+    }
+  };
+
+  const getRiskColor = (level) => {
+    switch (level) {
+      case 'high': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      default: return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
     }
   };
 
@@ -88,28 +111,79 @@ const CEODashboard = () => {
         </div>
 
         {/* System Actions */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-xl font-semibold text-white mb-4">System Management</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <button className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-blue-500 transition-colors">
-              <BuildingStorefrontIcon className="h-6 w-6 text-blue-500 mr-3" />
-              <span className="font-medium text-white">Manage Salons</span>
-            </button>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* At-Risk Studios Alert */}
+          {atRiskSummary.total > 0 && (
+            <div className="bg-gradient-to-br from-red-900/30 to-gray-800 rounded-lg p-6 border border-red-500/30">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <ExclamationTriangleIcon className="h-6 w-6 text-red-400" />
+                  Churn-Risiko Studios
+                </h2>
+                <Link 
+                  to="/ceo/analytics"
+                  className="text-sm text-red-400 hover:text-red-300"
+                >
+                  Alle anzeigen →
+                </Link>
+              </div>
+              
+              <div className="flex gap-4 mb-4">
+                <div className="bg-red-500/20 rounded-lg px-4 py-2">
+                  <p className="text-2xl font-bold text-red-400">{atRiskSummary.highRisk}</p>
+                  <p className="text-xs text-red-300">Hohes Risiko</p>
+                </div>
+                <div className="bg-yellow-500/20 rounded-lg px-4 py-2">
+                  <p className="text-2xl font-bold text-yellow-400">{atRiskSummary.total - atRiskSummary.highRisk}</p>
+                  <p className="text-xs text-yellow-300">Beobachten</p>
+                </div>
+              </div>
 
-            <button className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-green-500 transition-colors">
-              <UsersIcon className="h-6 w-6 text-green-500 mr-3" />
-              <span className="font-medium text-white">User Management</span>
-            </button>
+              <div className="space-y-2">
+                {atRiskStudios.map((studio) => (
+                  <div 
+                    key={studio.id} 
+                    className={`p-3 rounded-lg border ${getRiskColor(studio.riskLevel)}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-white">{studio.name}</p>
+                        <p className="text-xs opacity-75">{studio.riskFactors?.join(' • ')}</p>
+                      </div>
+                      <span className="text-xs font-semibold px-2 py-1 rounded bg-black/30">
+                        Score: {studio.riskScore}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-            <button className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-yellow-500 transition-colors">
-              <CurrencyEuroIcon className="h-6 w-6 text-yellow-500 mr-3" />
-              <span className="font-medium text-white">Billing & Subscriptions</span>
-            </button>
+          {/* Management Actions */}
+          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">System Management</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <Link to="/ceo/companies" className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-blue-500 transition-colors">
+                <BuildingStorefrontIcon className="h-6 w-6 text-blue-500 mr-3" />
+                <span className="font-medium text-white">Salons</span>
+              </Link>
 
-            <button className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-purple-500 transition-colors">
-              <ChartBarIcon className="h-6 w-6 text-purple-500 mr-3" />
-              <span className="font-medium text-white">Analytics & Reports</span>
-            </button>
+              <Link to="/ceo/users" className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-green-500 transition-colors">
+                <UsersIcon className="h-6 w-6 text-green-500 mr-3" />
+                <span className="font-medium text-white">Users</span>
+              </Link>
+
+              <Link to="/ceo/payments" className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-yellow-500 transition-colors">
+                <CurrencyEuroIcon className="h-6 w-6 text-yellow-500 mr-3" />
+                <span className="font-medium text-white">Billing</span>
+              </Link>
+
+              <Link to="/ceo/analytics" className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg hover:border-purple-500 transition-colors">
+                <ChartBarIcon className="h-6 w-6 text-purple-500 mr-3" />
+                <span className="font-medium text-white">Analytics</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

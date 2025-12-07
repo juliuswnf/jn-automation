@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Users, Star, Briefcase, Plus, ArrowRight, Clock, Settings } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { OnboardingChecklist } from '../../components/dashboard';
+import OnboardingTour from '../../components/onboarding/OnboardingTour';
 import { useNotification } from '../../hooks/useNotification';
 import { salonAPI, bookingAPI } from '../../utils/api';
 
@@ -286,6 +287,9 @@ export default function StudioDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Onboarding Tour - shows only for new users */}
+      <OnboardingTour />
     </div>
   );
 }

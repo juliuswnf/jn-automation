@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { authAPI, formatError } from '../../utils/api';
 import { useNotification } from '../../hooks/useNotification';
 import { FiLock, FiClipboard } from 'react-icons/fi';
@@ -7,22 +7,23 @@ import { FiLock, FiClipboard } from 'react-icons/fi';
 export default function Register() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { success, error: showError } = useNotification();
   
-  // Check if coming from checkout
+  // Check if coming from checkout or direct signup
   const fromCheckout = location.state?.fromCheckout;
-  const selectedPlan = location.state?.plan;
-  const checkoutEmail = location.state?.email;
+  const selectedPlan = location.state?.plan || searchParams.get('plan') || 'starter';
+  const checkoutEmail = location.state?.email || searchParams.get('email') || '';
   
   // Get plan info from sessionStorage
   const storedPlan = JSON.parse(sessionStorage.getItem('selectedPlan') || 'null');
 
-  // Redirect to pricing if not coming from checkout
-  useEffect(() => {
-    if (!fromCheckout && !storedPlan) {
-      navigate('/pricing');
-    }
-  }, [fromCheckout, storedPlan, navigate]);
+  // Plan details
+  const planDetails = {
+    starter: { name: 'Starter', price: 49 },
+    professional: { name: 'Professional', price: 99 },
+    enterprise: { name: 'Enterprise', price: 199 }
+  };
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -30,6 +31,9 @@ export default function Register() {
     email: checkoutEmail || storedPlan?.email || '',
     phone: '',
     companyName: '',
+    companyAddress: '',
+    companyCity: '',
+    companyZip: '',
     password: '',
     confirmPassword: '',
     userType: 'salon_owner',
@@ -41,9 +45,9 @@ export default function Register() {
   const [apiError, setApiError] = useState('');
 
   const planInfo = storedPlan || {
-    planId: selectedPlan || 'starter',
-    planName: selectedPlan === 'pro' ? 'Pro' : 'Starter',
-    price: selectedPlan === 'pro' ? 69 : 29,
+    planId: selectedPlan,
+    planName: planDetails[selectedPlan]?.name || 'Starter',
+    price: planDetails[selectedPlan]?.price || 49,
   };
 
   const handleChange = (e) => {
@@ -136,7 +140,7 @@ export default function Register() {
         </div>
 
         {/* Plan Info Banner */}
-        <div className="bg-indigo-900/30 border border-indigo-500/30 rounded-xl p-4 mb-8 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/30 rounded-xl p-4 mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center">
               <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,12 +149,12 @@ export default function Register() {
             </div>
             <div>
               <p className="font-medium text-white">{planInfo.planName} Plan</p>
-              <p className="text-sm text-indigo-300">14 Tage kostenlos testen</p>
+              <p className="text-sm text-green-400">30 Tage kostenlos testen</p>
             </div>
           </div>
           <div className="text-right">
             <p className="text-xl font-bold text-white">€{planInfo.price}/Monat</p>
-            <p className="text-xs text-gray-400">nach Testphase</p>
+            <p className="text-xs text-gray-400">nach Testphase • keine Kreditkarte nötig</p>
           </div>
         </div>
 

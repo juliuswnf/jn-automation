@@ -492,7 +492,14 @@ export const salonAPI = {
   update: (data) => api.put('/salon/update', data),
   getServices: () => api.get('/salon/services'),
   getBookings: (params) => api.get('/salon/bookings', { params }),
-  getStats: () => api.get('/salon/stats')
+  getStats: () => api.get('/salon/stats'),
+  
+  // Success Metrics / Analytics
+  getSuccessMetrics: (period = '30d') => api.get('/salon/analytics/success-metrics', { params: { period } }),
+  getBookingTrends: (period = '30d') => api.get('/salon/analytics/booking-trends', { params: { period } }),
+  getRevenueBreakdown: (period = '30d') => api.get('/salon/analytics/revenue-breakdown', { params: { period } }),
+  getGoals: () => api.get('/salon/analytics/goals'),
+  updateGoals: (goals) => api.post('/salon/analytics/goals', goals)
 };
 
 export const widgetAPI = {
@@ -588,6 +595,7 @@ export const ceoAPI = {
   getCustomerGrowth: (timeRange) => api.get('/ceo/analytics/customer-growth', { params: { timeRange } }),
   getCohortAnalysis: () => api.get('/ceo/analytics/cohorts'),
   getChurnAnalysis: () => api.get('/ceo/analytics/churn'),
+  getAtRiskStudios: () => api.get('/ceo/analytics/at-risk'),
   
   // ==================== EMAIL CAMPAIGNS ====================
   getCampaigns: (params) => api.get('/ceo/email/campaigns', { params }),
@@ -701,6 +709,21 @@ export const formatError = (error) => {
   if (error.response?.status === 429) return 'Too many requests. Try again later';
   if (error.response?.status >= 500) return 'Server error. Try again later';
   return message;
+};
+
+// ==================== SUBSCRIPTION API ====================
+export const subscriptionAPI = {
+  // Get available plans (public)
+  getPlans: () => api.get('/subscriptions/plans'),
+  
+  // Create Stripe checkout session (planId: starter|professional|enterprise, billing: monthly|yearly)
+  createCheckout: (planId, billing = 'monthly') => api.post('/subscriptions/checkout', { planId, billing }),
+  
+  // Create billing portal session
+  createPortal: () => api.post('/subscriptions/portal'),
+  
+  // Get current subscription status
+  getStatus: () => api.get('/subscriptions/status'),
 };
 
 export default api;

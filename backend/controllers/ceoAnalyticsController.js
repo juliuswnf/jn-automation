@@ -8,6 +8,7 @@ import Salon from '../models/Salon.js';
 import Booking from '../models/Booking.js';
 import User from '../models/User.js';
 import Payment from '../models/Payment.js';
+import LifecycleEmail from '../models/LifecycleEmail.js';
 
 // ==================== PRICING CONSTANTS ====================
 const PRICING = {
@@ -310,10 +311,205 @@ export const getChurnAnalysis = async (req, res) => {
   }
 };
 
+// ==================== GET AT-RISK STUDIOS ====================
+export const getAtRiskStudios = async (req, res) => {
+  try {
+    const Booking = (await import('../models/Booking.js')).default;
+    
+    // Get all active/trial studios
+    const studios = await Salon.find({
+      'subscription.status': { $in: ['active', 'trial'] }
+    }).populate('owner', 'name email lastLogin');
+    
+    const atRiskStudios = [];
+    const now = new Date();
+    const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const fourteenDaysAgo = new Date(now - 14 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    
+    for (const studio of studios) {
+      const riskFactors = [];
+      let riskScore = 0;
+      
+      // Check last login
+      const lastLogin = studio.owner?.lastLogin;
+      if (!lastLogin) {
+        riskFactors.push('Noch nie eingeloggt');
+        riskScore += 30;
+      } else if (lastLogin < fourteenDaysAgo) {
+        riskFactors.push(`Letzter Login: ${Math.floor((now - lastLogin) / (1000 * 60 * 60 * 24))} Tage`);
+        riskScore += lastLogin < thirtyDaysAgo ? 25 : 15;
+      }
+      
+      // Check booking activity
+      const recentBookings = await Booking.countDocuments({
+        salonId: studio._id,
+        createdAt: { $gte: sevenDaysAgo }
+      });
+      
+      const totalBookings = await Booking.countDocuments({
+        salonId: studio._id
+      });
+      
+      if (totalBookings === 0) {
+        riskFactors.push('Keine Buchungen');
+        riskScore += 30;
+      } else if (recentBookings === 0) {
+        riskFactors.push('Keine Buchungen letzte 7 Tage');
+        riskScore += 20;
+      }
+      
+      // Check trial ending soon
+      if (studio.subscription?.status === 'trial') {
+        const trialEnds = new Date(studio.subscription.trialEndsAt);
+        const daysLeft = Math.ceil((trialEnds - now) / (1000 * 60 * 60 * 24));
+        if (daysLeft <= 7 && daysLeft > 0) {
+          riskFactors.push(`Trial endet in ${daysLeft} Tagen`);
+          riskScore += 20;
+        } else if (daysLeft <= 0) {
+          riskFactors.push('Trial abgelaufen');
+          riskScore += 35;
+        }
+      }
+      
+      // Only include if there are risk factors
+      if (riskScore >= 20) {
+        atRiskStudios.push({
+          id: studio._id,
+          name: studio.name,
+          slug: studio.slug,
+          owner: {
+            name: studio.owner?.name || 'Unbekannt',
+            email: studio.owner?.email || 'N/A',
+            lastLogin: lastLogin
+          },
+          subscription: {
+            status: studio.subscription?.status,
+            plan: studio.subscription?.plan,
+            trialEndsAt: studio.subscription?.trialEndsAt
+          },
+          stats: {
+            totalBookings,
+            recentBookings
+          },
+          riskScore,
+          riskLevel: riskScore >= 50 ? 'high' : riskScore >= 30 ? 'medium' : 'low',
+          riskFactors,
+          createdAt: studio.createdAt
+        });
+      }
+    }
+    
+    // Sort by risk score descending
+    atRiskStudios.sort((a, b) => b.riskScore - a.riskScore);
+    
+    res.status(200).json({
+      success: true,
+      studios: atRiskStudios,
+      summary: {
+        total: atRiskStudios.length,
+        highRisk: atRiskStudios.filter(s => s.riskLevel === 'high').length,
+        mediumRisk: atRiskStudios.filter(s => s.riskLevel === 'medium').length,
+        lowRisk: atRiskStudios.filter(s => s.riskLevel === 'low').length
+      }
+    });
+  } catch (error) {
+    logger.error('GetAtRiskStudios Error:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// ==================== GET LIFECYCLE EMAIL STATS ====================
+export const getLifecycleEmailStats = async (req, res) => {
+  try {
+    // Get overall stats
+    const totalScheduled = await LifecycleEmail.countDocuments();
+    const sent = await LifecycleEmail.countDocuments({ status: 'sent' });
+    const pending = await LifecycleEmail.countDocuments({ status: 'pending' });
+    const failed = await LifecycleEmail.countDocuments({ status: 'failed' });
+    const skipped = await LifecycleEmail.countDocuments({ status: 'skipped' });
+
+    // Get stats by email type
+    const emailTypes = [
+      'welcome_day1', 'engagement_day3', 'midtrial_day7',
+      'urgency_day23', 'expiry_day30', 'expired_day31', 'winback_day45'
+    ];
+
+    const byType = await Promise.all(emailTypes.map(async (type) => {
+      const typeSent = await LifecycleEmail.countDocuments({ emailType: type, status: 'sent' });
+      const typeTotal = await LifecycleEmail.countDocuments({ emailType: type });
+      const conversions = await LifecycleEmail.countDocuments({ 
+        emailType: type, 
+        status: 'sent', 
+        convertedAfter: true 
+      });
+
+      return {
+        type,
+        sent: typeSent,
+        total: typeTotal,
+        sendRate: typeTotal > 0 ? Math.round((typeSent / typeTotal) * 100) : 0,
+        conversions,
+        conversionRate: typeSent > 0 ? Math.round((conversions / typeSent) * 100) : 0
+      };
+    }));
+
+    // Get recently sent emails
+    const recentlySent = await LifecycleEmail.find({ status: 'sent' })
+      .populate('salonId', 'name')
+      .populate('userId', 'name email')
+      .sort({ sentAt: -1 })
+      .limit(20);
+
+    // Get upcoming emails
+    const upcoming = await LifecycleEmail.find({ 
+      status: 'pending',
+      scheduledFor: { $gte: new Date() }
+    })
+      .populate('salonId', 'name')
+      .populate('userId', 'name email')
+      .sort({ scheduledFor: 1 })
+      .limit(20);
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        total: totalScheduled,
+        sent,
+        pending,
+        failed,
+        skipped,
+        sendRate: totalScheduled > 0 ? Math.round((sent / totalScheduled) * 100) : 0
+      },
+      byType,
+      recentlySent: recentlySent.map(e => ({
+        id: e._id,
+        type: e.emailType,
+        salon: e.salonId?.name || 'Unknown',
+        user: e.userId?.email || 'Unknown',
+        subject: e.subject,
+        sentAt: e.sentAt
+      })),
+      upcoming: upcoming.map(e => ({
+        id: e._id,
+        type: e.emailType,
+        salon: e.salonId?.name || 'Unknown',
+        user: e.userId?.email || 'Unknown',
+        scheduledFor: e.scheduledFor
+      }))
+    });
+  } catch (error) {
+    logger.error('GetLifecycleEmailStats Error:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
 export default {
   getAnalyticsOverview,
   getRevenueChart,
   getCustomerGrowthChart,
   getCohortAnalysis,
-  getChurnAnalysis
+  getChurnAnalysis,
+  getAtRiskStudios,
+  getLifecycleEmailStats
 };

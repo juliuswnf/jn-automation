@@ -15,11 +15,20 @@ export default function DashboardLayout({ children }) {
           </div>
 
           <nav className="flex flex-col gap-2 text-sm text-zinc-300">
-            <Link to="/dashboard" className="py-2 px-3 rounded hover:bg-zinc-800">Übersicht</Link>
-            <Link to="/dashboard/bookings" className="py-2 px-3 rounded hover:bg-zinc-800">Buchungen</Link>
-            <Link to="/dashboard/services" className="py-2 px-3 rounded hover:bg-zinc-800">Services</Link>
-            <Link to="/dashboard/widget" className="py-2 px-3 rounded hover:bg-zinc-800">Widget</Link>
-            <Link to="/dashboard/settings" className="py-2 px-3 rounded hover:bg-zinc-800">Einstellungen</Link>
+            <Link to="/dashboard" data-tour="dashboard" className="py-2 px-3 rounded hover:bg-zinc-800">Übersicht</Link>
+            <Link to="/dashboard/bookings" data-tour="bookings" className="py-2 px-3 rounded hover:bg-zinc-800">Buchungen</Link>
+            <Link to="/dashboard/services" data-tour="services" className="py-2 px-3 rounded hover:bg-zinc-800">Services</Link>
+            <Link to="/dashboard/employees" className="py-2 px-3 rounded hover:bg-zinc-800">Mitarbeiter</Link>
+            <Link to="/dashboard/success-metrics" className="py-2 px-3 rounded hover:bg-zinc-800">📊 Erfolgsmetriken</Link>
+            <Link to="/dashboard/widget" data-tour="widget" className="py-2 px-3 rounded hover:bg-zinc-800">Widget</Link>
+            <Link to="/dashboard/settings" data-tour="settings" className="py-2 px-3 rounded hover:bg-zinc-800">Einstellungen</Link>
+            <hr className="border-zinc-800 my-2" />
+            <Link to="/dashboard/help" data-tour="help" className="py-2 px-3 rounded hover:bg-zinc-800 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Hilfe & Tutorials
+            </Link>
           </nav>
         </aside>
 
