@@ -1,5 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 
 // Critical path - load immediately
 import Home from './pages/Home';
@@ -165,6 +166,7 @@ function App() {
 
   return (
     <Router>
+        <ScrollToTop />
       <KeyboardShortcuts />
       <Routes>
         {/* ==================== PUBLIC ROUTES (wrapped in AppLayout) ==================== */}
