@@ -1,21 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 
 function Home() {
-  const [activeService, setActiveService] = useState(0);
-  const services = [
-    { name: 'Haarschnitt Damen', duration: '45 Min', price: '45€' },
-    { name: 'Färben komplett', duration: '120 Min', price: '85€' },
-    { name: 'Balayage', duration: '150 Min', price: '120€' },
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveService((prev) => (prev + 1) % services.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section - Large with Preview */}
@@ -53,71 +38,111 @@ function Home() {
               </p>
             </div>
 
-            {/* Right: Animated Preview Widget */}
+            {/* Right: Dashboard Preview - Simple Version */}
             <div className="hidden lg:block">
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl">
-                {/* Widget Header */}
-                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-800">
-                  <div className="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-bold">MS</span>
+              <div className="relative">
+                {/* Main Dashboard Card */}
+                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+                  {/* Header */}
+                  <div className="bg-zinc-800 px-5 py-4 border-b border-zinc-700 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                        <span className="text-black font-bold text-sm">JN</span>
+                      </div>
+                      <span className="font-medium">Mein Salon Dashboard</span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-zinc-600" />
+                      <div className="w-3 h-3 rounded-full bg-zinc-600" />
+                      <div className="w-3 h-3 rounded-full bg-zinc-600" />
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold">Muster Salon</div>
-                    <div className="text-xs text-gray-500">Online Terminbuchung</div>
-                  </div>
-                </div>
 
-                {/* Service Selection - Animated */}
-                <div className="mb-6">
-                  <div className="text-xs text-gray-500 mb-3">Behandlung wählen</div>
-                  <div className="space-y-2">
-                    {services.map((service, i) => (
-                      <div 
-                        key={i}
-                        className={`p-4 rounded-lg border transition-all duration-500 ${
-                          activeService === i 
-                            ? 'border-white bg-zinc-800' 
-                            : 'border-zinc-800 bg-zinc-900/50'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <div className={`font-medium transition-colors ${activeService === i ? 'text-white' : 'text-gray-400'}`}>
-                              {service.name}
+                  {/* Content */}
+                  <div className="p-5 space-y-5">
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                        <div className="text-2xl font-bold">47</div>
+                        <div className="text-xs text-gray-500">Buchungen</div>
+                      </div>
+                      <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                        <div className="text-2xl font-bold text-green-400">€2.340</div>
+                        <div className="text-xs text-gray-500">Umsatz</div>
+                      </div>
+                      <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                        <div className="text-2xl font-bold">4.8</div>
+                        <div className="text-xs text-gray-500">Bewertung</div>
+                      </div>
+                    </div>
+
+                    {/* Bookings List */}
+                    <div>
+                      <div className="text-sm text-gray-400 mb-3">Heutige Termine</div>
+                      <div className="space-y-2">
+                        <div className="bg-zinc-800 rounded-xl p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-medium">MH</div>
+                            <div>
+                              <div className="font-medium">Maria H.</div>
+                              <div className="text-sm text-gray-500">Haarschnitt · 10:30 Uhr</div>
                             </div>
-                            <div className="text-xs text-gray-500">{service.duration}</div>
                           </div>
-                          <div className={`font-semibold transition-colors ${activeService === i ? 'text-white' : 'text-gray-500'}`}>
-                            {service.price}
+                          <span className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full">Bestätigt</span>
+                        </div>
+                        <div className="bg-zinc-800 rounded-xl p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-medium">SK</div>
+                            <div>
+                              <div className="font-medium">Sophie K.</div>
+                              <div className="text-sm text-gray-500">Färben · 14:00 Uhr</div>
+                            </div>
                           </div>
+                          <span className="text-xs bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full">Neu</span>
+                        </div>
+                        <div className="bg-zinc-800 rounded-xl p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-medium">LM</div>
+                            <div>
+                              <div className="font-medium">Lisa M.</div>
+                              <div className="text-sm text-gray-500">Styling · 16:30 Uhr</div>
+                            </div>
+                          </div>
+                          <span className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full">Bestätigt</span>
                         </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Date Preview */}
-                <div className="mb-6">
-                  <div className="text-xs text-gray-500 mb-3">Verfügbare Termine</div>
-                  <div className="flex gap-2">
-                    {['Mo', 'Di', 'Mi', 'Do', 'Fr'].map((day, i) => (
-                      <div 
-                        key={day}
-                        className={`flex-1 py-3 rounded-lg text-center text-sm transition-all duration-300 ${
-                          i === 2 ? 'bg-white text-black font-medium' : 'bg-zinc-800 text-gray-400'
-                        }`}
-                      >
-                        <div className="text-xs opacity-70">{day}</div>
-                        <div className="font-medium">{10 + i}</div>
-                      </div>
-                    ))}
+                {/* Floating Notification - New Booking */}
+                <div className="absolute -top-3 -right-3 bg-white text-black rounded-xl shadow-lg p-3 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">Neue Buchung!</div>
+                      <div className="text-xs text-gray-500">vor 2 Min.</div>
+                    </div>
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <button className="w-full py-3 bg-white text-black font-medium rounded-lg">
-                  Termin buchen
-                </button>
+                {/* Floating Review Badge */}
+                <div className="absolute -bottom-3 -left-3 bg-white text-black rounded-xl shadow-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex text-yellow-400">
+                      {[1,2,3,4,5].map((i) => (
+                        <svg key={i} className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span className="text-sm font-semibold">+12 Bewertungen</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
