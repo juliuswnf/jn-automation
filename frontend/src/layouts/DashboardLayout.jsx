@@ -19,7 +19,7 @@ export default function DashboardLayout({ children }) {
             <Link to="/dashboard/bookings" data-tour="bookings" className="py-2 px-3 rounded hover:bg-zinc-800">Buchungen</Link>
             <Link to="/dashboard/services" data-tour="services" className="py-2 px-3 rounded hover:bg-zinc-800">Services</Link>
             <Link to="/dashboard/employees" className="py-2 px-3 rounded hover:bg-zinc-800">Mitarbeiter</Link>
-            <Link to="/dashboard/success-metrics" className="py-2 px-3 rounded hover:bg-zinc-800">📊 Erfolgsmetriken</Link>
+            <Link to="/dashboard/success-metrics" className="py-2 px-3 rounded hover:bg-zinc-800">Erfolgsmetriken</Link>
             <Link to="/dashboard/widget" data-tour="widget" className="py-2 px-3 rounded hover:bg-zinc-800">Widget</Link>
             <Link to="/dashboard/settings" data-tour="settings" className="py-2 px-3 rounded hover:bg-zinc-800">Einstellungen</Link>
             <hr className="border-zinc-800 my-2" />

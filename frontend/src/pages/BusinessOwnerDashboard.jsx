@@ -165,7 +165,7 @@ const BusinessOwnerDashboard = () => {
               <h2 className="text-xl font-semibold text-white mb-4">Heutige Termine</h2>
               {todaysBookings.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="text-4xl mb-2">📅</div>
+                  <div className="text-4xl mb-2"></div>
                   <p className="text-gray-400">Keine Termine für heute</p>
                 </div>
               ) : (

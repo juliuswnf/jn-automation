@@ -401,7 +401,7 @@ export default function Settings() {
                 onClick={handleSaveProfile}
                 className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold transition"
               >
-                Änderungen speichern ✅
+                Änderungen speichern
               </button>
             )}
           </div>
@@ -424,7 +424,7 @@ export default function Settings() {
                         ? 'bg-green-900 text-green-300'
                         : 'bg-gray-700 text-gray-300'
                     }`}>
-                      {booking.status === 'confirmed' ? '✅ Bestätigt' : '✓ Abgeschlossen'}
+                      {booking.status === 'confirmed' ? 'Bestätigt' : 'Abgeschlossen'}
                     </span>
                   </div>
                 </div>
@@ -447,10 +447,10 @@ export default function Settings() {
                 {booking.status === 'confirmed' && (
                   <div className="mt-4 flex gap-3">
                     <button className="flex-1 px-4 py-2 border border-gray-600 hover:bg-gray-800 rounded-lg transition">
-                      ✏️ Ändern
+                      Ändern
                     </button>
                     <button className="flex-1 px-4 py-2 border border-red-600 text-red-400 hover:bg-red-900 hover:bg-opacity-20 rounded-lg transition">
-                      ❌ Absagen
+                      Absagen
                     </button>
                   </div>
                 )}
@@ -466,11 +466,11 @@ export default function Settings() {
 
             <div className="space-y-4">
               {[
-                { key: 'emailNotifications', label: '📧 E-Mail-Benachrichtigungen', desc: 'Erhalte E-Mails zu deinen Terminen' },
-                { key: 'smsNotifications', label: '📱 SMS-Benachrichtigungen', desc: 'Erhalte SMS-Erinnerungen' },
-                { key: 'appointmentReminders', label: '⏰ Termin-Erinnerungen', desc: '24h vor dem Termin erinnern' },
-                { key: 'specialOffers', label: '🎉 Spezialangebote', desc: 'Informationen über Rabatte und Aktionen' },
-                { key: 'newsletter', label: '📬 Newsletter', desc: 'Wöchentliche Tipps und News' }
+                { key: 'emailNotifications', label: 'E-Mail-Benachrichtigungen', desc: 'Erhalte E-Mails zu deinen Terminen' },
+                { key: 'smsNotifications', label: 'SMS-Benachrichtigungen', desc: 'Erhalte SMS-Erinnerungen' },
+                { key: 'appointmentReminders', label: 'Termin-Erinnerungen', desc: '24h vor dem Termin erinnern' },
+                { key: 'specialOffers', label: 'Spezialangebote', desc: 'Informationen über Rabatte und Aktionen' },
+                { key: 'newsletter', label: 'Newsletter', desc: 'Wöchentliche Tipps und News' }
               ].map(pref => (
                 <div key={pref.key} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
                   <div>
@@ -494,7 +494,7 @@ export default function Settings() {
             </div>
 
             <button className="w-full mt-6 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition">
-              Speichern ✅
+              Speichern
             </button>
           </div>
         )}
@@ -548,7 +548,7 @@ export default function Settings() {
                 onClick={handleChangePassword}
                 className="w-full mt-6 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition"
               >
-                Passwort ändern 🔐
+                Passwort ändern
               </button>
             </div>
 
@@ -557,11 +557,11 @@ export default function Settings() {
               <h2 className="text-2xl font-bold mb-6">Kontostatus</h2>
               <div className="space-y-4">
                 <div className="p-4 bg-green-900 bg-opacity-20 border border-green-700 rounded-lg">
-                  <p className="text-green-300">✅ Konto aktiv</p>
+                  <p className="text-green-300">Konto aktiv</p>
                   <p className="text-sm text-green-300 mt-1">Dein Konto ist in Ordnung.</p>
                 </div>
                 <button className="w-full px-6 py-3 border border-red-600 text-red-400 hover:bg-red-900 hover:bg-opacity-20 rounded-lg font-semibold transition">
-                  🗑️ Konto löschen
+                  Konto löschen
                 </button>
               </div>
             </div>

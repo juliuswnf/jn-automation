@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ScissorsIcon, ClockIcon, LinkIcon, CheckCircleIcon, UsersIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
 
 /**
  * Getting Started Guide
@@ -11,7 +12,7 @@ const setupSteps = [
     id: 1,
     title: 'Services anlegen',
     description: 'Erstelle deine Dienstleistungen mit Preisen, Dauer und Beschreibung.',
-    icon: '✂️',
+    icon: ScissorsIcon,
     link: '/dashboard/services',
     tips: [
       'Füge mindestens 3-5 Services hinzu',
@@ -24,7 +25,7 @@ const setupSteps = [
     id: 2,
     title: 'Öffnungszeiten festlegen',
     description: 'Definiere, wann Kunden bei dir buchen können.',
-    icon: '🕐',
+    icon: ClockIcon,
     link: '/dashboard/settings',
     tips: [
       'Trage alle Arbeitstage ein',
@@ -37,7 +38,7 @@ const setupSteps = [
     id: 3,
     title: 'Buchungswidget einrichten',
     description: 'Kopiere den Widget-Code und füge ihn auf deiner Website ein.',
-    icon: '🔗',
+    icon: LinkIcon,
     link: '/dashboard/widget',
     tips: [
       'Teste das Widget vor dem Einbinden',
@@ -50,7 +51,7 @@ const setupSteps = [
     id: 4,
     title: 'Testbuchung durchführen',
     description: 'Buche selbst einen Termin, um den Ablauf zu testen.',
-    icon: '✅',
+    icon: CheckCircleIcon,
     link: '/dashboard/bookings',
     tips: [
       'Nutze eine andere E-Mail-Adresse',
@@ -63,7 +64,7 @@ const setupSteps = [
     id: 5,
     title: 'Team einladen (optional)',
     description: 'Füge Mitarbeiter hinzu, die eigene Termine verwalten können.',
-    icon: '👥',
+    icon: UsersIcon,
     link: '/dashboard/employees',
     tips: [
       'Jeder Mitarbeiter bekommt eigenen Login',
@@ -101,19 +102,19 @@ const videoTutorials = [
   {
     title: 'Schnellstart in 5 Minuten',
     duration: '5:23',
-    thumbnail: '🎬',
+    thumbnail: PlayCircleIcon,
     url: '#',
   },
   {
     title: 'Services richtig anlegen',
     duration: '3:45',
-    thumbnail: '✂️',
+    thumbnail: ScissorsIcon,
     url: '#',
   },
   {
     title: 'Widget einbinden (WordPress)',
     duration: '4:12',
-    thumbnail: '🔗',
+    thumbnail: LinkIcon,
     url: '#',
   },
 ];
@@ -168,7 +169,7 @@ export default function GettingStarted() {
           </div>
           {progress === 100 && (
             <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl text-center">
-              <span className="text-green-400 font-medium">🎉 Glückwunsch! Dein Setup ist abgeschlossen.</span>
+              <span className="text-green-400 font-medium">Glückwunsch! Dein Setup ist abgeschlossen.</span>
             </div>
           )}
         </div>
@@ -207,7 +208,7 @@ export default function GettingStarted() {
                   {/* Content */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="text-2xl">{step.icon}</span>
+                      <step.icon className="w-6 h-6 text-indigo-400" />
                       <h3 className={`text-lg font-semibold ${
                         completedSteps.includes(step.id) ? 'line-through text-gray-500' : ''
                       }`}>
@@ -250,7 +251,7 @@ export default function GettingStarted() {
 
         {/* Video Tutorials */}
         <div className="mb-12">
-          <h2 className="text-xl font-bold mb-6">📹 Video-Tutorials</h2>
+          <h2 className="text-xl font-bold mb-6">Video-Tutorials</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {videoTutorials.map((video, index) => (
               <a
@@ -258,7 +259,7 @@ export default function GettingStarted() {
                 href={video.url}
                 className="bg-gray-900 rounded-xl border border-gray-800 hover:border-indigo-500/50 p-6 transition-all group"
               >
-                <div className="text-4xl mb-4">{video.thumbnail}</div>
+                <video.thumbnail className="w-10 h-10 text-indigo-400 mb-4" />
                 <h3 className="font-medium mb-1 group-hover:text-indigo-400 transition-colors">
                   {video.title}
                 </h3>
@@ -270,7 +271,7 @@ export default function GettingStarted() {
 
         {/* FAQ */}
         <div className="mb-12">
-          <h2 className="text-xl font-bold mb-6">❓ Häufige Fragen</h2>
+          <h2 className="text-xl font-bold mb-6">Häufige Fragen</h2>
           <div className="space-y-3">
             {faqs.map((faq, index) => (
               <div

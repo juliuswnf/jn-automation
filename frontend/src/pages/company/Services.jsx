@@ -105,10 +105,10 @@ export default function Services() {
 
               <div className="flex gap-2 mb-4 flex-wrap">
                 <span className="text-xs bg-white/10 text-white px-2 md:px-3 py-1 rounded">
-                  ⏱ {service.duration || 0} min
+                  {service.duration || 0} min
                 </span>
                 <span className="text-xs bg-blue-500/10 text-blue-400 px-2 md:px-3 py-1 rounded">
-                  📅 {service.bookingCount || 0}
+                  {service.bookingCount || 0} Buchungen
                 </span>
               </div>
 

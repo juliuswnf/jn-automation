@@ -68,7 +68,7 @@ export default function CustomerReports() {
   return (
     <div className="customer-reports">
       <div className="reports-header">
-        <h1>📊 Kundenberichte</h1>
+        <h1>Kundenberichte</h1>
         {error && <div className="alert alert-error">{error}</div>}
       </div>
 
@@ -151,14 +151,14 @@ export default function CustomerReports() {
                 disabled={exporting}
                 className="btn btn-outline"
               >
-                📥 Als CSV exportieren
+                Als CSV exportieren
               </button>
               <button
                 onClick={() => handleExport('pdf')}
                 disabled={exporting}
                 className="btn btn-outline"
               >
-                📥 Als PDF exportieren
+                Als PDF exportieren
               </button>
             </div>
           </section>

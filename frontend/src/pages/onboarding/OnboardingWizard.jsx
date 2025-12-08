@@ -214,7 +214,7 @@ export default function OnboardingWizard() {
         case 6:
           // Complete onboarding
           await salonAPI.update({ onboardingCompleted: true });
-          showNotification('🎉 Onboarding abgeschlossen! Dein Studio ist bereit.', 'success');
+          showNotification('Onboarding abgeschlossen! Dein Studio ist bereit.', 'success');
           navigate('/dashboard');
           return;
       }
@@ -447,7 +447,7 @@ export default function OnboardingWizard() {
                 onClick={useTemplate}
                 className="w-full px-4 py-3 border border-dashed border-zinc-600 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-500 transition text-sm"
               >
-                🎨 Vorlage für Friseur-Services verwenden
+                Vorlage für Friseur-Services verwenden
               </button>
 
               {/* Services List */}
@@ -500,7 +500,7 @@ export default function OnboardingWizard() {
           {currentStep === 5 && (
             <div className="space-y-4">
               <div className="bg-zinc-800 rounded-xl p-4 mb-4">
-                <h4 className="font-medium text-white mb-2">💡 Wozu der Google Review Link?</h4>
+                <h4 className="font-medium text-white mb-2">Wozu der Google Review Link?</h4>
                 <p className="text-sm text-zinc-400">
                   Nach jedem Termin senden wir automatisch eine E-Mail mit deinem Review-Link. 
                   Das erhöht deine Google-Bewertungen erheblich!
@@ -536,7 +536,7 @@ export default function OnboardingWizard() {
           {currentStep === 6 && (
             <div className="space-y-4">
               <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-4">
-                <h4 className="font-medium text-green-400 mb-2">🎉 Fast geschafft!</h4>
+                <h4 className="font-medium text-green-400 mb-2">Fast geschafft!</h4>
                 <p className="text-sm text-zinc-300">
                   Kopiere diesen Code und füge ihn in deine Website ein, wo das Buchungsformular erscheinen soll.
                 </p>

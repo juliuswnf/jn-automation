@@ -131,11 +131,11 @@ const Demo = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">
-                  🎮 Interaktive Demo
+                  Interaktive Demo
                 </span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold">
-                Erlebe JN Automation live
+                Erlebe JN Business System live
               </h1>
               <p className="text-gray-400 mt-2">
                 Teste das Buchungswidget – genau so wie deine Kunden es sehen werden
@@ -407,7 +407,7 @@ const Demo = () => {
                       <Check className="w-10 h-10 text-green-400" />
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-2">
-                      Termin bestätigt! 🎉
+                      Termin bestätigt!
                     </h3>
                     <p className="text-gray-400 mb-6">
                       Eine Bestätigung wurde an {customerData.email || 'deine E-Mail'} gesendet.
@@ -443,7 +443,7 @@ const Demo = () => {
 
             {/* Demo Note */}
             <div className="mt-4 text-center text-sm text-gray-500">
-              💡 Dies ist eine Demo – keine echte Buchung wird erstellt
+              Dies ist eine Demo – keine echte Buchung wird erstellt
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { authAPI, formatError } from '../../utils/api';
 import { useNotification } from '../../hooks/useNotification';
 
@@ -124,9 +125,10 @@ const TwoFASetup = () => {
     <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
-          <h1 className="text-3xl font-bold text-white mb-4 text-center">🎉 2FA Enabled!</h1>
+          <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-white mb-4 text-center">2FA aktiviert</h1>
           <p className="text-slate-350 text-center mb-6">
-            Save your backup codes in a secure place. You can use them if you lose access to your authenticator.
+            Speichern Sie Ihre Backup-Codes an einem sicheren Ort. Sie können diese verwenden, falls Sie den Zugriff auf Ihre Authenticator-App verlieren.
           </p>
 
           <div className="bg-primary/50 rounded-lg p-6 mb-8">

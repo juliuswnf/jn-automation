@@ -476,7 +476,7 @@ export default function PublicBooking() {
                 onClick={handleSubmit}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold transition"
               >
-                Termin buchen ✅
+                Termin buchen
               </button>
             </div>
           </div>

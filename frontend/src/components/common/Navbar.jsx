@@ -80,7 +80,7 @@ export default function Navbar() {
                       to="/ceo/dashboard"
                       className="block px-4 py-3 text-slate-300 dark:text-slate-400 hover:text-accent dark:hover:text-accent hover:bg-primary/50 dark:hover:bg-slate-800 border-b border-accent/10 dark:border-accent/5 transition duration-200"
                     >
-                      👑 CEO Dashboard
+                      CEO Dashboard
                     </Link>
                   )}
                   {user.role === 'admin' && (
@@ -88,20 +88,20 @@ export default function Navbar() {
                       to="/admin/dashboard"
                       className="block px-4 py-3 text-slate-300 dark:text-slate-400 hover:text-accent dark:hover:text-accent hover:bg-primary/50 dark:hover:bg-slate-800 border-b border-accent/10 dark:border-accent/5 transition duration-200"
                     >
-                      🏢 Company Dashboard
+                      Firmen-Dashboard
                     </Link>
                   )}
                   <Link
                     to="/customer/settings"
                     className="block px-4 py-3 text-slate-300 dark:text-slate-400 hover:text-accent dark:hover:text-accent hover:bg-primary/50 dark:hover:bg-slate-800 border-b border-accent/10 dark:border-accent/5 transition duration-200"
                   >
-                    ⚙️ Settings
+                    Einstellungen
                   </Link>
                   <Link
                     to="/sessions"
                     className="block px-4 py-3 text-slate-300 dark:text-slate-400 hover:text-accent dark:hover:text-accent hover:bg-primary/50 dark:hover:bg-slate-800 border-b border-accent/10 dark:border-accent/5 transition duration-200"
                   >
-                    🔐 Sessions
+                    Sitzungen
                   </Link>
                   <button
                     onClick={() => {
@@ -110,7 +110,7 @@ export default function Navbar() {
                     }}
                     className="w-full text-left px-4 py-3 text-red-400 dark:text-red-400 hover:text-red-300 dark:hover:text-red-300 hover:bg-primary/50 dark:hover:bg-slate-800 transition duration-200"
                   >
-                    🚪 Sign Out
+                    Abmelden
                   </button>
                 </div>
               )}

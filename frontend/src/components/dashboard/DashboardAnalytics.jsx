@@ -43,44 +43,44 @@ export default function DashboardAnalytics() {
   return (
     <div className="dashboard-analytics">
       <div className="analytics-header">
-        <h1>📈 Dashboard Analytics</h1>
+        <h1>Dashboard Analytics</h1>
         {error && <div className="alert alert-error">{error}</div>}
       </div>
 
       <div className="analytics-container">
         {/* Employee Stats Section */}
         <section className="analytics-section">
-          <h2>👥 Mitarbeiter Statistiken</h2>
+          <h2>Mitarbeiter Statistiken</h2>
           {employeeStats && (
             <>
               <div className="stats-grid">
                 <StatsCard
-                  icon="👥"
+                  icon=""
                   title="Gesamtmitarbeiter"
                   value={employeeStats.totalEmployees}
                 />
                 <StatsCard
-                  icon="✅"
+                  icon=""
                   title="Aktive Mitarbeiter"
                   value={employeeStats.activeEmployees}
                 />
                 <StatsCard
-                  icon="⏸️"
+                  icon=""
                   title="Inaktive Mitarbeiter"
                   value={employeeStats.inactiveEmployees}
                 />
                 <StatsCard
-                  icon="⭐"
+                  icon=""
                   title="Durchschn. Bewertung"
                   value={`${employeeStats.avgRating}/5`}
                 />
                 <StatsCard
-                  icon="📅"
+                  icon=""
                   title="Gesamttermine"
                   value={employeeStats.totalAppointments}
                 />
                 <StatsCard
-                  icon="❌"
+                  icon=""
                   title="No-Show Rate"
                   value={employeeStats.noShowRate}
                 />
@@ -88,13 +88,13 @@ export default function DashboardAnalytics() {
 
               {employeeStats.topPerformers && (
                 <div className="top-performers">
-                  <h3>🏆 Top Performer</h3>
+                  <h3>Top Performer</h3>
                   <ul className="performers-list">
                     {employeeStats.topPerformers.map((emp, idx) => (
                       <li key={idx} className="performer-item">
                         <span className="performer-name">{emp.name}</span>
                         <span className="performer-stats">
-                          {emp.rating} ⭐ • {emp.appointments} Termine
+                          {emp.rating}/5 • {emp.appointments} Termine
                         </span>
                       </li>
                     ))}
@@ -107,7 +107,7 @@ export default function DashboardAnalytics() {
 
         {/* Revenue Section */}
         <section className="analytics-section">
-          <h2>💰 Einnahmen</h2>
+          <h2>Einnahmen</h2>
           <div className="revenue-header">
             <label className="period-label">
               Zeitraum:
@@ -158,7 +158,7 @@ export default function DashboardAnalytics() {
 
         {/* Growth Forecast Section */}
         <section className="analytics-section">
-          <h2>📊 Kundenwachstum Prognose</h2>
+          <h2>Kundenwachstum Prognose</h2>
           {growthForecast && (
             <div className="forecast-content">
               <div className="forecast-summary">

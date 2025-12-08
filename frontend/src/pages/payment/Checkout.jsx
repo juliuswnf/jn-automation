@@ -116,7 +116,7 @@ const Checkout = ({ onPaymentStart, onPaymentSuccess, onPaymentError }) => {
         {/* Security Note */}
         <div className="bg-purple-900 bg-opacity-30 border border-purple-600 rounded-lg p-4">
           <p className="text-sm text-purple-300">
-            🔒 Your payment information is secure and encrypted
+            Ihre Zahlungsdaten sind sicher und verschlüsselt
           </p>
         </div>
 

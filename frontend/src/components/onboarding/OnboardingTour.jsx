@@ -10,7 +10,7 @@ const tourSteps = [
   {
     id: 'welcome',
     target: null, // Full screen overlay
-    title: 'Willkommen bei JN Automation! 🎉',
+    title: 'Willkommen bei JN Business System',
     content: 'Wir zeigen dir in 60 Sekunden, wie du dein Buchungssystem einrichtest. Los geht\'s!',
     position: 'center',
     showSkip: true,
@@ -60,7 +60,7 @@ const tourSteps = [
   {
     id: 'complete',
     target: null,
-    title: 'Du bist startklar! 🚀',
+    title: 'Du bist startklar!',
     content: 'Das war\'s! Starte jetzt mit dem Anlegen deiner Services. Bei Fragen sind wir per Chat für dich da.',
     position: 'center',
     showComplete: true,

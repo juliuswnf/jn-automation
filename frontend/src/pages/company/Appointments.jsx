@@ -165,7 +165,7 @@ export default function Appointments() {
           </div>
         ) : (
           <div className="p-6 text-center text-slate-350">
-            📅 Calendar view coming soon
+            Kalenderansicht kommt bald
           </div>
         )}
       </div>
@@ -230,7 +230,7 @@ export default function Appointments() {
                   : 'bg-primary/50 text-slate-350 hover:text-white'
               }`}
             >
-              📅 Calendar
+              Kalender
             </button>
           </div>
           <input
@@ -289,7 +289,7 @@ export default function Appointments() {
           </div>
         ) : (
           <div className="p-6 text-center text-slate-350">
-            📅 Calendar view coming soon
+            Kalenderansicht kommt bald
           </div>
         )}
       </div>

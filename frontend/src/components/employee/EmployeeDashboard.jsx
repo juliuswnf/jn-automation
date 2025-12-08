@@ -90,7 +90,7 @@ export default function EmployeeDashboard() {
   return (
     <div className="employee-dashboard">
       <div className="dashboard-header">
-        <h1>📊 Mein Dashboard</h1>
+        <h1>Mein Dashboard</h1>
         {error && <div className="alert alert-error">{error}</div>}
       </div>
 
@@ -98,7 +98,7 @@ export default function EmployeeDashboard() {
       <section className="stats-section">
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">📅</div>
+            <div className="stat-icon"></div>
             <div className="stat-content">
               <h3>Termine diesen Monat</h3>
               <p className="stat-number">{stats?.appointmentsThisMonth || 0}</p>
@@ -106,7 +106,7 @@ export default function EmployeeDashboard() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">⭐</div>
+            <div className="stat-icon"></div>
             <div className="stat-content">
               <h3>Bewertung</h3>
               <p className="stat-number">{stats?.avgRating || 0}</p>
@@ -114,7 +114,7 @@ export default function EmployeeDashboard() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">💰</div>
+            <div className="stat-icon"></div>
             <div className="stat-content">
               <h3>Monatliches Einkommen</h3>
               <p className="stat-number">€{stats?.monthlyEarnings || 0}</p>
@@ -122,7 +122,7 @@ export default function EmployeeDashboard() {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">😊</div>
+            <div className="stat-icon"></div>
             <div className="stat-content">
               <h3>Kundenzufriedenheit</h3>
               <p className="stat-number">{stats?.customerSatisfaction || 0}%</p>
@@ -133,7 +133,7 @@ export default function EmployeeDashboard() {
 
       {/* Shifts Section */}
       <section className="shifts-section">
-        <h2>📅 Meine Schichten</h2>
+        <h2>Meine Schichten</h2>
         {shifts.length > 0 ? (
           <div className="table-responsive">
             <table className="shifts-table">
@@ -183,28 +183,28 @@ export default function EmployeeDashboard() {
 
       {/* Export Section */}
       <section className="export-section">
-        <h2>📥 Berichte exportieren</h2>
+        <h2>Berichte exportieren</h2>
         <div className="button-group">
           <button
             onClick={() => handleExport('schedule')}
             className="btn btn-primary"
             disabled={exporting}
           >
-            {exporting ? 'wird exportiert...' : '📄 Zeitplan (CSV)'}
+            {exporting ? 'wird exportiert...' : 'Zeitplan (CSV)'}
           </button>
           <button
             onClick={() => handleExport('earnings')}
             className="btn btn-primary"
             disabled={exporting}
           >
-            {exporting ? 'wird exportiert...' : '💰 Einnahmen (PDF)'}
+            {exporting ? 'wird exportiert...' : 'Einnahmen (PDF)'}
           </button>
           <button
             onClick={() => handleExport('performance')}
             className="btn btn-primary"
             disabled={exporting}
           >
-            {exporting ? 'wird exportiert...' : '📈 Leistung (PDF)'}
+            {exporting ? 'wird exportiert...' : 'Leistung (PDF)'}
           </button>
         </div>
       </section>

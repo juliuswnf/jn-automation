@@ -131,15 +131,15 @@ const AccountSettings = () => {
 
           {/* Account Actions Section */}
           <div className="rounded-lg bg-secondary/50 border border-accent/20 p-6 hover:border-accent/40 transition">
-            <h2 className="text-xl font-semibold text-white mb-4">Account Actions</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">Konto-Aktionen</h2>
             <div className="space-y-3">
               <button
                 className="w-full px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 font-semibold transition"
               >
-                🗑️ Delete Account
+                Konto löschen
               </button>
               <p className="text-xs text-slate-400 text-center">
-                Permanently delete your account and all associated data
+                Ihr Konto und alle zugehörigen Daten dauerhaft löschen
               </p>
             </div>
           </div>

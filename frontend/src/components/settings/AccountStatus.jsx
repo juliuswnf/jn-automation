@@ -31,14 +31,14 @@ export default function AccountStatus() {
   return (
     <div className="account-status">
       <div className="status-header">
-        <h1>🔐 Kontostand</h1>
+        <h1>Kontostatus</h1>
         {error && <div className="alert alert-error">{error}</div>}
       </div>
 
       <div className="status-container">
         {/* Account Information */}
         <section className="status-section">
-          <h2>👤 Kontoinformationen</h2>
+          <h2>Kontoinformationen</h2>
           <div className="info-grid">
             <div className="info-item">
               <span className="info-label">Email:</span>
@@ -63,18 +63,18 @@ export default function AccountStatus() {
 
         {/* Security */}
         <section className="status-section">
-          <h2>🔒 Sicherheit</h2>
+          <h2>Sicherheit</h2>
           <div className="security-grid">
             <div className="security-item">
               <span className="security-label">Email-Verifizierung:</span>
               <span className={`badge ${status.emailVerified ? 'badge-success' : 'badge-danger'}`}>
-                {status.emailVerified ? '✅ Verifiziert' : '❌ Nicht verifiziert'}
+                {status.emailVerified ? 'Verifiziert' : 'Nicht verifiziert'}
               </span>
             </div>
             <div className="security-item">
               <span className="security-label">Zwei-Faktor-Auth:</span>
               <span className={`badge ${status.security.twoFactorEnabled ? 'badge-success' : 'badge-danger'}`}>
-                {status.security.twoFactorEnabled ? '✅ Aktiviert' : '❌ Deaktiviert'}
+                {status.security.twoFactorEnabled ? 'Aktiviert' : 'Deaktiviert'}
               </span>
             </div>
             <div className="security-item">
@@ -90,7 +90,7 @@ export default function AccountStatus() {
 
         {/* Subscription */}
         <section className="status-section">
-          <h2>💳 Abonnement</h2>
+          <h2>Abonnement</h2>
           <div className="subscription-grid">
             <div className="subscription-item">
               <span className="subscription-label">Plan:</span>
@@ -110,14 +110,14 @@ export default function AccountStatus() {
             )}
             <div className="subscription-item">
               <span className="subscription-label">Auto-Verlängerung:</span>
-              <span>{status.subscription.autoRenew ? '✅' : '❌'}</span>
+              <span>{status.subscription.autoRenew ? 'Ja' : 'Nein'}</span>
             </div>
           </div>
         </section>
 
         {/* Compliance */}
         <section className="status-section">
-          <h2>⚖️ Compliance</h2>
+          <h2>Compliance</h2>
           <div className="compliance-grid">
             <div className="compliance-item">
               <span>Datensicherung:</span>
@@ -133,7 +133,7 @@ export default function AccountStatus() {
             </div>
             <div className="compliance-item">
               <span>GDPR-konform:</span>
-              <strong>{status.complianceStatus.gdprCompliant ? '✅ Ja' : '❌ Nein'}</strong>
+              <strong>{status.complianceStatus.gdprCompliant ? 'Ja' : 'Nein'}</strong>
             </div>
           </div>
         </section>

@@ -160,9 +160,9 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Stats Grid */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <StatCard icon="📅" label="Heutige Termine" value={stats.upcomingCount} color="bg-blue-900" />
-            <StatCard icon="💰" label="Monatsverdienst" value={`${stats.monthlyEarnings}€`} color="bg-green-900" />
-            <StatCard icon="📊" label="Gesamt-Buchungen" value={stats.totalBookings} color="bg-purple-900" />
+            <StatCard icon="" label="Heutige Termine" value={stats.upcomingCount} color="bg-blue-900" />
+            <StatCard icon="" label="Monatsverdienst" value={`${stats.monthlyEarnings}€`} color="bg-green-900" />
+            <StatCard icon="" label="Gesamt-Buchungen" value={stats.totalBookings} color="bg-purple-900" />
           </div>
 
           {/* Today's Bookings */}
@@ -190,8 +190,8 @@ export default function Dashboard() {
                         <p className="font-semibold text-white">{booking.customer}</p>
                         <p className="text-gray-400 text-sm">{booking.service}</p>
                         <div className="flex items-center gap-4 mt-2 text-sm text-gray-300">
-                          <span>🕐 {booking.time}</span>
-                          <span>⏱️ {booking.duration}</span>
+                          <span>{booking.time}</span>
+                          <span>{booking.duration}</span>
                         </div>
                       </div>
                       <div className="text-right">
@@ -213,7 +213,7 @@ export default function Dashboard() {
           {/* Quick Actions */}
           <div className="mt-12 grid md:grid-cols-2 gap-6">
             <div className="rounded-2xl bg-gradient-to-br from-purple-900 to-black border border-purple-800 p-6 hover:border-purple-600 transition">
-              <h3 className="text-xl font-bold mb-3">📅 Zeitplan verwalten</h3>
+              <h3 className="text-xl font-bold mb-3">Zeitplan verwalten</h3>
               <p className="text-gray-300 mb-4">Verfügbarkeit und freie Tage einstellen</p>
               <button className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition">
                 Zeitplan öffnen
@@ -221,7 +221,7 @@ export default function Dashboard() {
             </div>
 
             <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-black border border-blue-800 p-6 hover:border-blue-600 transition">
-              <h3 className="text-xl font-bold mb-3">🔄 Aktualisieren</h3>
+              <h3 className="text-xl font-bold mb-3">Aktualisieren</h3>
               <p className="text-gray-300 mb-4">Termine neu laden</p>
               <button 
                 onClick={fetchData}

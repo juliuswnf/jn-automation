@@ -140,7 +140,7 @@ const CustomerDashboard = () => {
               <h2 className="text-xl font-semibold text-white mb-4">Bevorstehende Termine</h2>
               {upcomingBookings.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="text-4xl mb-2">📅</div>
+                  <div className="text-4xl mb-2"></div>
                   <p className="text-gray-400">Keine bevorstehenden Termine</p>
                 </div>
               ) : (

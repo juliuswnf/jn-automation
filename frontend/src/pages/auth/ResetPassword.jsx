@@ -91,16 +91,16 @@ const ResetPassword = () => {
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
-            <div className="text-5xl mb-4">❌</div>
-            <h2 className="text-2xl font-bold text-white mb-4">Invalid Link</h2>
+            <div className="text-5xl mb-4"></div>
+            <h2 className="text-2xl font-bold text-white mb-4">Ungültiger Link</h2>
             <p className="text-slate-350 mb-8">
-              This password reset link is invalid or has expired.
+              Dieser Link zum Zurücksetzen des Passworts ist ungültig oder abgelaufen.
             </p>
             <Link
               to="/forgot-password"
               className="inline-block px-8 py-3 rounded-lg bg-accent hover:bg-accent-light text-primary font-semibold transition duration-300 shadow-lg shadow-accent/30"
             >
-              Request New Link
+              Neuen Link anfordern
             </Link>
           </div>
         </div>
@@ -154,15 +154,15 @@ const ResetPassword = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-accent hover:bg-accent-light text-primary font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 shadow-lg shadow-accent/30 hover:shadow-accent/50"
             >
-              {loading ? '⏳ Resetting...' : '🔐 Reset Password'}
+              {loading ? 'Wird zurückgesetzt...' : 'Passwort zurücksetzen'}
             </button>
           </form>
 
           <div className="mt-8 text-center text-sm text-slate-350 border-t border-accent/10 pt-8">
             <p>
-              Remember your password?{' '}
+              Passwort doch bekannt?{' '}
               <Link to="/login" className="text-accent hover:text-accent-light font-semibold transition">
-                Back to Login
+                Zurück zum Login
               </Link>
             </p>
           </div>

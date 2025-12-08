@@ -169,7 +169,7 @@ const AdminDashboard = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                      🚀 Studio-Setup abschließen
+                      Studio-Setup abschließen
                     </h2>
                     <p className="text-indigo-200 text-sm mt-1">
                       Schließe diese Schritte ab, um dein Studio optimal einzurichten

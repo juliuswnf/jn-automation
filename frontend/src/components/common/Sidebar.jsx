@@ -10,18 +10,18 @@ export default function Sidebar() {
   const isActive = (path) => location.pathname === path;
 
   const menuItems = [
-    { path: '/customer/booking', label: '📅 Meine Buchungen', role: 'customer' },
-    { path: '/customer/settings', label: '⚙️ Einstellungen', role: 'customer' },
-    { path: '/company/appointments', label: '📅 Appointments', role: 'admin' },
-    { path: '/company/customers', label: '👥 Customers', role: 'admin' },
-    { path: '/company/services', label: '✨ Services', role: 'admin' },
-    { path: '/company/employees', label: '👨‍💼 Employees', role: 'admin' },
-    { path: '/company/payments', label: '💳 Payments', role: 'admin' },
+    { path: '/customer/booking', label: 'Meine Buchungen', role: 'customer' },
+    { path: '/customer/settings', label: 'Einstellungen', role: 'customer' },
+    { path: '/company/appointments', label: 'Termine', role: 'admin' },
+    { path: '/company/customers', label: 'Kunden', role: 'admin' },
+    { path: '/company/services', label: 'Services', role: 'admin' },
+    { path: '/company/employees', label: 'Mitarbeiter', role: 'admin' },
+    { path: '/company/payments', label: 'Zahlungen', role: 'admin' },
     { path: '/ceo/dashboard', label: '👔 CEO Dashboard', role: 'ceo' },
     { path: '/ceo/companies', label: '🏢 Companies', role: 'ceo' },
     { path: '/ceo/users', label: '👥 Users', role: 'ceo' },
     { path: '/ceo/settings', label: '⚙️ System Settings', role: 'ceo' },
-    { path: '/employee/dashboard', label: '💼 My Schedule', role: 'employee' },
+    { path: '/employee/dashboard', label: 'Mein Zeitplan', role: 'employee' },
   ];
 
   useEffect(() => {

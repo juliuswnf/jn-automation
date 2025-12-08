@@ -158,23 +158,23 @@ export default function Datenschutz() {
             <h2 className="text-2xl font-bold text-white mb-4">6. Ihre Rechte</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h4 className="font-semibold text-white mb-2">📋 Auskunftsrecht</h4>
+                <h4 className="font-semibold text-white mb-2">Auskunftsrecht</h4>
                 <p className="text-gray-300 text-sm">Sie können jederzeit Auskunft über Ihre gespeicherten Daten verlangen.</p>
               </div>
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h4 className="font-semibold text-white mb-2">✏️ Berichtigung</h4>
+                <h4 className="font-semibold text-white mb-2">Berichtigung</h4>
                 <p className="text-gray-300 text-sm">Sie können die Berichtigung unrichtiger Daten verlangen.</p>
               </div>
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h4 className="font-semibold text-white mb-2">🗑️ Löschung</h4>
+                <h4 className="font-semibold text-white mb-2">Löschung</h4>
                 <p className="text-gray-300 text-sm">Sie können die Löschung Ihrer Daten verlangen.</p>
               </div>
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h4 className="font-semibold text-white mb-2">📦 Datenübertragbarkeit</h4>
+                <h4 className="font-semibold text-white mb-2">Datenübertragbarkeit</h4>
                 <p className="text-gray-300 text-sm">Sie können Ihre Daten in einem maschinenlesbaren Format erhalten.</p>
               </div>
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h4 className="font-semibold text-white mb-2">🚫 Widerspruch</h4>
+                <h4 className="font-semibold text-white mb-2">Widerspruch</h4>
                 <p className="text-gray-300 text-sm">Sie können der Verarbeitung Ihrer Daten widersprechen.</p>
               </div>
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">

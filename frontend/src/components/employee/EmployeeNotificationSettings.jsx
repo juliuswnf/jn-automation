@@ -71,9 +71,9 @@ export default function EmployeeNotificationSettings() {
   return (
     <div className="notification-settings">
       <div className="settings-header">
-        <h1>🔔 Benachrichtigungseinstellungen</h1>
+        <h1>Benachrichtigungseinstellungen</h1>
         {error && <div className="alert alert-error">{error}</div>}
-        {saved && <div className="alert alert-success">✅ Einstellungen gespeichert!</div>}
+        {saved && <div className="alert alert-success">Einstellungen gespeichert!</div>}
       </div>
 
       <div className="settings-container">
