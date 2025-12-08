@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import SupportButton from '../components/support/SupportButton';
 
 const plans = [
   {
@@ -313,8 +312,6 @@ export default function Pricing() {
           </div>
         </div>
       </div>
-
-      <SupportButton />
     </div>
   );
 }

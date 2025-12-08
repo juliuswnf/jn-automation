@@ -13,9 +13,6 @@ import AppLayout from './layouts/AppLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import CustomerLayout from './components/layout/CustomerLayout';
 
-// Support Widget
-import TawkToWidget from './components/support/TawkToWidget';
-
 // Lazy loaded pages - less critical
 const CustomerRegister = lazy(() => import('./pages/auth/CustomerRegister'));
 const Register = lazy(() => import('./pages/auth/Register'));
@@ -169,7 +166,6 @@ function App() {
   return (
     <Router>
       <KeyboardShortcuts />
-      <TawkToWidget />
       <Routes>
         {/* ==================== PUBLIC ROUTES (wrapped in AppLayout) ==================== */}
         <Route path="/" element={<AppLayout><Home /></AppLayout>} />
