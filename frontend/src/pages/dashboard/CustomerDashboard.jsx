@@ -90,8 +90,8 @@ const CustomerDashboard = () => {
                 className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-                    <Calendar className="text-indigo-400" size={24} />
+                  <div className="w-12 h-12 bg-zinc-700/50 rounded-lg flex items-center justify-center">
+                    <Calendar className="text-white" size={24} />
                   </div>
                   <div>
                     <h4 className="font-medium text-white">{booking.service}</h4>

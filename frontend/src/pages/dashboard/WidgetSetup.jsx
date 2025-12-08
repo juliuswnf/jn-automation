@@ -95,8 +95,8 @@ export default function WidgetSetup() {
           {/* Colors */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 md:p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                <Palette className="w-5 h-5 text-purple-400" />
+              <div className="w-10 h-10 rounded-lg bg-zinc-700/50 flex items-center justify-center">
+                <Palette className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-lg font-semibold text-white">Farben</h2>
             </div>
@@ -277,13 +277,14 @@ export default function WidgetSetup() {
         </div>
 
         {/* Live Preview */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 md:p-6 h-fit xl:sticky xl:top-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-              <Eye className="w-5 h-5 text-cyan-400" />
+        <div className="xl:sticky xl:top-8 xl:self-start">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 md:p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-zinc-700/50 flex items-center justify-center">
+                <Eye className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-lg font-semibold text-white">Live Preview</h2>
             </div>
-            <h2 className="text-lg font-semibold text-white">Live Preview</h2>
-          </div>
 
           {/* Widget Preview */}
           <div 
@@ -340,6 +341,7 @@ export default function WidgetSetup() {
           <p className="mt-4 text-xs text-zinc-500 text-center">
             So wird dein Widget auf deiner Website aussehen
           </p>
+          </div>
         </div>
       </div>
     </div>

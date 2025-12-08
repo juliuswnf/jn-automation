@@ -135,7 +135,7 @@ export default function Dashboard() {
       {/* Loading State */}
       {loading && (
         <div className="max-w-7xl mx-auto px-6 py-12 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
           <p className="text-gray-400 mt-4">Lade Daten...</p>
         </div>
       )}
@@ -162,7 +162,7 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <StatCard icon="" label="Heutige Termine" value={stats.upcomingCount} color="bg-blue-900" />
             <StatCard icon="" label="Monatsverdienst" value={`${stats.monthlyEarnings}€`} color="bg-green-900" />
-            <StatCard icon="" label="Gesamt-Buchungen" value={stats.totalBookings} color="bg-purple-900" />
+            <StatCard icon="" label="Gesamt-Buchungen" value={stats.totalBookings} color="bg-zinc-800" />
           </div>
 
           {/* Today's Bookings */}

@@ -7,7 +7,7 @@ export default function AGB() {
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="mb-12">
-          <Link to="/" className="text-indigo-400 hover:text-indigo-300 text-sm mb-4 inline-block">
+          <Link to="/" className="text-zinc-400 hover:text-white text-sm mb-4 inline-block">
             ← Zurück zur Startseite
           </Link>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
@@ -85,7 +85,7 @@ export default function AGB() {
               </p>
               <p>
                 (2) <strong className="text-white">Beantragung:</strong> Die Rückerstattung kann 
-                per E-Mail an <a href="mailto:support@jn-automation.de" className="text-indigo-400 hover:underline">
+                per E-Mail an <a href="mailto:support@jn-automation.de" className="text-zinc-400 hover:text-white hover:underline">
                 support@jn-automation.de</a> beantragt werden.
               </p>
               <p>
@@ -108,7 +108,7 @@ export default function AGB() {
             <div className="text-gray-300 space-y-3">
               <p>
                 (1) Die aktuellen Preise sind auf der Website unter 
-                <Link to="/pricing" className="text-indigo-400 hover:underline ml-1">/pricing</Link> einsehbar.
+                <Link to="/pricing" className="text-zinc-400 hover:text-white hover:underline ml-1">/pricing</Link> einsehbar.
               </p>
               <p>
                 (2) Alle Preise verstehen sich netto zzgl. der gesetzlichen Mehrwertsteuer.
@@ -139,7 +139,7 @@ export default function AGB() {
               </p>
               <p>
                 (3) Die Kündigung kann jederzeit im Dashboard oder per E-Mail an 
-                <a href="mailto:support@jn-automation.de" className="text-indigo-400 hover:underline ml-1">
+                <a href="mailto:support@jn-automation.de" className="text-zinc-400 hover:text-white hover:underline ml-1">
                 support@jn-automation.de</a> erfolgen.
               </p>
               <p>
@@ -154,7 +154,7 @@ export default function AGB() {
             <div className="text-gray-300 space-y-3">
               <p>
                 (1) Der Anbieter verarbeitet personenbezogene Daten gemäß der 
-                <Link to="/datenschutz" className="text-indigo-400 hover:underline ml-1">Datenschutzerklärung</Link> 
+                <Link to="/datenschutz" className="text-zinc-400 hover:text-white hover:underline ml-1">Datenschutzerklärung</Link> 
                 und im Einklang mit der DSGVO.
               </p>
               <p>
@@ -246,7 +246,7 @@ export default function AGB() {
             <div className="text-gray-300">
               <p>
                 Bei Fragen zu diesen AGB wenden Sie sich bitte an:<br />
-                <a href="mailto:support@jn-automation.de" className="text-indigo-400 hover:underline">
+                <a href="mailto:support@jn-automation.de" className="text-zinc-400 hover:text-white hover:underline">
                   support@jn-automation.de
                 </a>
               </p>

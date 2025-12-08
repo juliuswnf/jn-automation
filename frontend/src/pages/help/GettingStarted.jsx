@@ -208,7 +208,7 @@ export default function GettingStarted() {
                   {/* Content */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                      <step.icon className="w-6 h-6 text-indigo-400" />
+                      <step.icon className="w-6 h-6 text-white" />
                       <h3 className={`text-lg font-semibold ${
                         completedSteps.includes(step.id) ? 'line-through text-gray-500' : ''
                       }`}>
@@ -223,7 +223,7 @@ export default function GettingStarted() {
                       <ul className="space-y-1">
                         {step.tips.map((tip, i) => (
                           <li key={i} className="text-sm text-gray-300 flex items-center gap-2">
-                            <svg className="w-3 h-3 text-indigo-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3 text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                             {tip}
@@ -235,7 +235,7 @@ export default function GettingStarted() {
                     {/* Action Button */}
                     <Link
                       to={step.link}
-                      className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium text-sm"
+                      className="inline-flex items-center gap-2 text-zinc-400 hover:text-white font-medium text-sm"
                     >
                       {step.title} öffnen
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,10 +257,10 @@ export default function GettingStarted() {
               <a
                 key={index}
                 href={video.url}
-                className="bg-gray-900 rounded-xl border border-gray-800 hover:border-indigo-500/50 p-6 transition-all group"
+                className="bg-gray-900 rounded-xl border border-gray-800 hover:border-zinc-600 p-6 transition-all group"
               >
-                <video.thumbnail className="w-10 h-10 text-indigo-400 mb-4" />
-                <h3 className="font-medium mb-1 group-hover:text-indigo-400 transition-colors">
+                <video.thumbnail className="w-10 h-10 text-white mb-4" />
+                <h3 className="font-medium mb-1 group-hover:text-white transition-colors">
                   {video.title}
                 </h3>
                 <span className="text-sm text-gray-500">{video.duration}</span>

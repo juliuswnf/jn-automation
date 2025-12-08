@@ -81,7 +81,7 @@ export default function Employees() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export default function Employees() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+          className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition"
         >
           <Plus size={20} />
           Mitarbeiter hinzufügen
@@ -111,7 +111,7 @@ export default function Employees() {
           <p className="text-gray-400 mb-4">Fügen Sie Ihren ersten Mitarbeiter hinzu</p>
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+            className="px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition"
           >
             Mitarbeiter hinzufügen
           </button>
@@ -124,7 +124,7 @@ export default function Employees() {
               className="flex items-center justify-between p-4 bg-zinc-900 rounded-xl border border-zinc-800"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold">
+                <div className="w-12 h-12 rounded-full bg-zinc-700 flex items-center justify-center text-white font-semibold">
                   {employee.name?.charAt(0)?.toUpperCase() || 'M'}
                 </div>
                 <div>
@@ -204,7 +204,7 @@ export default function Employees() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                  className="flex-1 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition"
                 >
                   Hinzufügen
                 </button>

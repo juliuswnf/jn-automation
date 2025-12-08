@@ -230,7 +230,7 @@ export default function Checkout() {
             {!isLoggedIn && (
               <p className="text-center text-gray-500 text-sm mb-4">
                 Du hast bereits ein Konto?{' '}
-                <Link to="/login" className="text-indigo-400 hover:underline">
+                                <Link to="/login" className="text-zinc-400 hover:text-white hover:underline">
                   Anmelden
                 </Link>
               </p>
@@ -261,9 +261,9 @@ export default function Checkout() {
             {/* Legal Links */}
             <div className="mt-6 pt-4 border-t border-gray-800 text-center text-xs text-gray-600">
               Mit dem Klick auf "Starten" akzeptierst du unsere{' '}
-              <Link to="/agb" className="text-indigo-400 hover:underline">AGB</Link>
+              <Link to="/agb" className="text-zinc-400 hover:text-white hover:underline">AGB</Link>
               {' '}und{' '}
-              <Link to="/datenschutz" className="text-indigo-400 hover:underline">Datenschutzerklärung</Link>.
+              <Link to="/datenschutz" className="text-zinc-400 hover:text-white hover:underline">Datenschutzerklärung</Link>.
             </div>
           </div>
         </div>
