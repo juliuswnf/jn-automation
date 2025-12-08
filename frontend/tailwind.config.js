@@ -52,6 +52,7 @@ export default {
         'slide-in': 'slideIn 0.5s ease-out',
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
         float: 'float 6s ease-in-out infinite',
+        'bounce-slow': 'bounceSlow 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -69,6 +70,10 @@ export default {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },
+        },
+        bounceSlow: {
+          '0%, 100%': { transform: 'translateY(-8px)' },
+          '50%': { transform: 'translateY(0px)' },
         },
       },
     },

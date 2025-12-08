@@ -37,28 +37,28 @@ const CustomerDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Link 
           to="/customer/booking"
-          className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-xl hover:opacity-90 transition group"
+          className="bg-white text-black p-6 rounded-xl hover:bg-gray-100 transition group"
         >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-lg mb-1">Neuen Termin buchen</h3>
-              <p className="text-white/70 text-sm">Finden Sie Ihren nächsten Termin</p>
+              <p className="text-black/70 text-sm">Finden Sie Ihren nächsten Termin</p>
             </div>
             <ChevronRight className="group-hover:translate-x-1 transition" />
           </div>
         </Link>
         
-        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
           <div className="flex items-center gap-3 mb-2">
-            <Calendar className="text-indigo-400" size={24} />
+            <Calendar className="text-gray-400" size={24} />
             <h3 className="font-semibold text-white">Kommende Termine</h3>
           </div>
           <p className="text-3xl font-bold text-white">{bookings.filter(b => new Date(b.date) > new Date()).length}</p>
         </div>
         
-        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
           <div className="flex items-center gap-3 mb-2">
-            <Clock className="text-green-400" size={24} />
+            <Clock className="text-gray-400" size={24} />
             <h3 className="font-semibold text-white">Vergangene Termine</h3>
           </div>
           <p className="text-3xl font-bold text-white">{bookings.filter(b => new Date(b.date) <= new Date()).length}</p>

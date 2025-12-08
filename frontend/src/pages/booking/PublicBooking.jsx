@@ -206,7 +206,7 @@ export default function PublicBooking() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header - NO LOGIN OPTIONS */}
-      <div className="border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black sticky top-0 z-40">
+      <div className="border-b border-zinc-800 bg-black sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <h1 className="text-3xl font-bold mb-1">Termin buchen</h1>
           <p className="text-gray-400 text-sm">
@@ -243,7 +243,7 @@ export default function PublicBooking() {
 
         {/* Step 1: Customer Data */}
         {bookingStep === 1 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Deine Kontaktdaten</h2>
             
             <div className="space-y-4">
@@ -255,7 +255,7 @@ export default function PublicBooking() {
                   value={bookingData.customerName}
                   onChange={handleInputChange}
                   placeholder="Max Mustermann"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                   required
                 />
               </div>
@@ -268,7 +268,7 @@ export default function PublicBooking() {
                   value={bookingData.customerEmail}
                   onChange={handleInputChange}
                   placeholder="email@beispiel.de"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                   required
                 />
               </div>
@@ -281,7 +281,7 @@ export default function PublicBooking() {
                   value={bookingData.customerPhone}
                   onChange={handleInputChange}
                   placeholder="+49 XXX XXXXXXX"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                   required
                 />
               </div>
@@ -304,7 +304,7 @@ export default function PublicBooking() {
 
         {/* Step 2: Service Selection */}
         {bookingStep === 2 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Service wählen</h2>
             
             <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -317,14 +317,14 @@ export default function PublicBooking() {
                     onClick={() => handleServiceSelect(service)}
                     className={`p-4 rounded-lg border-2 cursor-pointer transition ${
                       bookingData.service === service.name
-                        ? 'border-purple-600 bg-purple-900 bg-opacity-20'
-                        : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
+                        ? 'border-white bg-zinc-800'
+                        : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800'
                     }`}
                   >
                     <h3 className="font-semibold mb-2">{service.name}</h3>
                     <div className="flex justify-between text-sm text-gray-300">
                       <span className="flex items-center gap-2"><FiClock className="text-gray-400" /> {service.duration}</span>
-                      <span className="text-purple-400 font-bold">{service.price}</span>
+                      <span className="text-white font-bold">{service.price}</span>
                     </div>
                   </div>
                 ))
@@ -379,7 +379,7 @@ export default function PublicBooking() {
 
         {/* Step 3: Date & Time Selection */}
         {bookingStep === 3 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Datum & Uhrzeit</h2>
             
             <div className="mb-6">
@@ -389,7 +389,7 @@ export default function PublicBooking() {
                 name="date"
                 value={bookingData.date}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                 required
               />
             </div>
@@ -403,8 +403,8 @@ export default function PublicBooking() {
                     onClick={() => setBookingData(prev => ({ ...prev, time: slot }))}
                     className={`py-2 px-3 rounded-lg font-medium transition ${
                       bookingData.time === slot
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                        ? 'bg-white text-black'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-gray-300'
                     }`}
                   >
                     {slot}
@@ -423,7 +423,7 @@ export default function PublicBooking() {
               <button
                 onClick={() => setBookingStep(4)}
                 disabled={!bookingData.date || !bookingData.time}
-                className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition"
+                className="flex-1 px-6 py-3 bg-white text-black disabled:bg-zinc-700 disabled:text-gray-400 disabled:cursor-not-allowed rounded-lg font-medium hover:bg-gray-100 transition"
               >
                 Bestätigung
               </button>
@@ -433,7 +433,7 @@ export default function PublicBooking() {
 
         {/* Step 4: Confirmation */}
         {bookingStep === 4 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Buchung bestätigen</h2>
             
             <div className="space-y-4 mb-8 p-6 bg-gray-800 bg-opacity-50 rounded-lg">
@@ -474,7 +474,7 @@ export default function PublicBooking() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold transition"
+                className="flex-1 px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
               >
                 Termin buchen
               </button>

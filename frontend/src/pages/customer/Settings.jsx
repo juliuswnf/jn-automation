@@ -213,7 +213,7 @@ export default function Settings() {
   return (
     <div className="text-white">
       {/* Header */}
-      <div className="border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black">
+      <div className="border-b border-zinc-800 bg-black">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <h1 className="text-3xl font-bold">Einstellungen & Profil</h1>
           <p className="text-gray-400 text-sm mt-1">Verwalte dein Konto und deine Präferenzen</p>
@@ -235,7 +235,7 @@ export default function Settings() {
               onClick={() => setActiveTab(tab.key)}
               className={`px-6 py-4 font-medium transition border-b-2 whitespace-nowrap ${
                 activeTab === tab.key
-                  ? 'border-purple-600 text-purple-400'
+                  ? 'border-white text-white'
                   : 'border-transparent text-gray-400 hover:text-gray-300'
               }`}
             >
@@ -246,15 +246,15 @@ export default function Settings() {
 
         {/* PROFILE TAB */}
         {activeTab === 'profile' && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Persönliche Daten</h2>
               <button
                 onClick={() => setEditMode(!editMode)}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${
+                className={`px-4 py-2 rounded-lg font-medium transition ${
                   editMode
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-purple-600 hover:bg-purple-700'
+                    ? 'bg-zinc-700 text-white hover:bg-zinc-600'
+                    : 'bg-white text-black hover:bg-gray-100'
                 }`}
               >
                 {editMode ? 'Abbrechen' : 'Bearbeiten'}
@@ -271,7 +271,7 @@ export default function Settings() {
                   value={profile.firstName}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -284,7 +284,7 @@ export default function Settings() {
                   value={profile.lastName}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -297,7 +297,7 @@ export default function Settings() {
                   value={profile.email}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -310,7 +310,7 @@ export default function Settings() {
                   value={profile.phone}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -323,7 +323,7 @@ export default function Settings() {
                   value={profile.birthDate}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -335,7 +335,7 @@ export default function Settings() {
                   value={profile.gender}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 >
                   <option value="male">Männlich</option>
                   <option value="female">Weiblich</option>
@@ -352,7 +352,7 @@ export default function Settings() {
                   value={profile.address}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -365,7 +365,7 @@ export default function Settings() {
                   value={profile.city}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -378,7 +378,7 @@ export default function Settings() {
                   value={profile.zipCode}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
 
@@ -391,7 +391,7 @@ export default function Settings() {
                   value={profile.country}
                   onChange={handleProfileChange}
                   disabled={!editMode}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-purple-600 focus:outline-none transition"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed focus:border-zinc-500 focus:outline-none transition"
                 />
               </div>
             </div>
@@ -399,7 +399,7 @@ export default function Settings() {
             {editMode && (
               <button
                 onClick={handleSaveProfile}
-                className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-semibold transition"
+                className="w-full mt-6 px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
               >
                 Änderungen speichern
               </button>
@@ -412,7 +412,7 @@ export default function Settings() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold mb-6">Deine Buchungen</h2>
             {bookingHistory.map(booking => (
-              <div key={booking.id} className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-6">
+              <div key={booking.id} className="rounded-xl bg-zinc-900 border border-zinc-800 p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold">{booking.service}</h3>
@@ -440,7 +440,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <p className="text-gray-400">Preis</p>
-                    <p className="font-semibold text-purple-400">{booking.price}</p>
+                    <p className="font-semibold text-white">{booking.price}</p>
                   </div>
                 </div>
 
@@ -461,7 +461,7 @@ export default function Settings() {
 
         {/* PREFERENCES TAB */}
         {activeTab === 'preferences' && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8">
             <h2 className="text-2xl font-bold mb-6">Benachrichtigungseinstellungen</h2>
 
             <div className="space-y-4">
@@ -481,19 +481,19 @@ export default function Settings() {
                     onClick={() => handlePreferenceChange(pref.key)}
                     className={`relative w-12 h-6 rounded-full transition ${
                       preferences[pref.key]
-                        ? 'bg-purple-600'
+                        ? 'bg-white'
                         : 'bg-gray-600'
                     }`}
                   >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition transform ${
-                      preferences[pref.key] ? 'translate-x-6' : 'translate-x-1'
+                    <div className={`absolute top-1 w-4 h-4 rounded-full transition transform ${
+                      preferences[pref.key] ? 'translate-x-6 bg-black' : 'translate-x-1 bg-white'
                     }`} />
                   </button>
                 </div>
               ))}
             </div>
 
-            <button className="w-full mt-6 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition">
+            <button className="w-full mt-6 px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition">
               Speichern
             </button>
           </div>
@@ -503,7 +503,7 @@ export default function Settings() {
         {activeTab === 'security' && (
           <div className="space-y-6">
             {/* Change Password */}
-            <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8">
+            <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8">
               <h2 className="text-2xl font-bold mb-6">Passwort ändern</h2>
 
               <div className="space-y-4">
@@ -515,7 +515,7 @@ export default function Settings() {
                     value={passwords.current}
                     onChange={handlePasswordChange}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                   />
                 </div>
 
@@ -527,7 +527,7 @@ export default function Settings() {
                     value={passwords.new}
                     onChange={handlePasswordChange}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                   />
                 </div>
 
@@ -539,21 +539,21 @@ export default function Settings() {
                     value={passwords.confirm}
                     onChange={handlePasswordChange}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                   />
                 </div>
               </div>
 
               <button
                 onClick={handleChangePassword}
-                className="w-full mt-6 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition"
+                className="w-full mt-6 px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
               >
                 Passwort ändern
               </button>
             </div>
 
             {/* Account Status */}
-            <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8">
+            <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8">
               <h2 className="text-2xl font-bold mb-6">Kontostatus</h2>
               <div className="space-y-4">
                 <div className="p-4 bg-green-900 bg-opacity-20 border border-green-700 rounded-lg">

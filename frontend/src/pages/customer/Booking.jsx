@@ -255,7 +255,7 @@ export default function Booking() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header mit User Info */}
-      <div className="border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black sticky top-0 z-40">
+      <div className="border-b border-zinc-800 bg-black sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
@@ -297,7 +297,7 @@ export default function Booking() {
 
         {/* Step 1: Service Selection */}
         {bookingStep === 1 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Welcher Service interessiert dich?</h2>
             
             <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -307,14 +307,14 @@ export default function Booking() {
                   onClick={() => handleServiceSelect(service)}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition ${
                     bookingData.service === service.name
-                      ? 'border-purple-600 bg-purple-900 bg-opacity-20'
-                      : 'border-gray-700 hover:border-gray-600 bg-gray-800 bg-opacity-50'
+                      ? 'border-white bg-zinc-800'
+                      : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800'
                   }`}
                 >
                   <h3 className="font-semibold mb-2">{service.name}</h3>
                   <div className="flex justify-between text-sm text-gray-300">
                     <span className="flex items-center gap-2"><FiClock className="text-gray-400" /> {service.duration}</span>
-                    <span className="text-purple-400 font-bold">{service.price}</span>
+                    <span className="text-white font-bold">{service.price}</span>
                   </div>
                 </div>
               ))}
@@ -364,7 +364,7 @@ export default function Booking() {
 
         {/* Step 2: Date & Time Selection */}
         {bookingStep === 2 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Wann möchtest du kommen?</h2>
             
             <div className="mb-6">
@@ -374,7 +374,7 @@ export default function Booking() {
                 name="date"
                 value={bookingData.date}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
                 required
               />
             </div>
@@ -388,8 +388,8 @@ export default function Booking() {
                     onClick={() => setBookingData(prev => ({ ...prev, time: slot }))}
                     className={`py-2 px-3 rounded-lg font-medium transition ${
                       bookingData.time === slot
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                        ? 'bg-white text-black'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-gray-300'
                     }`}
                   >
                     {slot}
@@ -406,7 +406,7 @@ export default function Booking() {
                 onChange={handleInputChange}
                 placeholder="z.B. Besondere Wünsche, Allergien, etc."
                 rows="3"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-purple-600 focus:outline-none transition"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-zinc-500 focus:outline-none transition"
               />
             </div>
 
@@ -430,7 +430,7 @@ export default function Booking() {
 
         {/* Step 3: Confirmation */}
         {bookingStep === 3 && (
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8 mb-8">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Termin-Übersicht</h2>
             
               <div className="space-y-4 mb-8 p-6 bg-gray-800 bg-opacity-50 rounded-lg">

@@ -115,8 +115,8 @@ function Home() {
                   </div>
                 </div>
 
-                {/* Floating Notification - New Booking */}
-                <div className="absolute -top-3 -right-3 bg-white text-black rounded-xl shadow-lg p-3 animate-pulse">
+                {/* Floating Notification - New Booking - slides up and down */}
+                <div className="absolute -top-3 -right-3 bg-white text-black rounded-xl shadow-lg p-3 animate-bounce-slow">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                       <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

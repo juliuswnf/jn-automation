@@ -100,7 +100,7 @@ export default function Dashboard() {
   };
 
   const StatCard = ({ icon, label, value, color }) => (
-    <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-6 hover:border-purple-600 transition">
+    <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-6 hover:border-zinc-700 transition">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-400 text-sm mb-2">{label}</p>
@@ -116,7 +116,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="border-b border-gray-800 sticky top-0 z-40 bg-black bg-opacity-80 backdrop-blur-md">
+      <div className="border-b border-zinc-800 sticky top-0 z-40 bg-black">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -166,10 +166,10 @@ export default function Dashboard() {
           </div>
 
           {/* Today's Bookings */}
-          <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-6">
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">Heutige Termine</h2>
-              <span className="px-3 py-1 rounded-full bg-blue-900 text-blue-200 text-sm font-semibold">
+              <span className="px-3 py-1 rounded-full bg-zinc-800 text-gray-300 text-sm font-medium">
                 {upcomingBookings.length} Termine
               </span>
             </div>
@@ -183,7 +183,7 @@ export default function Dashboard() {
                 {upcomingBookings.map((booking) => (
                   <div 
                     key={booking.id} 
-                    className="p-4 rounded-lg bg-gray-800 bg-opacity-50 hover:bg-opacity-100 transition border-l-4 border-purple-600"
+                    className="p-4 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -195,10 +195,10 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                           booking.status === 'Bestätigt' 
-                            ? 'bg-green-900 text-green-300' 
-                            : 'bg-yellow-900 text-yellow-300'
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-yellow-500/20 text-yellow-400'
                         }`}>
                           {booking.status}
                         </span>
@@ -212,20 +212,20 @@ export default function Dashboard() {
 
           {/* Quick Actions */}
           <div className="mt-12 grid md:grid-cols-2 gap-6">
-            <div className="rounded-2xl bg-gradient-to-br from-purple-900 to-black border border-purple-800 p-6 hover:border-purple-600 transition">
+            <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-6 hover:border-zinc-700 transition">
               <h3 className="text-xl font-bold mb-3">Zeitplan verwalten</h3>
-              <p className="text-gray-300 mb-4">Verfügbarkeit und freie Tage einstellen</p>
-              <button className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition">
+              <p className="text-gray-400 mb-4">Verfügbarkeit und freie Tage einstellen</p>
+              <button className="w-full px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition">
                 Zeitplan öffnen
               </button>
             </div>
 
-            <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-black border border-blue-800 p-6 hover:border-blue-600 transition">
+            <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-6 hover:border-zinc-700 transition">
               <h3 className="text-xl font-bold mb-3">Aktualisieren</h3>
-              <p className="text-gray-300 mb-4">Termine neu laden</p>
+              <p className="text-gray-400 mb-4">Termine neu laden</p>
               <button 
                 onClick={fetchData}
-                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition"
+                className="w-full px-4 py-2 border border-zinc-700 text-white rounded-lg font-medium hover:bg-zinc-800 transition"
               >
                 Daten aktualisieren
               </button>
