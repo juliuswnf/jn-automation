@@ -140,21 +140,21 @@ export default function Register() {
         </div>
 
         {/* Plan Info Banner */}
-        <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/30 rounded-xl p-4 mb-8 flex items-center justify-between">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
               <p className="font-medium text-white">{planInfo.planName} Plan</p>
-              <p className="text-sm text-green-400">30 Tage kostenlos testen</p>
+              <p className="text-sm text-gray-400">30 Tage kostenlos testen</p>
             </div>
           </div>
           <div className="text-right">
             <p className="text-xl font-bold text-white">€{planInfo.price}/Monat</p>
-            <p className="text-xs text-gray-400">nach Testphase • keine Kreditkarte nötig</p>
+            <p className="text-xs text-gray-500">nach Testphase</p>
           </div>
         </div>
 

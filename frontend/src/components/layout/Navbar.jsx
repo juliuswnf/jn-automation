@@ -52,12 +52,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-black/95 backdrop-blur-sm border-b border-gray-800 px-4 md:px-8 py-4 sticky top-0 z-50">
+    <nav className="bg-black border-b border-zinc-800 px-4 md:px-8 py-4 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">JN</span>
+          <div className="w-8 h-8 rounded bg-white flex items-center justify-center">
+            <span className="text-black font-bold text-sm">JN</span>
           </div>
           <span className="text-white font-semibold text-lg hidden sm:block">JN Automation</span>
         </Link>
@@ -89,7 +89,7 @@ const Navbar = () => {
                 onMouseLeave={(e) => !showUserMenu && e.currentTarget.querySelector('.dropdown-arrow').classList.add('opacity-0')}
                 className="group flex items-center gap-1 px-2 py-2 rounded-lg hover:bg-white/5 transition"
               >
-                <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-lg">
+                <div className="w-9 h-9 bg-zinc-800 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <svg 
@@ -110,7 +110,7 @@ const Navbar = () => {
                     onClick={() => setShowUserMenu(false)}
                   />
                   {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-56 bg-gray-900 rounded-xl border border-gray-800 shadow-xl z-50 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-56 bg-zinc-900 rounded-lg border border-zinc-800 shadow-xl z-50 overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-800">
                       <p className="text-sm font-medium text-white">{user?.name}</p>
                       <p className="text-xs text-gray-400">{user?.email}</p>
@@ -166,7 +166,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/pricing"
-              className="px-4 py-2 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-100 transition"
+              className="px-4 py-2 bg-white text-black rounded text-sm font-medium hover:bg-gray-100 transition"
             >
               Jetzt starten
             </Link>

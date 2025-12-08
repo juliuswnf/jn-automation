@@ -77,9 +77,9 @@ const ResetPassword = () => {
     return (
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
-            <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-slate-350">Verifying reset link...</p>
+          <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8 text-center">
+            <div className="w-12 h-12 border-4 border-zinc-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-400">Verifying reset link...</p>
           </div>
         </div>
       </div>
@@ -90,7 +90,7 @@ const ResetPassword = () => {
     return (
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
+          <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8 text-center">
             <div className="text-5xl mb-4"></div>
             <h2 className="text-2xl font-bold text-white mb-4">Ungültiger Link</h2>
             <p className="text-slate-350 mb-8">
@@ -111,8 +111,8 @@ const ResetPassword = () => {
   return (
     <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent mb-2">JN Business</h1>
+        <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8">
+          <h1 className="text-2xl font-bold text-white mb-2">JN Business</h1>
           <h2 className="text-xl text-slate-350 mb-8">Create New Password</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">

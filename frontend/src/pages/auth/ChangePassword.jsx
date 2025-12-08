@@ -68,13 +68,13 @@ const ChangePassword = () => {
           <h1 className="text-2xl font-bold">Change Password</h1>
           <Link
             to="/customer/settings"
-            className="px-4 py-2 text-accent hover:text-accent-light font-semibold transition"
+            className="px-4 py-2 text-gray-400 hover:text-white font-medium transition"
           >
             ← Back
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
+        <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-white mb-2">Current Password</label>

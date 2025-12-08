@@ -176,14 +176,14 @@ const SuccessMetrics = () => {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Value Highlight */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 text-white">
+            <div className="bg-zinc-900 rounded-lg p-6 text-white border border-zinc-800">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-medium opacity-90">Dein Erfolg mit JN Automation</h2>
+                  <h2 className="text-lg font-medium text-gray-400">Dein Erfolg mit JN Automation</h2>
                   <div className="text-3xl font-bold mt-1">
                     {metrics?.timeSavedHours || 0} Stunden gespart
                   </div>
-                  <p className="text-sm opacity-80 mt-1">
+                  <p className="text-sm text-gray-500 mt-1">
                     Durch {formatNumber(metrics?.totalBookings)} Online-Buchungen (ca. 5 Min. pro Anruf)
                   </p>
                 </div>

@@ -65,9 +65,9 @@ const TwoFASetup = () => {
     return (
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
-            <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-slate-350">Setting up 2FA...</p>
+          <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8 text-center">
+            <div className="w-12 h-12 border-4 border-zinc-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-400">Setting up 2FA...</p>
           </div>
         </div>
       </div>
@@ -78,7 +78,7 @@ const TwoFASetup = () => {
     return (
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
+          <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8">
             <h1 className="text-3xl font-bold text-white mb-8 text-center">Setup 2FA</h1>
             
             <div className="bg-primary/50 rounded-lg p-6 mb-8 text-center">
@@ -124,7 +124,7 @@ const TwoFASetup = () => {
   return (
     <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
+        <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8">
           <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-white mb-4 text-center">2FA aktiviert</h1>
           <p className="text-slate-350 text-center mb-6">

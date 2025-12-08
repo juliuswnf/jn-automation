@@ -91,7 +91,7 @@ const EmailVerification = () => {
     return (
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
+          <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8 text-center">
             <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-slate-350">Verifying your email...</p>
           </div>
@@ -103,9 +103,9 @@ const EmailVerification = () => {
   return (
     <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
+        <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8">
           <div className="text-5xl text-center mb-4"></div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent mb-2 text-center">
+          <h1 className="text-2xl font-bold text-white mb-2 text-center">
             E-Mail verifizieren
           </h1>
           <p className="text-slate-350 text-center mb-8">

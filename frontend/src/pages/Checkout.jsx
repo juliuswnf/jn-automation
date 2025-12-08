@@ -134,7 +134,7 @@ export default function Checkout() {
             <p className="text-gray-400 mb-8">{plan.description}</p>
 
             {/* Features */}
-            <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-6">
+            <div className="bg-zinc-900 rounded-lg p-5 border border-zinc-800 mb-6">
               <h3 className="font-semibold mb-4">Was ist enthalten:</h3>
               <ul className="space-y-3">
                 {plan.features.map((feature, idx) => (
@@ -149,14 +149,14 @@ export default function Checkout() {
             </div>
 
             {/* Trial Info */}
-            <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl p-4 border border-indigo-500/30">
+            <div className="bg-zinc-900 rounded-lg p-4 border border-zinc-800">
               <div className="flex items-start gap-3">
-                <svg className="w-6 h-6 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <h4 className="font-medium text-indigo-300">30 Tage kostenlos testen</h4>
-                  <p className="text-sm text-indigo-400/80 mt-1">
+                  <h4 className="font-medium text-white">30 Tage kostenlos testen</h4>
+                  <p className="text-sm text-gray-500 mt-1">
                     Du wirst erst nach Ablauf der Testphase belastet. Jederzeit kündbar.
                   </p>
                 </div>
@@ -165,7 +165,7 @@ export default function Checkout() {
           </div>
 
           {/* Right: Checkout Summary */}
-          <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800">
+          <div className="bg-zinc-900 rounded-lg p-6 border border-zinc-800">
             <h2 className="text-xl font-bold mb-6">Zusammenfassung</h2>
 
             {/* Price Breakdown */}
@@ -206,10 +206,10 @@ export default function Checkout() {
             <button
               onClick={handleStripeCheckout}
               disabled={loading}
-              className={`w-full py-4 rounded-full text-center font-semibold transition mb-4 ${
+              className={`w-full py-3 rounded text-center font-medium transition mb-4 ${
                 loading
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600'
+                  ? 'bg-zinc-700 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-black hover:bg-gray-100'
               }`}
             >
               {loading ? (

@@ -163,7 +163,7 @@ export default function GettingStarted() {
           </div>
           <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+              className="h-full bg-white transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -305,13 +305,13 @@ export default function GettingStarted() {
         </div>
 
         {/* Support CTA */}
-        <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-2xl p-8 text-center border border-indigo-500/20">
+        <div className="bg-zinc-900 rounded-lg p-8 text-center border border-zinc-800">
           <h3 className="text-xl font-bold mb-2">Noch Fragen?</h3>
           <p className="text-gray-400 mb-6">Unser Support-Team hilft dir gerne weiter.</p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
               href="mailto:support@jn-automation.de"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 rounded-full transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2 bg-white text-black hover:bg-gray-100 rounded text-sm transition"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

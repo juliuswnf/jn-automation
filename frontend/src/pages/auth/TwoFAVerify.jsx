@@ -17,9 +17,9 @@ const TwoFAVerify = () => {
     return (
       <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl text-center">
+          <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8 text-center">
             <h2 className="text-2xl font-bold text-white mb-4">Invalid Session</h2>
-            <p className="text-slate-350 mb-6">Please log in again.</p>
+            <p className="text-gray-400 mb-6">Please log in again.</p>
             <Link
               to="/login"
               className="inline-block px-8 py-3 rounded-lg bg-accent hover:bg-accent-light text-primary font-semibold transition"
@@ -64,10 +64,10 @@ const TwoFAVerify = () => {
   return (
     <div className="min-h-screen bg-primary text-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-secondary/50 border border-accent/20 p-8 backdrop-blur-xl">
-          <div className="text-5xl text-center mb-4">🔐</div>
-          <h1 className="text-3xl font-bold text-white mb-2 text-center">Two-Factor Authentication</h1>
-          <p className="text-slate-350 text-center mb-8">
+        <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-8">
+          <div className="text-5xl text-center mb-4"></div>
+          <h1 className="text-2xl font-bold text-white mb-2 text-center">Two-Factor Authentication</h1>
+          <p className="text-gray-400 text-center mb-8">
             Enter the code from your authenticator app
           </p>
           

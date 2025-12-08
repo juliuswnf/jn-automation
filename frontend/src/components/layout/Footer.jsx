@@ -11,8 +11,8 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <span className="font-bold text-white">JN</span>
+              <div className="w-10 h-10 rounded bg-white flex items-center justify-center">
+                <span className="font-bold text-black">JN</span>
               </div>
               <div>
                 <h3 className="text-white font-semibold">JN Automation</h3>
