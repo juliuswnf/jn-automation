@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { user } = useAuth();
 
   return (
     <footer className="bg-black border-t border-gray-800 text-gray-300">
@@ -58,32 +60,82 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Produkt */}
-          <div>
-            <h4 className="text-white font-medium mb-4">Produkt</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/dashboard" className="text-gray-400 hover:text-white transition">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard/bookings" className="text-gray-400 hover:text-white transition">
-                  Termine
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard/services" className="text-gray-400 hover:text-white transition">
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard/widget" className="text-gray-400 hover:text-white transition">
-                  Widget
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Produkt - nur für Business User */}
+          {user && (user.role === 'salon_owner' || user.role === 'employee' || user.role === 'ceo') && (
+            <div>
+              <h4 className="text-white font-medium mb-4">Für Salons</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/dashboard" className="text-gray-400 hover:text-white transition">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/bookings" className="text-gray-400 hover:text-white transition">
+                    Termine
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/services" className="text-gray-400 hover:text-white transition">
+                    Services
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/widget" className="text-gray-400 hover:text-white transition">
+                    Widget
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
+
+          {/* Für Kunden */}
+          {user && user.role === 'customer' && (
+            <div>
+              <h4 className="text-white font-medium mb-4">Mein Konto</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/customer/dashboard" className="text-gray-400 hover:text-white transition">
+                    Meine Termine
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/customer/booking" className="text-gray-400 hover:text-white transition">
+                    Neuer Termin
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/salons" className="text-gray-400 hover:text-white transition">
+                    Salons finden
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
+
+          {/* Für nicht-angemeldete User */}
+          {!user && (
+            <div>
+              <h4 className="text-white font-medium mb-4">Für Salons</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/demo" className="text-gray-400 hover:text-white transition">
+                    Demo ansehen
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pricing" className="text-gray-400 hover:text-white transition">
+                    Preise
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/login/business" className="text-gray-400 hover:text-white transition">
+                    Jetzt starten
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
 
           {/* Legal */}
           <div>

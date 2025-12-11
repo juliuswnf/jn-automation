@@ -278,7 +278,7 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'employee', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><StudioDashboard /></LazyPage>
               </DashboardLayout>
@@ -288,7 +288,7 @@ function App() {
         <Route
           path="/dashboard/bookings"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'employee', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><Bookings /></LazyPage>
               </DashboardLayout>
@@ -298,7 +298,7 @@ function App() {
         <Route
           path="/dashboard/services"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'employee', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><Services /></LazyPage>
               </DashboardLayout>
@@ -308,7 +308,7 @@ function App() {
         <Route
           path="/dashboard/employees"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><Employees /></LazyPage>
               </DashboardLayout>
@@ -318,7 +318,7 @@ function App() {
         <Route
           path="/dashboard/customers"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'employee', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><Customers /></LazyPage>
               </DashboardLayout>
@@ -328,7 +328,7 @@ function App() {
         <Route
           path="/dashboard/widget"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><WidgetSetup /></LazyPage>
               </DashboardLayout>
@@ -338,7 +338,7 @@ function App() {
         <Route
           path="/dashboard/settings"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><Settings /></LazyPage>
               </DashboardLayout>
@@ -358,7 +358,7 @@ function App() {
         <Route
           path="/dashboard/help"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['salon_owner', 'employee', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><GettingStarted /></LazyPage>
               </DashboardLayout>
