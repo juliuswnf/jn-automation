@@ -1,6 +1,7 @@
 ﻿import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { checkTenantAccess, enforceTenantFilter } from '../middleware/tenantMiddleware.js';
+import { mutationLimiter } from '../middleware/rateLimiterMiddleware.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
@@ -45,8 +46,8 @@ router.get('/:id', checkTenantAccess('service'), async (req, res) => {
   }
 });
 
-// Create service (uses tenant's salonId)
-router.post('/', async (req, res) => {
+// ✅ HIGH FIX #10: Create service with rate limiter
+router.post('/', mutationLimiter, async (req, res) => {
   try {
     const { Service } = await import('../models/index.js').then(m => m.default);
 
@@ -66,8 +67,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update service (with tenant check)
-router.put('/:id', checkTenantAccess('service'), async (req, res) => {
+// ✅ HIGH FIX #10: Update service with rate limiter
+router.put('/:id', mutationLimiter, checkTenantAccess('service'), async (req, res) => {
   try {
     const { Service } = await import('../models/index.js').then(m => m.default);
 
@@ -110,8 +111,8 @@ router.put('/:id', checkTenantAccess('service'), async (req, res) => {
   }
 });
 
-// Delete service (with tenant check)
-router.delete('/:id', checkTenantAccess('service'), async (req, res) => {
+// ✅ HIGH FIX #10: Delete service with rate limiter
+router.delete('/:id', mutationLimiter, checkTenantAccess('service'), async (req, res) => {
   try {
     const { Service } = await import('../models/index.js').then(m => m.default);
 

@@ -119,6 +119,32 @@ const salonSchema = new mongoose.Schema({
     min: 0
   },
 
+  // ✅ HIGH FIX #8: Capacity Management
+  capacity: {
+    type: Number,
+    default: 5, // Default: 5 concurrent bookings
+    min: 1,
+    max: 50
+  },
+  settings: {
+    maxConcurrentBookings: {
+      type: Number,
+      default: 5,
+      min: 1,
+      max: 50
+    },
+    employeeCount: {
+      type: Number,
+      default: 1,
+      min: 1
+    },
+    workstationCount: {
+      type: Number,
+      default: 2,
+      min: 1
+    }
+  },
+
   // Subscription & Billing
   subscription: {
     status: {

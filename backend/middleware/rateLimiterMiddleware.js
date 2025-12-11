@@ -236,6 +236,46 @@ const bookingLimiter = rateLimit({
   keyGenerator: (req) => req.user?.id || req.ip
 });
 
+// ✅ HIGH FIX #10: Booking Creation Limiter - DoS Protection
+const bookingCreationLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: parseInt(process.env.RATE_LIMIT_BOOKING_CREATION || '10'), // 10 bookings per minute
+  message: { success: false, message: 'Zu viele Buchungen in kurzer Zeit' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
+  skip: (req) => req.user && req.user.role === 'ceo', // CEO bypass
+  handler: (req, res) => {
+    logger.warn(`⚠️ Booking creation rate limit exceeded: ${req.user?.id || req.ip}`);
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele Buchungsanfragen. Bitte warten Sie einen Moment.',
+      retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+    });
+  }
+});
+
+// ✅ HIGH FIX #10: Mutation Limiter - General DoS Protection for Updates/Deletes
+const mutationLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: parseInt(process.env.RATE_LIMIT_MUTATIONS || '30'), // 30 mutations per minute
+  message: { success: false, message: 'Zu viele Änderungen in kurzer Zeit' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: memoryStoreAdapter,
+  keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
+  skip: (req) => req.user && req.user.role === 'ceo', // CEO bypass
+  handler: (req, res) => {
+    logger.warn(`⚠️ Mutation rate limit exceeded: ${req.user?.id || req.ip}`);
+    res.status(429).json({
+      success: false,
+      message: 'Zu viele Änderungen. Bitte verlangsamen Sie Ihre Anfragen.',
+      retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+    });
+  }
+});
+
 const reviewLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_REVIEW || '5'),
@@ -503,5 +543,7 @@ export {
   resetRateLimiter,
   resetRateLimitKey,
   getRateLimitInfo,
-  rateLimiterMiddlewareChain
+  rateLimiterMiddlewareChain,
+  bookingCreationLimiter, // ✅ HIGH FIX #10
+  mutationLimiter // ✅ HIGH FIX #10
 };

@@ -61,6 +61,46 @@ export const createBooking = async (req, res) => {
     session.startTransaction();
 
     try {
+      // ✅ HIGH FIX #8: Check salon capacity (prevent overbooking)
+      const salon = await Salon.findById(salonId).session(session);
+      if (!salon) {
+        await session.abortTransaction();
+        return res.status(404).json({
+          success: false,
+          message: 'Salon not found'
+        });
+      }
+
+      // Calculate booking time window
+      const startTime = new Date(parsedDate);
+      const endTime = new Date(startTime.getTime() + (service.duration || 60) * 60 * 1000);
+
+      // ✅ HIGH FIX #8: Check concurrent bookings against salon capacity
+      const concurrentBookings = await Booking.countDocuments({
+        salonId,
+        bookingDate: {
+          $gte: new Date(startTime.getTime() - 30 * 60 * 1000), // 30 min buffer before
+          $lt: new Date(endTime.getTime() + 30 * 60 * 1000) // 30 min buffer after
+        },
+        status: { $nin: ['cancelled', 'no_show'] }
+      }).session(session);
+
+      // Get salon capacity (default 5 if not set)
+      const maxConcurrentBookings = salon.settings?.maxConcurrentBookings || salon.capacity || 5;
+
+      if (concurrentBookings >= maxConcurrentBookings) {
+        await session.abortTransaction();
+        logger.warn(`⚠️ Capacity exceeded: ${concurrentBookings}/${maxConcurrentBookings} for salon ${salonId}`);
+        return res.status(409).json({
+          success: false,
+          message: `Kapazität erreicht. Maximal ${maxConcurrentBookings} gleichzeitige Buchungen möglich.`,
+          capacity: {
+            current: concurrentBookings,
+            max: maxConcurrentBookings
+          }
+        });
+      }
+
       // Check for conflicts with session lock
       const existingBooking = await Booking.findOne({
         salonId,

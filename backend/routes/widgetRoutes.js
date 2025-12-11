@@ -5,26 +5,53 @@ import Booking from '../models/Booking.js';
 import User from '../models/User.js';
 import { validateBooking } from '../middleware/validationMiddleware.js';
 import { widgetLimiter, publicBookingLimiter } from '../middleware/rateLimiterMiddleware.js';
+import widgetCorsMiddleware from '../middleware/widgetCorsMiddleware.js';
 import emailService from '../services/emailService.js';
 import logger from '../utils/logger.js';
-import { generateSecurePassword } from '../utils/validation.js';
+import { generateSecurePassword, isValidObjectId } from '../utils/validation.js';
 
 const router = express.Router();
 
 /**
  * Widget Routes - Embeddable Booking Widget API
- * Public endpoints fÃ¼r externe Salon-Websites
+ * Public endpoints für externe Salon-Websites
  * Kein Auth erforderlich - Slug-basiert
- * Rate-Limited fÃ¼r Spam-Schutz
+ * Rate-Limited für Spam-Schutz
  */
+
+// ✅ HIGH FIX #12: Apply CORS middleware (allowedDomains whitelist)
+router.use(widgetCorsMiddleware);
 
 // Apply widget rate limiter to all routes
 router.use(widgetLimiter);
+
+// ✅ HIGH FIX #12: Validate slug format (prevent injection)
+const isValidSlug = (slug) => {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && slug.length >= 3 && slug.length <= 50;
+};
+
+// ✅ HIGH FIX #12: Sanitize input strings (prevent XSS)
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove script tags
+    .replace(/<[^>]+>/g, '') // Remove HTML tags
+    .trim()
+    .substring(0, 500); // Limit length
+};
 
 // ==================== GET WIDGET CONFIG ====================
 router.get('/config/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
+
+    // ✅ HIGH FIX #12: Validate slug format
+    if (!isValidSlug(slug)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid salon identifier format'
+      });
+    }
 
     const salon = await Salon.findOne({ slug })
       .select('name logo primaryColor secondaryColor openingHours address phone email');
@@ -63,6 +90,14 @@ router.get('/services/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
 
+    // ✅ HIGH FIX #12: Validate slug format
+    if (!isValidSlug(slug)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid salon identifier format'
+      });
+    }
+
     const salon = await Salon.findOne({ slug });
     if (!salon) {
       return res.status(404).json({
@@ -95,10 +130,26 @@ router.get('/timeslots/:slug', async (req, res) => {
     const { slug } = req.params;
     const { date, serviceId } = req.query;
 
-    if (!date || !serviceId) {
+    // ✅ HIGH FIX #12: Validate slug format
+    if (!isValidSlug(slug)) {
       return res.status(400).json({
         success: false,
-        message: 'Date and serviceId required'
+        message: 'Invalid salon identifier format'
+      });
+    }
+
+    // ✅ HIGH FIX #12: Validate serviceId format
+    if (!serviceId || !isValidObjectId(serviceId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid service ID format'
+      });
+    }
+
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        message: 'Date required'
       });
     }
 
@@ -197,6 +248,38 @@ router.post('/book/:slug', publicBookingLimiter, validateBooking, async (req, re
   try {
     const { slug } = req.params;
     const { customerName, customerEmail, customerPhone, serviceId, date, time, notes } = req.body;
+
+    // ✅ HIGH FIX #12: Validate slug format
+    if (!isValidSlug(slug)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid salon identifier format'
+      });
+    }
+
+    // ✅ HIGH FIX #12: Validate and sanitize inputs
+    if (!serviceId || !isValidObjectId(serviceId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid service ID format'
+      });
+    }
+
+    // ✅ HIGH FIX #12: Sanitize user inputs (XSS prevention)
+    const sanitizedData = {
+      customerName: sanitizeInput(customerName),
+      customerEmail: sanitizeInput(customerEmail),
+      customerPhone: sanitizeInput(customerPhone),
+      notes: sanitizeInput(notes)
+    };
+
+    // Validate email format
+    if (!sanitizedData.customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedData.customerEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
 
     const salon = await Salon.findOne({ slug });
     if (!salon) {

@@ -237,12 +237,13 @@ const cleanupOldEmails = async () => {
  * Runs every minute to process pending emails
  */
 const startWorker = () => {
-  logger.log('ðŸš€ Starting email queue worker...');
-  // Process queue immediately on startup
-  processEmailQueue();
+  logger.log('🚀 Starting email queue worker...');
+  
+  // ✅ HIGH FIX #9: Run immediately on startup (don't wait 1 minute)
+  processEmailQueueSafe();
 
-  // Then process every minute
-  const intervalId = setInterval(processEmailQueue, 60 * 1000);
+  // ✅ HIGH FIX #9: Use safe wrapper - worker never dies
+  const intervalId = setInterval(processEmailQueueSafe, 60 * 1000);
 
   // Cleanup old emails once per day
   const cleanupIntervalId = setInterval(cleanupOldEmails, 24 * 60 * 60 * 1000);
@@ -268,6 +269,7 @@ const stopWorker = (intervals) => {
 // ES6 Export
 export default {
   processEmailQueue,
+  processEmailQueueSafe, // ✅ HIGH FIX #9
   processEmailQueueItem,
   scheduleReminderEmail,
   scheduleReviewEmail,

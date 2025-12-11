@@ -41,16 +41,19 @@ export const getSalonInfo = async (req, res) => {
 
 // ==================== UPDATE SALON ====================
 
+// ✅ HIGH FIX #11: Allowed fields whitelist (prevent subscription manipulation)
+const ALLOWED_SALON_FIELDS = [
+  'name', 'email', 'phone', 'address', 'description', 'openingHours',
+  'businessHours', 'googleReviewUrl', 'defaultLanguage', 'timezone',
+  'emailTemplates', 'settings', 'logo', 'cover', 'social'
+];
+
 export const updateSalon = async (req, res) => {
   try {
     const salonId = req.params.salonId || req.user.salonId;
-    const { name, phone, address, description, openingHours } = req.body;
 
-    const salon = await Salon.findByIdAndUpdate(
-      salonId,
-      { name, phone, address, description, openingHours },
-      { new: true, runValidators: true }
-    );
+    // Load salon first
+    const salon = await Salon.findById(salonId);
 
     if (!salon) {
       return res.status(404).json({
@@ -58,6 +61,20 @@ export const updateSalon = async (req, res) => {
         message: 'Salon not found'
       });
     }
+
+    // ✅ HIGH FIX #11: Only update whitelisted fields
+    const updateData = {};
+    for (const field of ALLOWED_SALON_FIELDS) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    }
+
+    // Apply updates
+    Object.assign(salon, updateData);
+    await salon.save();
+
+    logger.log(`✅ Salon updated: ${salon.name} (ID: ${salonId})`);
 
     res.status(200).json({
       success: true,
