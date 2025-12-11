@@ -15,7 +15,7 @@ const router = express.Router();
 
 // Simple health check (no auth required - for load balancers)
 router.get('/ping', (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: 'pong',
     timestamp: new Date().toISOString()
@@ -43,13 +43,13 @@ router.use((req, res, next) => {
 router.get('/health/detailed', async (req, res) => {
   try {
     const health = await healthCheckService.getHealthStatus();
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       ...health
     });
   } catch (error) {
     logger.error('❌ Detailed health check failed:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Health check failed',
       error: error.message
@@ -63,14 +63,14 @@ router.get('/health/detailed', async (req, res) => {
 router.post('/backups/create', async (req, res) => {
   try {
     const result = await backupService.createMongoBackup();
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Backup created successfully',
       backup: result
     });
   } catch (error) {
     logger.error('❌ Backup creation failed:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Backup creation failed',
       error: error.message
@@ -82,14 +82,14 @@ router.post('/backups/create', async (req, res) => {
 router.get('/backups', async (req, res) => {
   try {
     const backups = await backupService.listBackups();
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: backups.length,
       backups
     });
   } catch (error) {
     logger.error('❌ Failed to list backups:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to list backups',
       error: error.message
@@ -101,14 +101,14 @@ router.get('/backups', async (req, res) => {
 router.post('/backups/cleanup', async (req, res) => {
   try {
     const result = await backupService.cleanupOldBackups();
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: `Deleted ${result.deletedCount} old backups`,
       ...result
     });
   } catch (error) {
     logger.error('❌ Backup cleanup failed:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Backup cleanup failed',
       error: error.message
@@ -136,14 +136,13 @@ router.post('/backups/restore', async (req, res) => {
     }
 
     const result = await backupService.restoreFromBackup(backupPath);
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Restore completed',
       ...result
-    });
-  } catch (error) {
+    });\n  } catch (error) {
     logger.error('❌ Restore failed:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Restore failed',
       error: error.message
