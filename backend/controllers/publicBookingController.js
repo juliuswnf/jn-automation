@@ -23,18 +23,15 @@ export const getAllSalons = async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
-    // Get all salons with active subscription
-    const salons = await Salon.find({
-      'subscription.status': { $in: ['active', 'trialing'] }
-    })
-      .select('name slug address city phone businessHours createdAt')
+    // Get all salons (show all for now, can filter by subscription later)
+    // For production: filter by subscription.status: 'active' or 'trialing'
+    const salons = await Salon.find({})
+      .select('name slug address city phone businessHours createdAt subscription')
       .sort({ name: 1 })
       .skip(skip)
       .limit(limit);
 
-    const total = await Salon.countDocuments({
-      'subscription.status': { $in: ['active', 'trialing'] }
-    });
+    const total = await Salon.countDocuments({});
 
     // Get service count for each salon
     const salonsWithServices = await Promise.all(
@@ -87,7 +84,6 @@ export const searchSalons = async (req, res) => {
     const searchRegex = new RegExp(q, 'i');
 
     const salons = await Salon.find({
-      'subscription.status': { $in: ['active', 'trialing'] },
       $or: [
         { name: searchRegex },
         { city: searchRegex },
@@ -95,7 +91,7 @@ export const searchSalons = async (req, res) => {
         { 'address.city': searchRegex }
       ]
     })
-      .select('name slug address city phone')
+      .select('name slug address city phone subscription')
       .limit(10);
 
     res.status(200).json({
@@ -130,7 +126,6 @@ export const getSalonsByCity = async (req, res) => {
 
     // Find salons in this city
     const salons = await Salon.find({
-      'subscription.status': { $in: ['active', 'trialing'] },
       $or: [
         { city: cityRegex },
         { 'address.city': cityRegex }
