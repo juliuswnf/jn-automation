@@ -1,11 +1,10 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Email Campaigns Controller
  * Broadcast emails, templates, and campaign management
  */
 
 import Salon from '../models/Salon.js';
-import User from '../models/User.js';
 import EmailLog from '../models/EmailLog.js';
 import EmailQueue from '../models/EmailQueue.js';
 
@@ -13,9 +12,11 @@ import EmailQueue from '../models/EmailQueue.js';
 export const getAllCampaigns = async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
-    
+
     const query = { type: 'campaign' };
-    if (status) query.status = status;
+    if (status) {
+      query.status = status;
+    }
 
     // Get campaigns from email logs
     const campaigns = await EmailLog.find(query)
@@ -78,32 +79,32 @@ export const createCampaign = async (req, res) => {
 
     // Determine recipients
     let targetEmails = [];
-    
+
     if (recipients === 'all') {
       const salons = await Salon.find({ isActive: true }).select('ownerEmail');
       targetEmails = salons.map(s => s.ownerEmail).filter(Boolean);
     } else if (recipients === 'trial') {
-      const salons = await Salon.find({ 
-        isActive: true, 
-        'subscription.status': 'trial' 
+      const salons = await Salon.find({
+        isActive: true,
+        'subscription.status': 'trial'
       }).select('ownerEmail');
       targetEmails = salons.map(s => s.ownerEmail).filter(Boolean);
     } else if (recipients === 'paid') {
-      const salons = await Salon.find({ 
-        isActive: true, 
-        'subscription.status': 'active' 
+      const salons = await Salon.find({
+        isActive: true,
+        'subscription.status': 'active'
       }).select('ownerEmail');
       targetEmails = salons.map(s => s.ownerEmail).filter(Boolean);
     } else if (recipients === 'starter') {
-      const salons = await Salon.find({ 
-        isActive: true, 
-        'subscription.plan': 'starter' 
+      const salons = await Salon.find({
+        isActive: true,
+        'subscription.plan': 'starter'
       }).select('ownerEmail');
       targetEmails = salons.map(s => s.ownerEmail).filter(Boolean);
     } else if (recipients === 'pro') {
-      const salons = await Salon.find({ 
-        isActive: true, 
-        'subscription.plan': 'pro' 
+      const salons = await Salon.find({
+        isActive: true,
+        'subscription.plan': 'pro'
       }).select('ownerEmail');
       targetEmails = salons.map(s => s.ownerEmail).filter(Boolean);
     } else if (Array.isArray(recipients)) {
@@ -329,7 +330,7 @@ export const getEmailTemplates = async (req, res) => {
       {
         id: 'welcome',
         name: 'Willkommen',
-        description: 'Willkommens-E-Mail für neue Kunden',
+        description: 'Willkommens-E-Mail fÃ¼r neue Kunden',
         subject: 'Willkommen bei JN Automation!',
         content: 'Hallo {name},\n\nwillkommen bei JN Automation...'
       },
@@ -342,7 +343,7 @@ export const getEmailTemplates = async (req, res) => {
       },
       {
         id: 'feature_announcement',
-        name: 'Feature Ankündigung',
+        name: 'Feature AnkÃ¼ndigung',
         description: 'Neue Features vorstellen',
         subject: 'Neu: {feature_name}',
         content: 'Hallo {name},\n\nwir haben ein neues Feature...'
@@ -351,8 +352,8 @@ export const getEmailTemplates = async (req, res) => {
         id: 'promotion',
         name: 'Promotion',
         description: 'Rabattaktionen und Angebote',
-        subject: 'Exklusives Angebot für Sie!',
-        content: 'Hallo {name},\n\nnur für kurze Zeit...'
+        subject: 'Exklusives Angebot fÃ¼r Sie!',
+        content: 'Hallo {name},\n\nnur fÃ¼r kurze Zeit...'
       },
       {
         id: 'newsletter',
@@ -384,14 +385,21 @@ export const getEmailTemplates = async (req, res) => {
 export const getEmailStats = async (req, res) => {
   try {
     const { period = '30d' } = req.query;
-    
+
     const now = new Date();
     let startDate;
     switch (period) {
-      case '7d': startDate = new Date(now - 7 * 24 * 60 * 60 * 1000); break;
-      case '30d': startDate = new Date(now - 30 * 24 * 60 * 60 * 1000); break;
-      case '90d': startDate = new Date(now - 90 * 24 * 60 * 60 * 1000); break;
-      default: startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    case '7d':
+      startDate = new Date(now - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case '30d':
+      startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
+      break;
+    case '90d':
+      startDate = new Date(now - 90 * 24 * 60 * 60 * 1000);
+      break;
+    default:
+      startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
     }
 
     const stats = await EmailLog.aggregate([
@@ -419,17 +427,17 @@ export const getEmailStats = async (req, res) => {
     };
 
     // Calculate rates
-    result.deliveryRate = result.totalSent > 0 
-      ? ((result.totalDelivered / result.totalSent) * 100).toFixed(1) 
+    result.deliveryRate = result.totalSent > 0
+      ? ((result.totalDelivered / result.totalSent) * 100).toFixed(1)
       : 0;
-    result.openRate = result.totalDelivered > 0 
-      ? ((result.totalOpened / result.totalDelivered) * 100).toFixed(1) 
+    result.openRate = result.totalDelivered > 0
+      ? ((result.totalOpened / result.totalDelivered) * 100).toFixed(1)
       : 0;
-    result.clickRate = result.totalOpened > 0 
-      ? ((result.totalClicked / result.totalOpened) * 100).toFixed(1) 
+    result.clickRate = result.totalOpened > 0
+      ? ((result.totalClicked / result.totalOpened) * 100).toFixed(1)
       : 0;
-    result.bounceRate = result.totalSent > 0 
-      ? ((result.totalBounced / result.totalSent) * 100).toFixed(1) 
+    result.bounceRate = result.totalSent > 0
+      ? ((result.totalBounced / result.totalSent) * 100).toFixed(1)
       : 0;
 
     res.status(200).json({

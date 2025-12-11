@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Jest Test Setup
  * Runs before all tests
  */

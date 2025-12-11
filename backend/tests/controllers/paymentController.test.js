@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Payment Controller Unit Tests
  * Tests for payment operations
  */
@@ -59,7 +59,7 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
 process.env.STRIPE_SECRET_KEY = 'sk_test_mock';
 
 // Import controller after mocking
-const { createPaymentIntent, processPayment, getPaymentStatus, refundPayment } = 
+const { createPaymentIntent, processPayment, getPaymentStatus, refundPayment } =
   await import('../../controllers/paymentController.js');
 
 describe('Payment Controller', () => {

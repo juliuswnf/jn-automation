@@ -1,4 +1,4 @@
-import logger from './logger.js';
+﻿import logger from './logger.js';
 // ==================== HELPER FUNCTIONS ====================
 
 import crypto from 'crypto';
@@ -37,7 +37,7 @@ export const stringHelpers = {
 
   removeSpecialChars: (str) => {
     if (!str) {return '';}
-    return str.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, '');
+    return str.replace(/[^a-zA-Z0-9Ã¤Ã¶Ã¼Ã„Ã–ÃœÃŸ\s-]/g, '');
   },
 
   toCamelCase: (str) => {
@@ -381,24 +381,24 @@ export const paginationHelpers = {
 
 export const loggerHelpers = {
   logInfo: (message, data = null) => {
-    logger.log(`ℹ️  [INFO] ${message}`, data ? data : '');
+    logger.log(`â„¹ï¸  [INFO] ${message}`, data ? data : '');
   },
 
   logSuccess: (message, data = null) => {
-    logger.log(`✅ [SUCCESS] ${message}`, data ? data : '');
+    logger.log(`âœ… [SUCCESS] ${message}`, data ? data : '');
   },
 
   logWarning: (message, data = null) => {
-    logger.warn(`⚠️  [WARNING] ${message}`, data ? data : '');
+    logger.warn(`âš ï¸  [WARNING] ${message}`, data ? data : '');
   },
 
   logError: (message, error = null) => {
-    logger.error(`❌ [ERROR] ${message}`, error ? error.message : '');
+    logger.error(`âŒ [ERROR] ${message}`, error ? error.message : '');
   },
 
   logDebug: (message, data = null) => {
     if (process.env.DEBUG === 'true') {
-      logger.log(`🐛 [DEBUG] ${message}`, data ? data : '');
+      logger.log(`ðŸ› [DEBUG] ${message}`, data ? data : '');
     }
   }
 };

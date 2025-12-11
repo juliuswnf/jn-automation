@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Controller - MVP Optimized
  * Essential CEO dashboard and salon management only
@@ -11,8 +11,8 @@ import ErrorLog from '../models/ErrorLog.js';
 
 // ==================== PRICING CONSTANTS ====================
 const PRICING = {
-  starter: 29,  // €29/Monat
-  pro: 69       // €69/Monat
+  starter: 29,  // â‚¬29/Monat
+  pro: 69       // â‚¬69/Monat
 };
 
 // ==================== GET CEO DASHBOARD ====================
@@ -559,7 +559,7 @@ export const updateSystemSettings = async (req, res) => {
 };
 
 // ==================== CEO STATUS ====================
-// Für System-Überwachung
+// FÃ¼r System-Ãœberwachung
 export const getCEOStatus = async (req, res) => {
   try {
     if (req.user.role !== 'ceo') {
@@ -586,7 +586,7 @@ export const getCEOStatus = async (req, res) => {
 };
 
 // ==================== CEO DASHBOARD STATS (NEW) ====================
-// Für das neue CEO Dashboard mit Echtzeit-Daten
+// FÃ¼r das neue CEO Dashboard mit Echtzeit-Daten
 export const getCEOStats = async (req, res) => {
   try {
     if (req.user.role !== 'ceo') {
@@ -599,7 +599,7 @@ export const getCEOStats = async (req, res) => {
     // Gesamte Kunden (Salons/Unternehmen)
     const totalCustomers = await Salon.countDocuments();
 
-    // Starter Abos (planId enthält 'starter' oder subscription.planId)
+    // Starter Abos (planId enthÃ¤lt 'starter' oder subscription.planId)
     const starterAbos = await Salon.countDocuments({
       'subscription.status': 'active',
       $or: [
@@ -624,7 +624,7 @@ export const getCEOStats = async (req, res) => {
       'subscription.status': 'trial'
     });
 
-    // Berechne tatsächliche Starter/Pro basierend auf verfügbaren Daten
+    // Berechne tatsÃ¤chliche Starter/Pro basierend auf verfÃ¼gbaren Daten
     const activeSalons = await Salon.find({ 'subscription.status': 'active' });
     let calculatedStarter = 0;
     let calculatedPro = 0;
@@ -637,14 +637,14 @@ export const getCEOStats = async (req, res) => {
       }
     });
 
-    // Fallback: wenn keine planId gesetzt, alle aktiven als Starter zählen
+    // Fallback: wenn keine planId gesetzt, alle aktiven als Starter zÃ¤hlen
     const finalStarter = calculatedStarter || starterAbos || (activeSalons.length - calculatedPro);
     const finalPro = calculatedPro || proAbos;
 
     // MRR Berechnung (Monthly Recurring Revenue)
     const totalRevenue = (finalStarter * PRICING.starter) + (finalPro * PRICING.pro);
 
-    // Ungelöste Fehler
+    // UngelÃ¶ste Fehler
     const unresolvedErrors = await ErrorLog.countDocuments({ resolved: false });
 
     res.status(200).json({

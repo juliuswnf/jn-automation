@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Subscription Middleware
  * Ensures salon has active subscription before allowing access
@@ -28,13 +28,13 @@ const PLAN_LIMITS = {
  */
 const getPlanType = (subscription) => {
   if (!subscription) return 'trial';
-  
+
   const planId = (subscription.planId || '').toLowerCase();
-  
+
   if (planId.includes('pro')) return 'pro';
   if (planId.includes('starter')) return 'starter';
   if (subscription.status === 'trial') return 'trial';
-  
+
   return 'starter'; // Default to starter
 };
 
@@ -45,33 +45,33 @@ const getPlanType = (subscription) => {
 export const checkBookingLimits = async (req, res, next) => {
   try {
     const salon = req.salon;
-    
+
     if (!salon) {
       return next(); // Let other middleware handle missing salon
     }
-    
+
     const planType = getPlanType(salon.subscription);
     const limits = PLAN_LIMITS[planType];
-    
+
     // Pro plan has no limits
     if (planType === 'pro') {
       req.bookingLimits = { unlimited: true };
       return next();
     }
-    
+
     // Count bookings this month
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
-    
+
     const bookingsThisMonth = await Booking.countDocuments({
       salonId: salon._id,
       createdAt: { $gte: startOfMonth },
       status: { $ne: 'cancelled' }
     });
-    
+
     const remaining = limits.monthlyBookings - bookingsThisMonth;
-    
+
     // Attach limits info to request
     req.bookingLimits = {
       used: bookingsThisMonth,
@@ -80,25 +80,25 @@ export const checkBookingLimits = async (req, res, next) => {
       planType,
       percentUsed: Math.round((bookingsThisMonth / limits.monthlyBookings) * 100)
     };
-    
+
     // Block if limit exceeded
     if (remaining <= 0) {
       return res.status(403).json({
         success: false,
-        message: planType === 'starter' 
+        message: planType === 'starter'
           ? 'Monatliches Buchungslimit erreicht. Bitte auf Pro upgraden.'
-          : 'Buchungslimit für Testphase erreicht.',
+          : 'Buchungslimit fÃ¼r Testphase erreicht.',
         code: 'BOOKING_LIMIT_EXCEEDED',
         bookingLimits: req.bookingLimits,
         upgradeUrl: '/pricing'
       });
     }
-    
+
     // Warn if approaching limit (80%)
     if (remaining <= limits.monthlyBookings * 0.2 && remaining > 0) {
       res.set('X-Booking-Limit-Warning', `${remaining} Buchungen verbleibend`);
     }
-    
+
     next();
   } catch (error) {
     logger.error('Check booking limits error:', error);

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 /**
  * Support Ticket Model
@@ -12,7 +12,7 @@ const supportTicketSchema = new mongoose.Schema(
       unique: true,
       required: true
     },
-    
+
     // Customer info
     salonId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +33,7 @@ const supportTicketSchema = new mongoose.Schema(
       required: true,
       lowercase: true
     },
-    
+
     // Ticket details
     subject: {
       type: String,
@@ -60,14 +60,14 @@ const supportTicketSchema = new mongoose.Schema(
       default: 'open',
       index: true
     },
-    
+
     // Assignment
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null
     },
-    
+
     // Messages/Replies
     messages: [{
       sender: {
@@ -93,11 +93,11 @@ const supportTicketSchema = new mongoose.Schema(
         default: Date.now
       }
     }],
-    
+
     // Metadata
     tags: [String],
     internalNotes: String,
-    
+
     // Timestamps
     firstResponseAt: Date,
     resolvedAt: Date,

@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 import emailService from './emailService.js';
 
 /**
@@ -30,8 +30,10 @@ let recent5xxErrors = [];
  */
 const isOnCooldown = (alertType) => {
   const lastAlert = alertCooldowns.get(alertType);
-  if (!lastAlert) return false;
-  
+  if (!lastAlert) {
+    return false;
+  }
+
   const cooldownMs = COOLDOWN_MINUTES * 60 * 1000;
   return (Date.now() - lastAlert) < cooldownMs;
 };
@@ -48,18 +50,18 @@ const setCooldown = (alertType) => {
  */
 const sendAlert = async (alert) => {
   const { type, severity, title, message, details } = alert;
-  
+
   // Check cooldown
   if (isOnCooldown(type)) {
     logger.info(`Alert "${type}" on cooldown, skipping`);
     return;
   }
-  
+
   setCooldown(type);
-  
+
   // Log the alert
-  logger.error(`🚨 ALERT [${severity.toUpperCase()}]: ${title}`, { type, message, details });
-  
+  logger.error(`ðŸš¨ ALERT [${severity.toUpperCase()}]: ${title}`, { type, message, details });
+
   // Send email if configured
   if (process.env.ALERT_EMAIL) {
     try {
@@ -68,7 +70,7 @@ const sendAlert = async (alert) => {
       logger.error('Failed to send email alert:', error);
     }
   }
-  
+
   // Send to Slack if configured
   if (process.env.SLACK_WEBHOOK_URL) {
     try {
@@ -77,7 +79,7 @@ const sendAlert = async (alert) => {
       logger.error('Failed to send Slack alert:', error);
     }
   }
-  
+
   // Send to Discord if configured
   if (process.env.DISCORD_WEBHOOK_URL) {
     try {
@@ -93,18 +95,18 @@ const sendAlert = async (alert) => {
  */
 const sendEmailAlert = async (alert) => {
   const { severity, title, message, details, type } = alert;
-  
+
   const severityColor = {
     critical: '#dc2626',
     high: '#ea580c',
     medium: '#ca8a04',
     low: '#16a34a'
   };
-  
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background: ${severityColor[severity] || '#6b7280'}; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0;">🚨 ${title}</h1>
+        <h1 style="margin: 0;">ðŸš¨ ${title}</h1>
         <p style="margin: 5px 0 0 0; opacity: 0.9;">Severity: ${severity.toUpperCase()} | Type: ${type}</p>
       </div>
       <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none;">
@@ -119,7 +121,7 @@ const sendEmailAlert = async (alert) => {
       </div>
     </div>
   `;
-  
+
   await emailService.sendRawEmail({
     to: process.env.ALERT_EMAIL,
     subject: `[${severity.toUpperCase()}] ${title} - JN Automation`,
@@ -132,21 +134,21 @@ const sendEmailAlert = async (alert) => {
  */
 const sendSlackAlert = async (alert) => {
   const { severity, title, message, details, type } = alert;
-  
+
   const severityEmoji = {
-    critical: '🔴',
-    high: '🟠',
-    medium: '🟡',
-    low: '🟢'
+    critical: 'ðŸ”´',
+    high: 'ðŸŸ ',
+    medium: 'ðŸŸ¡',
+    low: 'ðŸŸ¢'
   };
-  
+
   const payload = {
     blocks: [
       {
         type: 'header',
         text: {
           type: 'plain_text',
-          text: `${severityEmoji[severity] || '⚪'} ${title}`,
+          text: `${severityEmoji[severity] || 'âšª'} ${title}`,
           emoji: true
         }
       },
@@ -166,7 +168,7 @@ const sendSlackAlert = async (alert) => {
       }
     ]
   };
-  
+
   if (details) {
     payload.blocks.push({
       type: 'section',
@@ -176,7 +178,7 @@ const sendSlackAlert = async (alert) => {
       }
     });
   }
-  
+
   await fetch(process.env.SLACK_WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -189,17 +191,17 @@ const sendSlackAlert = async (alert) => {
  */
 const sendDiscordAlert = async (alert) => {
   const { severity, title, message, details, type } = alert;
-  
+
   const severityColor = {
     critical: 0xdc2626,
     high: 0xea580c,
     medium: 0xca8a04,
     low: 0x16a34a
   };
-  
+
   const payload = {
     embeds: [{
-      title: `🚨 ${title}`,
+      title: `ðŸš¨ ${title}`,
       description: message,
       color: severityColor[severity] || 0x6b7280,
       fields: [
@@ -210,14 +212,14 @@ const sendDiscordAlert = async (alert) => {
       timestamp: new Date().toISOString()
     }]
   };
-  
+
   if (details) {
     payload.embeds[0].fields.push({
       name: 'Details',
       value: `\`\`\`json\n${JSON.stringify(details, null, 2).substring(0, 1000)}\n\`\`\``
     });
   }
-  
+
   await fetch(process.env.DISCORD_WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -231,10 +233,12 @@ const sendDiscordAlert = async (alert) => {
  * Alert on high error rate
  */
 export const checkErrorRate = (metrics) => {
-  if (metrics.requests.total < 100) return; // Need enough data
-  
+  if (metrics.requests.total < 100) {
+    return; // Need enough data
+  }
+
   const errorRate = metrics.requests.errors / metrics.requests.total;
-  
+
   if (errorRate > THRESHOLDS.errorRate) {
     sendAlert({
       type: 'error_rate',
@@ -254,10 +258,12 @@ export const checkErrorRate = (metrics) => {
  * Alert on slow response times
  */
 export const checkResponseTime = (metrics) => {
-  if (metrics.responseTime.count < 50) return;
-  
+  if (metrics.responseTime.count < 50) {
+    return;
+  }
+
   const avgTime = metrics.responseTime.total / metrics.responseTime.count;
-  
+
   if (avgTime > THRESHOLDS.responseTime) {
     sendAlert({
       type: 'slow_response',
@@ -281,10 +287,10 @@ export const checkResponseTime = (metrics) => {
 export const checkMemoryUsage = () => {
   const memUsage = process.memoryUsage();
   const rssMB = memUsage.rss / 1024 / 1024;
-  
+
   // Alert if RSS exceeds 512MB (reasonable for Node.js API)
   const RSS_THRESHOLD_MB = 512;
-  
+
   if (rssMB > RSS_THRESHOLD_MB) {
     const severity = rssMB > 768 ? 'critical' : 'high';
     sendAlert({
@@ -306,14 +312,14 @@ export const checkMemoryUsage = () => {
  */
 export const record5xxError = (error, req) => {
   const now = Date.now();
-  
+
   // Add to recent errors
   recent5xxErrors.push({ timestamp: now, error: error.message, path: req?.path });
-  
+
   // Clean old errors (older than 5 minutes)
   const fiveMinutesAgo = now - (5 * 60 * 1000);
   recent5xxErrors = recent5xxErrors.filter(e => e.timestamp > fiveMinutesAgo);
-  
+
   // Check threshold
   if (recent5xxErrors.length >= THRESHOLDS.error5xxCount) {
     sendAlert({
@@ -329,7 +335,7 @@ export const record5xxError = (error, req) => {
         }))
       }
     });
-    
+
     // Reset after alerting
     recent5xxErrors = [];
   }
@@ -340,7 +346,7 @@ export const record5xxError = (error, req) => {
  */
 export const recordConsecutiveError = (error) => {
   consecutiveErrors++;
-  
+
   if (consecutiveErrors >= THRESHOLDS.consecutiveErrors) {
     sendAlert({
       type: 'consecutive_errors',
@@ -428,8 +434,8 @@ export const startHealthChecks = (getMetricsFn, intervalMs = 60000) => {
       logger.error('Health check failed:', error);
     }
   }, intervalMs);
-  
-  logger.info(`🔔 Alerting service started (interval: ${intervalMs / 1000}s)`);
+
+  logger.info(`ðŸ”” Alerting service started (interval: ${intervalMs / 1000}s)`);
 };
 
 export default {

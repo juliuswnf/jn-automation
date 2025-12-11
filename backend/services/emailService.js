@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+﻿import nodemailer from 'nodemailer';
 import EmailQueue from '../models/EmailQueue.js';
 import EmailLog from '../models/EmailLog.js';
 import logger from '../utils/logger.js';
@@ -60,11 +60,11 @@ export const sendEmail = async (emailData) => {
       messageId: info.messageId
     });
 
-    logger.log(`✅ Email sent to: ${emailData.to}`);
+    logger.log(`âœ… Email sent to: ${emailData.to}`);
 
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    logger.error('❌ Email send error:', error);
+    logger.error('âŒ Email send error:', error);
 
     // Log failed email
     await EmailLog.create({
@@ -137,11 +137,11 @@ export const sendBookingConfirmation = async (booking) => {
       language: booking.language
     });
 
-    logger.log(`✅ Confirmation email queued for: ${booking.customerEmail}`);
+    logger.log(`âœ… Confirmation email queued for: ${booking.customerEmail}`);
 
     return { success: true };
   } catch (error) {
-    logger.error('❌ SendBookingConfirmation Error:', error);
+    logger.error('âŒ SendBookingConfirmation Error:', error);
     throw error;
   }
 };
@@ -200,11 +200,11 @@ export const sendBookingReminder = async (booking) => {
       language: booking.language
     });
 
-    logger.log(`✅ Reminder email queued for: ${booking.customerEmail}`);
+    logger.log(`âœ… Reminder email queued for: ${booking.customerEmail}`);
 
     return { success: true };
   } catch (error) {
-    logger.error('❌ SendBookingReminder Error:', error);
+    logger.error('âŒ SendBookingReminder Error:', error);
     throw error;
   }
 };
@@ -219,7 +219,7 @@ export const sendReviewRequest = async (booking) => {
 
     // Check if Google review URL is configured
     if (!salon.googleReviewUrl) {
-      logger.warn(`⚠️ Google Review URL not configured for salon: ${salon.name}`);
+      logger.warn(`âš ï¸ Google Review URL not configured for salon: ${salon.name}`);
       return { success: false, message: 'Google review URL not configured' };
     }
 
@@ -252,11 +252,11 @@ export const sendReviewRequest = async (booking) => {
       language: booking.language
     });
 
-    logger.log(`✅ Review request email queued for: ${booking.customerEmail}`);
+    logger.log(`âœ… Review request email queued for: ${booking.customerEmail}`);
 
     return { success: true };
   } catch (error) {
-    logger.error('❌ SendReviewRequest Error:', error);
+    logger.error('âŒ SendReviewRequest Error:', error);
     throw error;
   }
 };
@@ -273,7 +273,7 @@ export const processEmailQueue = async () => {
       .sort({ priority: 1, createdAt: 1 })
       .limit(10); // Process 10 at a time
 
-    logger.log(`📧 Processing ${emails.length} emails from queue`);
+    logger.log(`ðŸ“§ Processing ${emails.length} emails from queue`);
 
     for (const email of emails) {
       try {
@@ -297,7 +297,7 @@ export const processEmailQueue = async () => {
 
     return { success: true, processed: emails.length };
   } catch (error) {
-    logger.error('❌ ProcessEmailQueue Error:', error);
+    logger.error('âŒ ProcessEmailQueue Error:', error);
     throw error;
   }
 };
@@ -321,10 +321,10 @@ export const sendWelcomeEmail = async (user, salon) => {
   try {
     const dashboardUrl = process.env.FRONTEND_URL || 'https://app.jn-automation.de';
     const firstName = user.name?.split(' ')[0] || user.name || 'dort';
-    
+
     const emailData = {
       to: user.email,
-      subject: '🎉 Willkommen bei JN Automation - Deine nächsten Schritte',
+      subject: 'ðŸŽ‰ Willkommen bei JN Automation - Deine nÃ¤chsten Schritte',
       type: 'welcome',
       body: `Willkommen bei JN Automation, ${firstName}!`,
       html: `
@@ -335,51 +335,51 @@ export const sendWelcomeEmail = async (user, salon) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f8fafc;">
-  
+
   <!-- Header -->
   <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 40px 30px; text-align: center;">
     <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Willkommen bei JN!</h1>
     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Dein Buchungssystem ist bereit</p>
   </div>
-  
+
   <!-- Content -->
   <div style="background: white; padding: 40px 30px;">
-    
+
     <p style="font-size: 18px; color: #1f2937; margin: 0 0 20px 0;">
       Hallo ${firstName},
     </p>
-    
+
     <p style="color: #4b5563; margin: 0 0 30px 0;">
-      Herzlichen Glückwunsch! Dein Account ist aktiviert und du hast <strong>30 Tage kostenlos</strong> alle Features zur Verfügung. 
+      Herzlichen GlÃ¼ckwunsch! Dein Account ist aktiviert und du hast <strong>30 Tage kostenlos</strong> alle Features zur VerfÃ¼gung.
       Lass uns gemeinsam dein Studio einrichten.
     </p>
-    
+
     <!-- Setup Checklist -->
     <div style="background: #f0fdf4; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
       <h2 style="color: #166534; margin: 0 0 16px 0; font-size: 18px;">
-        ✅ Deine Setup-Checkliste
+        âœ… Deine Setup-Checkliste
       </h2>
-      
+
       <div style="margin-bottom: 12px;">
         <div style="display: flex; align-items: flex-start;">
           <span style="color: #22c55e; font-size: 18px; margin-right: 10px;">1.</span>
           <div>
             <strong style="color: #1f2937;">Services anlegen</strong>
-            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 14px;">Haarschnitt, Färben, Styling — mit Preisen und Dauer</p>
+            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 14px;">Haarschnitt, FÃ¤rben, Styling â€” mit Preisen und Dauer</p>
           </div>
         </div>
       </div>
-      
+
       <div style="margin-bottom: 12px;">
         <div style="display: flex; align-items: flex-start;">
           <span style="color: #22c55e; font-size: 18px; margin-right: 10px;">2.</span>
           <div>
-            <strong style="color: #1f2937;">Öffnungszeiten festlegen</strong>
-            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 14px;">Wann können Kunden buchen?</p>
+            <strong style="color: #1f2937;">Ã–ffnungszeiten festlegen</strong>
+            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 14px;">Wann kÃ¶nnen Kunden buchen?</p>
           </div>
         </div>
       </div>
-      
+
       <div style="margin-bottom: 12px;">
         <div style="display: flex; align-items: flex-start;">
           <span style="color: #22c55e; font-size: 18px; margin-right: 10px;">3.</span>
@@ -389,7 +389,7 @@ export const sendWelcomeEmail = async (user, salon) => {
           </div>
         </div>
       </div>
-      
+
       <div>
         <div style="display: flex; align-items: flex-start;">
           <span style="color: #22c55e; font-size: 18px; margin-right: 10px;">4.</span>
@@ -400,71 +400,71 @@ export const sendWelcomeEmail = async (user, salon) => {
         </div>
       </div>
     </div>
-    
+
     <!-- CTA Button -->
     <div style="text-align: center; margin-bottom: 30px;">
       <a href="${dashboardUrl}/dashboard" style="display: inline-block; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 16px;">
-        Zum Dashboard →
+        Zum Dashboard â†’
       </a>
     </div>
-    
+
     <!-- Video Tutorial -->
     <div style="background: #eff6ff; border-radius: 12px; padding: 24px; margin-bottom: 30px; text-align: center;">
-      <div style="font-size: 36px; margin-bottom: 10px;">🎬</div>
+      <div style="font-size: 36px; margin-bottom: 10px;">ðŸŽ¬</div>
       <h3 style="color: #1e40af; margin: 0 0 8px 0; font-size: 16px;">Video-Tutorial: Schnellstart in 5 Minuten</h3>
       <p style="color: #3b82f6; margin: 0 0 16px 0; font-size: 14px;">
         Schau dir unser kurzes Einrichtungsvideo an
       </p>
       <a href="${dashboardUrl}/help/getting-started" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-        Tutorial ansehen →
+        Tutorial ansehen â†’
       </a>
     </div>
-    
+
     <!-- Support Info -->
     <div style="background: #faf5ff; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
-      <h3 style="color: #7c3aed; margin: 0 0 12px 0; font-size: 16px;">💬 Brauchst du Hilfe?</h3>
+      <h3 style="color: #7c3aed; margin: 0 0 12px 0; font-size: 16px;">ðŸ’¬ Brauchst du Hilfe?</h3>
       <p style="color: #6b7280; margin: 0 0 16px 0; font-size: 14px;">
-        Unser Team ist für dich da — per Chat oder E-Mail.
+        Unser Team ist fÃ¼r dich da â€” per Chat oder E-Mail.
       </p>
       <div style="display: flex; gap: 16px; flex-wrap: wrap;">
         <a href="mailto:support@jn-automation.de" style="color: #7c3aed; text-decoration: none; font-size: 14px;">
-          📧 support@jn-automation.de
+          ðŸ“§ support@jn-automation.de
         </a>
       </div>
     </div>
-    
+
     <!-- Trial Reminder -->
     <div style="border: 2px dashed #e5e7eb; border-radius: 12px; padding: 20px; text-align: center;">
       <p style="color: #6b7280; margin: 0; font-size: 14px;">
         <strong style="color: #1f2937;">Deine Testphase:</strong> 30 Tage kostenlos<br>
-        Keine Kreditkarte erforderlich • Jederzeit kündbar
+        Keine Kreditkarte erforderlich â€¢ Jederzeit kÃ¼ndbar
       </p>
     </div>
-    
+
   </div>
-  
+
   <!-- Footer -->
   <div style="background: #1f2937; padding: 30px; text-align: center;">
     <p style="color: #9ca3af; margin: 0 0 10px 0; font-size: 14px;">
       Bei Fragen antworte einfach auf diese E-Mail.
     </p>
     <p style="color: #6b7280; margin: 0; font-size: 12px;">
-      JN Automation • Das Buchungssystem für Salons & Studios<br>
+      JN Automation â€¢ Das Buchungssystem fÃ¼r Salons & Studios<br>
       <a href="${dashboardUrl}" style="color: #6b7280;">jn-automation.de</a>
     </p>
   </div>
-  
+
 </body>
 </html>
       `
     };
 
     await sendEmail(emailData);
-    logger.log(`✅ Welcome email sent to: ${user.email}`);
-    
+    logger.log(`âœ… Welcome email sent to: ${user.email}`);
+
     return { success: true };
   } catch (error) {
-    logger.error('❌ Welcome email error:', error);
+    logger.error('âŒ Welcome email error:', error);
     // Don't throw - welcome email failure shouldn't block registration
     return { success: false, error: error.message };
   }

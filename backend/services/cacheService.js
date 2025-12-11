@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 
 /**
  * Simple In-Memory Cache Service
@@ -13,7 +13,7 @@ class CacheService {
       misses: 0,
       sets: 0
     };
-    
+
     // Clean up expired entries every 5 minutes
     this.cleanupInterval = setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
@@ -32,7 +32,7 @@ class CacheService {
    */
   get(key) {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       this.stats.misses++;
       return null;
@@ -78,14 +78,14 @@ class CacheService {
   deletePattern(pattern) {
     const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
     let deleted = 0;
-    
+
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {
         this.cache.delete(key);
         deleted++;
       }
     }
-    
+
     return deleted;
   }
 
@@ -115,14 +115,14 @@ class CacheService {
   cleanup() {
     const now = Date.now();
     let cleaned = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (entry.expiresAt && entry.expiresAt < now) {
         this.cache.delete(key);
         cleaned++;
       }
     }
-    
+
     if (cleaned > 0) {
       logger.debug(`Cache cleanup: removed ${cleaned} expired entries`);
     }
@@ -135,7 +135,7 @@ class CacheService {
     const hitRate = this.stats.hits + this.stats.misses > 0
       ? ((this.stats.hits / (this.stats.hits + this.stats.misses)) * 100).toFixed(2)
       : 0;
-    
+
     return {
       size: this.cache.size,
       hits: this.stats.hits,
@@ -161,20 +161,20 @@ const cacheService = new CacheService();
 export const cached = (keyGenerator, ttlSeconds = 300) => {
   return (target, propertyKey, descriptor) => {
     const originalMethod = descriptor.value;
-    
+
     descriptor.value = async function(...args) {
       const key = keyGenerator(...args);
       const cachedValue = cacheService.get(key);
-      
+
       if (cachedValue !== null) {
         return cachedValue;
       }
-      
+
       const result = await originalMethod.apply(this, args);
       cacheService.set(key, result, ttlSeconds);
       return result;
     };
-    
+
     return descriptor;
   };
 };
@@ -185,7 +185,7 @@ export const withCache = async (key, ttl, fetchFn) => {
   if (cached !== null) {
     return { data: cached, fromCache: true };
   }
-  
+
   const data = await fetchFn();
   cacheService.set(key, data, ttl);
   return { data, fromCache: false };

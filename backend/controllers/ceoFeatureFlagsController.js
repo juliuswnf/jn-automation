@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Feature Flags Controller
  * Feature toggle management
@@ -25,7 +25,7 @@ export const getAllFlags = async (req, res) => {
     const flagsWithCounts = await Promise.all(flags.map(async (flag) => {
       const enabledCount = flag.enabledFor?.length || 0;
       const disabledCount = flag.disabledFor?.length || 0;
-      
+
       return {
         ...flag.toObject(),
         stats: {
@@ -77,14 +77,14 @@ export const getFlagDetails = async (req, res) => {
 // ==================== CREATE FLAG ====================
 export const createFlag = async (req, res) => {
   try {
-    const { 
-      key, 
-      name, 
-      description, 
-      enabled, 
+    const {
+      key,
+      name,
+      description,
+      enabled,
       category,
       enabledPlans,
-      rolloutPercentage 
+      rolloutPercentage
     } = req.body;
 
     if (!key || !name) {
@@ -129,13 +129,13 @@ export const createFlag = async (req, res) => {
 export const updateFlag = async (req, res) => {
   try {
     const { flagId } = req.params;
-    const { 
-      name, 
-      description, 
-      enabled, 
+    const {
+      name,
+      description,
+      enabled,
       category,
       enabledPlans,
-      rolloutPercentage 
+      rolloutPercentage
     } = req.body;
 
     const flag = await FeatureFlag.findById(flagId);
@@ -153,7 +153,7 @@ export const updateFlag = async (req, res) => {
     if (category !== undefined) flag.category = category;
     if (enabledPlans !== undefined) flag.enabledPlans = enabledPlans;
     if (rolloutPercentage !== undefined) flag.rolloutPercentage = rolloutPercentage;
-    
+
     flag.lastModifiedBy = req.user._id;
     await flag.save();
 
@@ -264,7 +264,7 @@ export const updateCustomerFlag = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Customer flag updated`,
+      message: 'Customer flag updated',
       flag
     });
   } catch (error) {

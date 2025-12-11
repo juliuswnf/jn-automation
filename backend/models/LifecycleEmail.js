@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 /**
  * Lifecycle Email Model
@@ -14,14 +14,14 @@ const lifecycleEmailSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   // Reference to owner user
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  
+
   // Email type (day of trial)
   emailType: {
     type: String,
@@ -36,50 +36,50 @@ const lifecycleEmailSchema = new mongoose.Schema({
     ],
     required: true
   },
-  
+
   // Status
   status: {
     type: String,
     enum: ['pending', 'sent', 'failed', 'skipped'],
     default: 'pending'
   },
-  
+
   // Scheduled send time
   scheduledFor: {
     type: Date,
     required: true,
     index: true
   },
-  
+
   // When actually sent
   sentAt: {
     type: Date
   },
-  
+
   // Email content (for logging)
   subject: String,
-  
+
   // Error message if failed
   error: String,
-  
+
   // Retry count
   retries: {
     type: Number,
     default: 0
   },
-  
+
   // Was email opened? (future tracking)
   opened: {
     type: Boolean,
     default: false
   },
-  
+
   // Was CTA clicked? (future tracking)
   clicked: {
     type: Boolean,
     default: false
   },
-  
+
   // Did user convert after this email?
   convertedAfter: {
     type: Boolean,
@@ -101,7 +101,7 @@ lifecycleEmailSchema.index({ salonId: 1, emailType: 1 }, { unique: true });
 lifecycleEmailSchema.statics.scheduleForNewSalon = async function(salon, user) {
   const now = new Date();
   const trialStart = salon.createdAt || now;
-  
+
   const emailSchedule = [
     { type: 'welcome_day1', days: 0 },      // Immediately (or within 1 hour)
     { type: 'engagement_day3', days: 3 },
@@ -111,13 +111,13 @@ lifecycleEmailSchema.statics.scheduleForNewSalon = async function(salon, user) {
     { type: 'expired_day31', days: 31 },
     { type: 'winback_day45', days: 45 }
   ];
-  
+
   const emails = [];
-  
+
   for (const schedule of emailSchedule) {
     const scheduledFor = new Date(trialStart);
     scheduledFor.setDate(scheduledFor.getDate() + schedule.days);
-    
+
     // For day 1, schedule within 1 hour
     if (schedule.type === 'welcome_day1') {
       scheduledFor.setTime(now.getTime() + 60 * 60 * 1000); // 1 hour from now
@@ -125,7 +125,7 @@ lifecycleEmailSchema.statics.scheduleForNewSalon = async function(salon, user) {
       // Schedule for 10:00 AM on the target day
       scheduledFor.setHours(10, 0, 0, 0);
     }
-    
+
     try {
       const email = await this.create({
         salonId: salon._id,
@@ -142,7 +142,7 @@ lifecycleEmailSchema.statics.scheduleForNewSalon = async function(salon, user) {
       }
     }
   }
-  
+
   return emails;
 };
 
@@ -166,7 +166,7 @@ lifecycleEmailSchema.statics.getPendingEmails = function(limit = 50) {
 lifecycleEmailSchema.statics.cancelForSalon = async function(salonId, reason = 'converted') {
   return this.updateMany(
     { salonId, status: 'pending' },
-    { 
+    {
       status: 'skipped',
       error: reason
     }
@@ -182,12 +182,12 @@ lifecycleEmailSchema.statics.markConversion = async function(salonId) {
     salonId,
     status: 'sent'
   }).sort({ sentAt: -1 });
-  
+
   if (lastSent) {
     lastSent.convertedAfter = true;
     await lastSent.save();
   }
-  
+
   // Cancel remaining emails
   await this.cancelForSalon(salonId, 'converted');
 };

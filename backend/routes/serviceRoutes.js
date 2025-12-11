@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { checkTenantAccess, enforceTenantFilter } from '../middleware/tenantMiddleware.js';
 import logger from '../utils/logger.js';
@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
     });
 
     await service.save();
-    logger.log(`✅ Service created: ${service.name} for salon ${salonId}`);
+    logger.log(`âœ… Service created: ${service.name} for salon ${salonId}`);
     res.status(201).json({ success: true, data: service });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -85,7 +85,7 @@ router.put('/:id', checkTenantAccess('service'), async (req, res) => {
       return res.status(404).json({ success: false, message: 'Service not found' });
     }
 
-    logger.log(`✅ Service updated: ${service.name}`);
+    logger.log(`âœ… Service updated: ${service.name}`);
     res.json({ success: true, data: service });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -102,7 +102,7 @@ router.delete('/:id', checkTenantAccess('service'), async (req, res) => {
       return res.status(404).json({ success: false, message: 'Service not found' });
     }
 
-    logger.log(`🗑️ Service deleted: ${service.name}`);
+    logger.log(`ðŸ—‘ï¸ Service deleted: ${service.name}`);
     res.json({ success: true, message: 'Service deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

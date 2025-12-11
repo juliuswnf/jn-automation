@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Booking Controller Unit Tests
  * Tests for booking CRUD operations
  */
@@ -56,7 +56,7 @@ jest.unstable_mockModule('../../services/cacheService.js', () => ({
 }));
 
 // Import controller after mocking
-const { createBooking, getBooking, getBookings, updateBooking, cancelBooking } = 
+const { createBooking, getBooking, getBookings, updateBooking, cancelBooking } =
   await import('../../controllers/bookingController.js');
 
 describe('Booking Controller', () => {
@@ -65,14 +65,14 @@ describe('Booking Controller', () => {
   beforeEach(() => {
     // Reset all mocks
     jest.clearAllMocks();
-    
+
     // Create fresh request/response
     req = createMockRequest();
     res = createMockResponse();
   });
 
   // ==================== CREATE BOOKING ====================
-  
+
   describe('createBooking', () => {
     const validBookingData = {
       salonId: '507f1f77bcf86cd799439012',
@@ -92,10 +92,10 @@ describe('Booking Controller', () => {
 
     it('should create booking with valid data', async () => {
       req.body = validBookingData;
-      
+
       mockServiceFindById.mockResolvedValue(mockService);
       mockBookingFindOne.mockResolvedValue(null); // No conflict
-      
+
       const createdBooking = {
         _id: '507f1f77bcf86cd799439011',
         ...validBookingData,
@@ -153,7 +153,7 @@ describe('Booking Controller', () => {
       req.body = { ...validBookingData, customerEmail: 'TEST@EXAMPLE.COM' };
       mockServiceFindById.mockResolvedValue(mockService);
       mockBookingFindOne.mockResolvedValue(null);
-      
+
       const createdBooking = {
         populate: jest.fn().mockResolvedValue({ _id: '123', customerEmail: 'test@example.com' })
       };
@@ -180,7 +180,7 @@ describe('Booking Controller', () => {
 
     it('should return booking if found', async () => {
       req.params = { id: '507f1f77bcf86cd799439011' };
-      
+
       mockBookingFindById.mockReturnValue({
         populate: jest.fn().mockReturnValue({
           populate: jest.fn().mockResolvedValue(mockBooking)
@@ -196,7 +196,7 @@ describe('Booking Controller', () => {
 
     it('should return 404 if booking not found', async () => {
       req.params = { id: 'nonexistent-id' };
-      
+
       mockBookingFindById.mockReturnValue({
         populate: jest.fn().mockReturnValue({
           populate: jest.fn().mockResolvedValue(null)
@@ -221,7 +221,7 @@ describe('Booking Controller', () => {
     it('should return paginated bookings', async () => {
       req.query = { page: 1, limit: 10 };
       req.user = { role: 'salon_owner', salonId: '123' };
-      
+
       mockBookingCountDocuments.mockResolvedValue(2);
       mockBookingFind.mockReturnValue({
         populate: jest.fn().mockReturnValue({
@@ -248,7 +248,7 @@ describe('Booking Controller', () => {
     it('should filter by status', async () => {
       req.query = { status: 'confirmed', page: 1, limit: 10 };
       req.user = { role: 'ceo' };
-      
+
       mockBookingCountDocuments.mockResolvedValue(1);
       mockBookingFind.mockReturnValue({
         populate: jest.fn().mockReturnValue({
@@ -287,12 +287,12 @@ describe('Booking Controller', () => {
     it('should update booking status', async () => {
       req.params = { id: '507f1f77bcf86cd799439011' };
       req.body = { status: 'confirmed' };
-      
+
       const updatedBooking = {
         _id: '507f1f77bcf86cd799439011',
         status: 'confirmed'
       };
-      
+
       mockBookingFindByIdAndUpdate.mockReturnValue({
         populate: jest.fn().mockResolvedValue(updatedBooking)
       });
@@ -307,7 +307,7 @@ describe('Booking Controller', () => {
     it('should return 404 if booking not found for update', async () => {
       req.params = { id: 'nonexistent' };
       req.body = { status: 'confirmed' };
-      
+
       mockBookingFindByIdAndUpdate.mockReturnValue({
         populate: jest.fn().mockResolvedValue(null)
       });
@@ -324,13 +324,13 @@ describe('Booking Controller', () => {
     it('should cancel booking and update status', async () => {
       req.params = { id: '507f1f77bcf86cd799439011' };
       req.body = { reason: 'Customer request' };
-      
+
       const cancelledBooking = {
         _id: '507f1f77bcf86cd799439011',
         status: 'cancelled',
         cancellationReason: 'Customer request'
       };
-      
+
       mockBookingFindByIdAndUpdate.mockReturnValue({
         populate: jest.fn().mockResolvedValue(cancelledBooking)
       });

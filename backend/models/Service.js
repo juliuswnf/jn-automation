@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
 
 const serviceSchema = new mongoose.Schema(
@@ -20,7 +20,7 @@ const serviceSchema = new mongoose.Schema(
     description: {
       type: String,
       default: '',
-      maxlength: 5000,  // ✅ Added
+      maxlength: 5000,  // âœ… Added
       trim: true
     },
 
@@ -35,14 +35,14 @@ const serviceSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     currency: {
       type: String,
-      enum: ['EUR', 'USD', 'GBP', 'CHF'],  // ✅ Improved
+      enum: ['EUR', 'USD', 'GBP', 'CHF'],  // âœ… Improved
       default: 'EUR',
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     duration: {
@@ -59,19 +59,19 @@ const serviceSchema = new mongoose.Schema(
 
     subcategory: {
       type: String,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
     image: {
       type: String,
-      sparse: true  // ✅ Added
+      sparse: true  // âœ… Added
     },
 
     images: {
       type: [String],
       default: [],
-      sparse: true  // ✅ Added
+      sparse: true  // âœ… Added
     },
 
     isAvailable: {
@@ -82,13 +82,13 @@ const serviceSchema = new mongoose.Schema(
 
     availableFrom: {
       type: Date,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
     availableUntil: {
       type: Date,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
@@ -96,7 +96,7 @@ const serviceSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Employee',
-        index: true  // ✅ Added
+        index: true  // âœ… Added
       }
     ],
 
@@ -104,43 +104,43 @@ const serviceSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: 0,
-      max: 100  // ✅ Added
+      max: 100  // âœ… Added
     },
 
     discountValidUntil: {
       type: Date,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
     requirements: {
       type: [String],
       default: [],
-      sparse: true  // ✅ Added
+      sparse: true  // âœ… Added
     },
 
     maxCapacity: {
       type: Number,
       default: 1,
-      min: 1  // ✅ Added
+      min: 1  // âœ… Added
     },
 
     minCapacity: {
       type: Number,
       default: 1,
-      min: 1  // ✅ Added
+      min: 1  // âœ… Added
     },
 
     onlineAvailable: {
       type: Boolean,
       default: false,
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     tags: {
       type: [String],
       default: [],
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
@@ -150,19 +150,19 @@ const serviceSchema = new mongoose.Schema(
       sparse: true,
       lowercase: true,
       trim: true,
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     metaDescription: {
       type: String,
-      maxlength: 160,  // ✅ Added - SEO best practice
-      sparse: true  // ✅ Added
+      maxlength: 160,  // âœ… Added - SEO best practice
+      sparse: true  // âœ… Added
     },
 
     keywords: {
       type: [String],
       default: [],
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
@@ -191,19 +191,19 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       enum: ['one-time', 'weekly', 'bi-weekly', 'monthly'],
       default: 'one-time',
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     preparationTime: {
       type: Number,
       default: 0,
-      min: 0  // ✅ Added
+      min: 0  // âœ… Added
     },
 
     cleanupTime: {
       type: Number,
       default: 0,
-      min: 0  // ✅ Added
+      min: 0  // âœ… Added
     },
 
     rating: {
@@ -211,25 +211,25 @@ const serviceSchema = new mongoose.Schema(
       default: 0,
       min: 0,
       max: 5,
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     reviewCount: {
       type: Number,
       default: 0,
-      min: 0  // ✅ Added
+      min: 0  // âœ… Added
     },
 
     totalBookings: {
       type: Number,
       default: 0,
-      min: 0  // ✅ Added
+      min: 0  // âœ… Added
     },
 
     totalRevenue: {
       type: Number,
       default: 0,
-      min: 0,  // ✅ Added
+      min: 0,  // âœ… Added
       index: true
     },
 
@@ -243,14 +243,14 @@ const serviceSchema = new mongoose.Schema(
     viewCount: {
       type: Number,
       default: 0,
-      min: 0,  // ✅ Added
+      min: 0,  // âœ… Added
       index: true
     },
 
     searchRank: {
       type: Number,
       default: 0,
-      min: 0  // ✅ Added
+      min: 0  // âœ… Added
     },
 
     faqs: [
@@ -262,13 +262,13 @@ const serviceSchema = new mongoose.Schema(
 
     cancellationPolicy: {
       type: String,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       maxlength: 1000
     },
 
     terms: {
       type: String,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       maxlength: 2000
     },
 
@@ -287,14 +287,14 @@ const serviceSchema = new mongoose.Schema(
 
     featuredUntil: {
       type: Date,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
     isBestseller: {
       type: Boolean,
       default: false,
-      index: true  // ✅ Added
+      index: true  // âœ… Added
     },
 
     isNewService: {
@@ -305,7 +305,7 @@ const serviceSchema = new mongoose.Schema(
 
     newUntil: {
       type: Date,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
@@ -313,12 +313,12 @@ const serviceSchema = new mongoose.Schema(
       type: Map,
       of: String,
       default: {},
-      sparse: true  // ✅ Added
+      sparse: true  // âœ… Added
     },
 
     urlSlug: {
       type: String,
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     },
 
@@ -336,7 +336,7 @@ const serviceSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      sparse: true,  // ✅ Added
+      sparse: true,  // âœ… Added
       index: true
     }
   },
@@ -362,9 +362,9 @@ serviceSchema.virtual('finalPrice').get(function() {
   try {
     if (!this.discount || this.discount === 0) {return this.price;}
     const discountAmount = (this.price * this.discount) / 100;
-    return Math.round((this.price - discountAmount) * 100) / 100;  // ✅ Fixed rounding
+    return Math.round((this.price - discountAmount) * 100) / 100;  // âœ… Fixed rounding
   } catch (err) {
-    logger.error('❌ Calculate final price error:', err.message);
+    logger.error('âŒ Calculate final price error:', err.message);
     return this.price;
   }
 });
@@ -373,7 +373,7 @@ serviceSchema.virtual('durationHours').get(function() {
   try {
     return (this.duration / 60).toFixed(1);
   } catch (err) {
-    logger.error('❌ Calculate duration hours error:', err.message);
+    logger.error('âŒ Calculate duration hours error:', err.message);
     return 0;
   }
 });
@@ -382,7 +382,7 @@ serviceSchema.virtual('totalDuration').get(function() {
   try {
     return this.preparationTime + this.duration + this.cleanupTime;
   } catch (err) {
-    logger.error('❌ Calculate total duration error:', err.message);
+    logger.error('âŒ Calculate total duration error:', err.message);
     return this.duration;
   }
 });
@@ -391,7 +391,7 @@ serviceSchema.virtual('pricePerMinute').get(function() {
   try {
     return (this.price / this.duration).toFixed(2);
   } catch (err) {
-    logger.error('❌ Calculate price per minute error:', err.message);
+    logger.error('âŒ Calculate price per minute error:', err.message);
     return 0;
   }
 });
@@ -400,7 +400,7 @@ serviceSchema.virtual('hasDiscount').get(function() {
   try {
     return this.discount > 0 && (!this.discountValidUntil || this.discountValidUntil > new Date());
   } catch (err) {
-    logger.error('❌ Check has discount error:', err.message);
+    logger.error('âŒ Check has discount error:', err.message);
     return false;
   }
 });
@@ -410,7 +410,7 @@ serviceSchema.virtual('isOnSale').get(function() {
     if (!this.discountValidUntil) {return false;}
     return this.discountValidUntil > new Date();
   } catch (err) {
-    logger.error('❌ Check is on sale error:', err.message);
+    logger.error('âŒ Check is on sale error:', err.message);
     return false;
   }
 });
@@ -419,7 +419,7 @@ serviceSchema.virtual('revenuePotential').get(function() {
   try {
     return this.totalRevenue / Math.max(this.totalBookings, 1);
   } catch (err) {
-    logger.error('❌ Calculate revenue potential error:', err.message);
+    logger.error('âŒ Calculate revenue potential error:', err.message);
     return 0;
   }
 });
@@ -437,7 +437,7 @@ serviceSchema.methods.generateSlug = function() {
       .replace(/^-+|-+$/g, '');
     return this.slug;
   } catch (err) {
-    logger.error('❌ Generate slug error:', err.message);
+    logger.error('âŒ Generate slug error:', err.message);
     throw err;
   }
 };
@@ -449,7 +449,7 @@ serviceSchema.methods.isCurrentlyAvailable = function() {
     if (this.availableUntil && new Date() > this.availableUntil) {return false;}
     return true;
   } catch (err) {
-    logger.error('❌ Check is currently available error:', err.message);
+    logger.error('âŒ Check is currently available error:', err.message);
     return false;
   }
 };
@@ -461,10 +461,10 @@ serviceSchema.methods.applyDiscount = async function(discountPercent, validUntil
     }
     this.discount = discountPercent;
     this.discountValidUntil = validUntil;
-    logger.log(`💰 Discount applied: ${discountPercent}% until ${validUntil}`);
+    logger.log(`ðŸ’° Discount applied: ${discountPercent}% until ${validUntil}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Apply discount error:', err.message);
+    logger.error('âŒ Apply discount error:', err.message);
     throw err;
   }
 };
@@ -473,10 +473,10 @@ serviceSchema.methods.removeDiscount = async function() {
   try {
     this.discount = 0;
     this.discountValidUntil = null;
-    logger.log(`✅ Discount removed: ${this._id}`);
+    logger.log(`âœ… Discount removed: ${this._id}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Remove discount error:', err.message);
+    logger.error('âŒ Remove discount error:', err.message);
     throw err;
   }
 };
@@ -486,7 +486,7 @@ serviceSchema.methods.incrementViewCount = async function() {
     this.viewCount += 1;
     return await this.save();
   } catch (err) {
-    logger.error('❌ Increment view count error:', err.message);
+    logger.error('âŒ Increment view count error:', err.message);
     throw err;
   }
 };
@@ -497,10 +497,10 @@ serviceSchema.methods.markAsFeatured = async function(daysValid = 30) {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysValid);
     this.featuredUntil = futureDate;
-    logger.log(`⭐ Service marked as featured: ${this.name}`);
+    logger.log(`â­ Service marked as featured: ${this.name}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as featured error:', err.message);
+    logger.error('âŒ Mark as featured error:', err.message);
     throw err;
   }
 };
@@ -508,10 +508,10 @@ serviceSchema.methods.markAsFeatured = async function(daysValid = 30) {
 serviceSchema.methods.markAsBestseller = async function() {
   try {
     this.isBestseller = true;
-    logger.log(`🏆 Service marked as bestseller: ${this.name}`);
+    logger.log(`ðŸ† Service marked as bestseller: ${this.name}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as bestseller error:', err.message);
+    logger.error('âŒ Mark as bestseller error:', err.message);
     throw err;
   }
 };
@@ -522,10 +522,10 @@ serviceSchema.methods.markAsNew = async function(daysValid = 30) {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysValid);
     this.newUntil = futureDate;
-    logger.log(`🆕 Service marked as new: ${this.name}`);
+    logger.log(`ðŸ†• Service marked as new: ${this.name}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as new error:', err.message);
+    logger.error('âŒ Mark as new error:', err.message);
     throw err;
   }
 };
@@ -537,7 +537,7 @@ serviceSchema.methods.getPriceWithVariation = function(variationName) {
     const modifiedPrice = this.finalPrice + (variation.priceModifier || 0);
     return Math.max(0, modifiedPrice);
   } catch (err) {
-    logger.error('❌ Get price with variation error:', err.message);
+    logger.error('âŒ Get price with variation error:', err.message);
     return this.finalPrice;
   }
 };
@@ -548,7 +548,7 @@ serviceSchema.methods.getDurationWithVariation = function(variationName) {
     if (!variation) {return this.duration;}
     return this.duration + (variation.durationModifier || 0);
   } catch (err) {
-    logger.error('❌ Get duration with variation error:', err.message);
+    logger.error('âŒ Get duration with variation error:', err.message);
     return this.duration;
   }
 };
@@ -557,10 +557,10 @@ serviceSchema.methods.addBooking = async function(amount) {
   try {
     this.totalBookings += 1;
     this.totalRevenue += amount;
-    logger.log(`📊 Booking added - Total: ${this.totalBookings}, Revenue: ${this.totalRevenue}`);
+    logger.log(`ðŸ“Š Booking added - Total: ${this.totalBookings}, Revenue: ${this.totalRevenue}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Add booking error:', err.message);
+    logger.error('âŒ Add booking error:', err.message);
     throw err;
   }
 };
@@ -570,10 +570,10 @@ serviceSchema.methods.updateRating = async function(newRating, reviewCount) {
     this.rating = newRating;
     this.reviewCount = reviewCount;
     this.averageRating = newRating;
-    logger.log(`⭐ Rating updated: ${newRating} (${reviewCount} reviews)`);
+    logger.log(`â­ Rating updated: ${newRating} (${reviewCount} reviews)`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Update rating error:', err.message);
+    logger.error('âŒ Update rating error:', err.message);
     throw err;
   }
 };
@@ -582,7 +582,7 @@ serviceSchema.methods.getAddOns = function() {
   try {
     return this.addOns || [];
   } catch (err) {
-    logger.error('❌ Get add-ons error:', err.message);
+    logger.error('âŒ Get add-ons error:', err.message);
     return [];
   }
 };
@@ -607,7 +607,7 @@ serviceSchema.statics.getFeaturedServices = function(companyId, limit = 5) {
       .sort({ rating: -1, totalBookings: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get featured services error:', err.message);
+    logger.error('âŒ Get featured services error:', err.message);
     throw err;
   }
 };
@@ -622,7 +622,7 @@ serviceSchema.statics.getBestsellers = function(companyId, limit = 10) {
       .sort({ totalBookings: -1, rating: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get bestsellers error:', err.message);
+    logger.error('âŒ Get bestsellers error:', err.message);
     throw err;
   }
 };
@@ -638,7 +638,7 @@ serviceSchema.statics.getByCategory = function(companyId, category, limit = 20) 
       .sort({ rating: -1, totalBookings: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get by category error:', err.message);
+    logger.error('âŒ Get by category error:', err.message);
     throw err;
   }
 };
@@ -655,7 +655,7 @@ serviceSchema.statics.searchServices = function(companyId, query) {
       ]
     }).sort({ rating: -1, totalBookings: -1 });
   } catch (err) {
-    logger.error('❌ Search services error:', err.message);
+    logger.error('âŒ Search services error:', err.message);
     throw err;
   }
 };
@@ -688,7 +688,7 @@ serviceSchema.statics.getServiceStats = async function(companyId) {
       averageRating: 0
     };
   } catch (err) {
-    logger.error('❌ Get service stats error:', err.message);
+    logger.error('âŒ Get service stats error:', err.message);
     throw err;
   }
 };
@@ -705,7 +705,7 @@ serviceSchema.statics.getOnSaleServices = function(companyId, limit = 10) {
       .sort({ discount: -1, rating: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get on sale services error:', err.message);
+    logger.error('âŒ Get on sale services error:', err.message);
     throw err;
   }
 };
@@ -721,7 +721,7 @@ serviceSchema.statics.getRecentlyAdded = function(companyId, limit = 5) {
       .sort({ createdAt: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get recently added error:', err.message);
+    logger.error('âŒ Get recently added error:', err.message);
     throw err;
   }
 };
@@ -733,7 +733,7 @@ serviceSchema.statics.getByEmployee = function(employeeId) {
       status: 'active'
     }).sort({ rating: -1 });
   } catch (err) {
-    logger.error('❌ Get by employee error:', err.message);
+    logger.error('âŒ Get by employee error:', err.message);
     throw err;
   }
 };
@@ -747,7 +747,7 @@ serviceSchema.statics.getTopRated = function(companyId, limit = 5) {
       .sort({ rating: -1, reviewCount: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get top rated error:', err.message);
+    logger.error('âŒ Get top rated error:', err.message);
     throw err;
   }
 };
@@ -771,7 +771,7 @@ serviceSchema.statics.getPriceRange = async function(companyId, category = null)
 
     return result[0] || { minPrice: 0, maxPrice: 0, avgPrice: 0 };
   } catch (err) {
-    logger.error('❌ Get price range error:', err.message);
+    logger.error('âŒ Get price range error:', err.message);
     throw err;
   }
 };
@@ -780,7 +780,7 @@ serviceSchema.statics.getByCompany = function(companyId) {
   try {
     return this.find({ companyId, status: 'active' }).sort({ name: 1 });
   } catch (err) {
-    logger.error('❌ Get by company error:', err.message);
+    logger.error('âŒ Get by company error:', err.message);
     throw err;
   }
 };
@@ -793,12 +793,12 @@ serviceSchema.statics.searchByTag = function(companyId, tag) {
       status: 'active'
     }).sort({ rating: -1, totalBookings: -1 });
   } catch (err) {
-    logger.error('❌ Search by tag error:', err.message);
+    logger.error('âŒ Search by tag error:', err.message);
     throw err;
   }
 };
 
-// ✅ NEW: Get trending services
+// âœ… NEW: Get trending services
 serviceSchema.statics.getTrendingServices = function(companyId, limit = 5) {
   try {
     return this.find({
@@ -808,7 +808,7 @@ serviceSchema.statics.getTrendingServices = function(companyId, limit = 5) {
       .sort({ viewCount: -1, totalBookings: -1, rating: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get trending services error:', err.message);
+    logger.error('âŒ Get trending services error:', err.message);
     throw err;
   }
 };
@@ -848,7 +848,7 @@ serviceSchema.pre('save', async function(next) {
 
     next();
   } catch (err) {
-    logger.error('❌ Pre-save hook error:', err.message);
+    logger.error('âŒ Pre-save hook error:', err.message);
     next(err);
   }
 });

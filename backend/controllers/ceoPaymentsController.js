@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Payments Controller
  * Stripe transactions, refunds, and payout management
@@ -16,25 +16,33 @@ const PRICING = {
 // ==================== GET ALL TRANSACTIONS ====================
 export const getAllTransactions = async (req, res) => {
   try {
-    const { 
-      status, 
-      type, 
-      startDate, 
-      endDate, 
-      page = 1, 
+    const {
+      status,
+      type,
+      startDate,
+      endDate,
+      page = 1,
       limit = 50,
-      search 
+      search
     } = req.query;
 
     const query = {};
-    
-    if (status) query.status = status;
-    if (type) query.type = type;
-    
+
+    if (status) {
+      query.status = status;
+    }
+    if (type) {
+      query.type = type;
+    }
+
     if (startDate || endDate) {
       query.createdAt = {};
-      if (startDate) query.createdAt.$gte = new Date(startDate);
-      if (endDate) query.createdAt.$lte = new Date(endDate);
+      if (startDate) {
+        query.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        query.createdAt.$lte = new Date(endDate);
+      }
     }
 
     if (search) {
@@ -60,10 +68,10 @@ export const getAllTransactions = async (req, res) => {
         $group: {
           _id: null,
           totalAmount: { $sum: '$amount' },
-          totalRefunded: { 
-            $sum: { 
-              $cond: [{ $eq: ['$status', 'refunded'] }, '$amount', 0] 
-            } 
+          totalRefunded: {
+            $sum: {
+              $cond: [{ $eq: ['$status', 'refunded'] }, '$amount', 0]
+            }
           },
           count: { $sum: 1 }
         }
@@ -91,24 +99,31 @@ export const getAllTransactions = async (req, res) => {
 export const getPaymentOverview = async (req, res) => {
   try {
     const { period = '30d' } = req.query;
-    
+
     const now = new Date();
     let startDate;
     switch (period) {
-      case '7d': startDate = new Date(now - 7 * 24 * 60 * 60 * 1000); break;
-      case '30d': startDate = new Date(now - 30 * 24 * 60 * 60 * 1000); break;
-      case '90d': startDate = new Date(now - 90 * 24 * 60 * 60 * 1000); break;
-      default: startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    case '7d':
+      startDate = new Date(now - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case '30d':
+      startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
+      break;
+    case '90d':
+      startDate = new Date(now - 90 * 24 * 60 * 60 * 1000);
+      break;
+    default:
+      startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
     }
 
     // MRR calculation
-    const starterCount = await Salon.countDocuments({ 
-      'subscription.plan': 'starter', 
-      'subscription.status': 'active' 
+    const starterCount = await Salon.countDocuments({
+      'subscription.plan': 'starter',
+      'subscription.status': 'active'
     });
-    const proCount = await Salon.countDocuments({ 
-      'subscription.plan': 'pro', 
-      'subscription.status': 'active' 
+    const proCount = await Salon.countDocuments({
+      'subscription.plan': 'pro',
+      'subscription.status': 'active'
     });
     const mrr = (starterCount * PRICING.starter) + (proCount * PRICING.pro);
 
@@ -292,13 +307,13 @@ export const getPayoutSchedule = async (req, res) => {
 // ==================== GET REVENUE BY PLAN ====================
 export const getRevenueByPlan = async (req, res) => {
   try {
-    const starterCount = await Salon.countDocuments({ 
-      'subscription.plan': 'starter', 
-      'subscription.status': 'active' 
+    const starterCount = await Salon.countDocuments({
+      'subscription.plan': 'starter',
+      'subscription.status': 'active'
     });
-    const proCount = await Salon.countDocuments({ 
-      'subscription.plan': 'pro', 
-      'subscription.status': 'active' 
+    const proCount = await Salon.countDocuments({
+      'subscription.plan': 'pro',
+      'subscription.status': 'active'
     });
 
     const starterRevenue = starterCount * PRICING.starter;

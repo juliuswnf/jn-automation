@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Mock Models for Unit Tests
  * Isolates tests from database
  */
@@ -76,7 +76,7 @@ export const mockPayment = {
 
 // Create mock functions for Mongoose operations
 export const createMockModel = (mockData) => ({
-  findById: jest.fn().mockImplementation((id) => ({
+  findById: jest.fn().mockImplementation((_id) => ({
     populate: jest.fn().mockReturnThis(),
     lean: jest.fn().mockResolvedValue(mockData),
     exec: jest.fn().mockResolvedValue(mockData)

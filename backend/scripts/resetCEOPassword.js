@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+﻿/* eslint-disable no-console */
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -11,18 +11,18 @@ const resetCEOPassword = async () => {
     const mongoUri = process.env.MONGODB_URI;
 
     if (!mongoUri) {
-      console.error('❌ MONGODB_URI not found in environment');
+      console.error('âŒ MONGODB_URI not found in environment');
       process.exit(1);
     }
 
     await mongoose.connect(mongoUri);
-    console.log('✅ Database connected');
+    console.log('âœ… Database connected');
 
     // Find CEO
     const ceo = await User.findOne({ email: 'julius@jn-automation.de' });
 
     if (!ceo) {
-      console.log('❌ CEO not found, creating new one...');
+      console.log('âŒ CEO not found, creating new one...');
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('CEO@12345', salt);
 
@@ -34,22 +34,22 @@ const resetCEOPassword = async () => {
         isActive: true,
         emailVerified: true
       });
-      console.log('✅ CEO created with password: CEO@12345');
+      console.log('âœ… CEO created with password: CEO@12345');
     } else {
-      console.log('✅ CEO found, updating password...');
+      console.log('âœ… CEO found, updating password...');
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('CEO@12345', salt);
 
       ceo.password = hashedPassword;
       await ceo.save();
-      console.log('✅ CEO password updated to: CEO@12345');
+      console.log('âœ… CEO password updated to: CEO@12345');
     }
 
     await mongoose.disconnect();
-    console.log('✅ Done!');
+    console.log('âœ… Done!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('âŒ Error:', error.message);
     process.exit(1);
   }
 };

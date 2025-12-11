@@ -1,32 +1,31 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Support Tickets Controller
  * Customer support ticket management
  */
 
 import SupportTicket from '../models/SupportTicket.js';
-import Salon from '../models/Salon.js';
 
 // ==================== GET ALL TICKETS ====================
 export const getAllTickets = async (req, res) => {
   try {
-    const { 
-      status, 
-      priority, 
+    const {
+      status,
+      priority,
       category,
       assignedTo,
-      page = 1, 
+      page = 1,
       limit = 20,
-      search 
+      search
     } = req.query;
 
     const query = {};
-    
+
     if (status) query.status = status;
     if (priority) query.priority = priority;
     if (category) query.category = category;
     if (assignedTo) query.assignedTo = assignedTo;
-    
+
     if (search) {
       query.$or = [
         { ticketNumber: { $regex: search, $options: 'i' } },
@@ -37,9 +36,9 @@ export const getAllTickets = async (req, res) => {
     }
 
     const tickets = await SupportTicket.find(query)
-      .sort({ 
+      .sort({
         priority: -1, // urgent first
-        createdAt: -1 
+        createdAt: -1
       })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
@@ -136,14 +135,14 @@ export const getTicketDetails = async (req, res) => {
 // ==================== CREATE TICKET (Admin created) ====================
 export const createTicket = async (req, res) => {
   try {
-    const { 
-      salonId, 
-      customerName, 
-      customerEmail, 
-      subject, 
-      description, 
-      category, 
-      priority 
+    const {
+      salonId,
+      customerName,
+      customerEmail,
+      subject,
+      description,
+      category,
+      priority
     } = req.body;
 
     if (!customerEmail || !subject || !description) {
@@ -273,7 +272,7 @@ export const addReply = async (req, res) => {
 export const getTicketStats = async (req, res) => {
   try {
     const { period = '30d' } = req.query;
-    
+
     const now = new Date();
     let startDate;
     switch (period) {
@@ -309,7 +308,7 @@ export const getTicketStats = async (req, res) => {
       }
     ]);
 
-    const avgResponseTime = responseTimeData[0]?.avgResponseTime 
+    const avgResponseTime = responseTimeData[0]?.avgResponseTime
       ? Math.round(responseTimeData[0].avgResponseTime / (1000 * 60)) // in minutes
       : 0;
 

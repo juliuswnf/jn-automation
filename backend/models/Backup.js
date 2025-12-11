@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 /**
  * Backup Model
@@ -16,20 +16,20 @@ const backupSchema = new mongoose.Schema(
       enum: ['manual', 'scheduled', 'auto'],
       default: 'manual'
     },
-    
+
     // Backup details
     size: {
       type: Number, // in bytes
       default: 0
     },
     sizeFormatted: String,
-    
+
     collections: [{
       name: String,
       documentCount: Number,
       size: Number
     }],
-    
+
     // Storage
     storageLocation: {
       type: String,
@@ -38,33 +38,33 @@ const backupSchema = new mongoose.Schema(
     },
     storagePath: String,
     storageUrl: String,
-    
+
     // Status
     status: {
       type: String,
       enum: ['pending', 'in_progress', 'completed', 'failed', 'deleted'],
       default: 'pending'
     },
-    
+
     // Timing
     startedAt: Date,
     completedAt: Date,
     duration: Number, // in seconds
-    
+
     // Error handling
     errorMessage: String,
     retryCount: {
       type: Number,
       default: 0
     },
-    
+
     // Retention
     expiresAt: Date,
     isRetained: {
       type: Boolean,
       default: false
     },
-    
+
     // Metadata
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

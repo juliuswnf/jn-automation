@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 import Salon from '../models/Salon.js';
 import { createCheckoutSession, createBillingPortalSession } from '../services/stripeService.js';
 
@@ -12,7 +12,7 @@ const PRICE_MAP_MONTHLY = {
   starter: process.env.STRIPE_PRICE_STARTER_MONTHLY,
   professional: process.env.STRIPE_PRICE_PRO_MONTHLY,
   pro: process.env.STRIPE_PRICE_PRO_MONTHLY,
-  enterprise: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY,
+  enterprise: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY
 };
 
 // Price mapping from plan ID to env variable (yearly)
@@ -20,7 +20,7 @@ const PRICE_MAP_YEARLY = {
   starter: process.env.STRIPE_PRICE_STARTER_YEARLY,
   professional: process.env.STRIPE_PRICE_PRO_YEARLY,
   pro: process.env.STRIPE_PRICE_PRO_YEARLY,
-  enterprise: process.env.STRIPE_PRICE_ENTERPRISE_YEARLY,
+  enterprise: process.env.STRIPE_PRICE_ENTERPRISE_YEARLY
 };
 
 /**
@@ -42,7 +42,7 @@ export const createCheckout = async (req, res) => {
     // Get price ID from environment based on billing cycle
     const priceMap = billing === 'yearly' ? PRICE_MAP_YEARLY : PRICE_MAP_MONTHLY;
     const priceId = priceMap[planId.toLowerCase()];
-    
+
     if (!priceId) {
       return res.status(400).json({
         success: false,
@@ -149,7 +149,7 @@ export const getSubscriptionStatus = async (req, res) => {
         planId: subscription.planId || null,
         trialEndsAt: subscription.trialEndsAt || null,
         currentPeriodEnd: subscription.currentPeriodEnd || null,
-        cancelAtPeriodEnd: subscription.cancelAtPeriodEnd || false,
+        cancelAtPeriodEnd: subscription.cancelAtPeriodEnd || false
       }
     });
 
@@ -174,7 +174,7 @@ export const getPlans = async (req, res) => {
         name: 'Starter',
         price: 49,
         yearlyPrice: 39,
-        description: 'Perfekt für Solo-Studios & Einzelunternehmer',
+        description: 'Perfekt fÃ¼r Solo-Studios & Einzelunternehmer',
         priceIdMonthly: process.env.STRIPE_PRICE_STARTER_MONTHLY,
         priceIdYearly: process.env.STRIPE_PRICE_STARTER_YEARLY,
         features: [
@@ -191,7 +191,7 @@ export const getPlans = async (req, res) => {
         name: 'Professional',
         price: 99,
         yearlyPrice: 79,
-        description: 'Für wachsende Teams',
+        description: 'FÃ¼r wachsende Teams',
         priceIdMonthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
         priceIdYearly: process.env.STRIPE_PRICE_PRO_YEARLY,
         highlighted: true,
@@ -209,7 +209,7 @@ export const getPlans = async (req, res) => {
         name: 'Enterprise',
         price: 199,
         yearlyPrice: 159,
-        description: 'Für Salon-Ketten',
+        description: 'FÃ¼r Salon-Ketten',
         priceIdMonthly: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY,
         priceIdYearly: process.env.STRIPE_PRICE_ENTERPRISE_YEARLY,
         features: [

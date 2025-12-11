@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Salon Controller - MVP
  * Salon owner operations for their salon
@@ -256,18 +256,18 @@ export const getSalonDashboard = async (req, res) => {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
-    
+
     const bookingsThisMonth = await Booking.countDocuments({
       salonId,
       createdAt: { $gte: startOfMonth },
       status: { $ne: 'cancelled' }
     });
-    
+
     const planId = (salon.subscription?.planId || '').toLowerCase();
     const isPro = planId.includes('pro');
     const isStarter = !isPro && salon.subscription?.status !== 'trial';
     const isTrial = salon.subscription?.status === 'trial';
-    
+
     let bookingLimits = null;
     if (!isPro) {
       const limit = isTrial ? 50 : 100;

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 /**
  * Audit Log Model
@@ -16,7 +16,7 @@ const auditLogSchema = new mongoose.Schema(
     userEmail: String,
     userName: String,
     userRole: String,
-    
+
     // Action details
     action: {
       type: String,
@@ -30,7 +30,7 @@ const auditLogSchema = new mongoose.Schema(
       index: true
     },
     description: String,
-    
+
     // Target resource
     resourceType: {
       type: String,
@@ -42,17 +42,17 @@ const auditLogSchema = new mongoose.Schema(
       index: true
     },
     resourceName: String,
-    
+
     // Request info
     ipAddress: String,
     userAgent: String,
     requestMethod: String,
     requestPath: String,
-    
+
     // Changes (for updates)
     previousValues: mongoose.Schema.Types.Mixed,
     newValues: mongoose.Schema.Types.Mixed,
-    
+
     // Status
     status: {
       type: String,
@@ -60,7 +60,7 @@ const auditLogSchema = new mongoose.Schema(
       default: 'success'
     },
     errorMessage: String,
-    
+
     // Metadata
     metadata: mongoose.Schema.Types.Mixed
   },

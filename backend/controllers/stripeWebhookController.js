@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Stripe Webhook Controller
  * Handles Stripe webhook events for subscription management
@@ -29,7 +29,7 @@ export const handleStripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
 
     if (!sig) {
-      logger.error('❌ Missing Stripe signature header');
+      logger.error('âŒ Missing Stripe signature header');
       return res.status(401).json({
         success: false,
         message: 'Missing signature'
@@ -37,7 +37,7 @@ export const handleStripeWebhook = async (req, res) => {
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      logger.error('❌ STRIPE_WEBHOOK_SECRET not configured');
+      logger.error('âŒ STRIPE_WEBHOOK_SECRET not configured');
       return res.status(500).json({
         success: false,
         message: 'Webhook secret not configured'
@@ -52,14 +52,14 @@ export const handleStripeWebhook = async (req, res) => {
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      logger.error('❌ Stripe signature verification failed:', err.message);
+      logger.error('âŒ Stripe signature verification failed:', err.message);
       return res.status(400).json({
         success: false,
         message: 'Webhook signature verification failed'
       });
     }
 
-    logger.log(`✅ Stripe webhook received: ${event.type}`);
+    logger.log(`âœ… Stripe webhook received: ${event.type}`);
 
     // Handle different event types
     switch (event.type) {
@@ -85,12 +85,12 @@ export const handleStripeWebhook = async (req, res) => {
 
     case 'invoice.paid':
       await stripeService.handleSuccessfulPayment(event.data.object);
-      logger.log('✅ Invoice paid successfully');
+      logger.log('âœ… Invoice paid successfully');
       break;
 
     case 'invoice.payment_failed':
       await stripeService.handleFailedPayment(event.data.object);
-      logger.log('❌ Invoice payment failed');
+      logger.log('âŒ Invoice payment failed');
       break;
 
     case 'invoice.payment_action_required':
@@ -100,38 +100,38 @@ export const handleStripeWebhook = async (req, res) => {
       // ==================== PAYMENT EVENTS ====================
 
     case 'payment_intent.succeeded':
-      logger.log('✅ Payment succeeded:', event.data.object.id);
+      logger.log('âœ… Payment succeeded:', event.data.object.id);
       break;
 
     case 'payment_intent.payment_failed':
-      logger.log('❌ Payment failed:', event.data.object.id);
+      logger.log('âŒ Payment failed:', event.data.object.id);
       break;
 
     case 'charge.refunded':
-      logger.log('💰 Charge refunded:', event.data.object.id);
+      logger.log('ðŸ’° Charge refunded:', event.data.object.id);
       break;
 
       // ==================== CUSTOMER EVENTS ====================
 
     case 'customer.created':
-      logger.log('👤 Customer created:', event.data.object.id);
+      logger.log('ðŸ‘¤ Customer created:', event.data.object.id);
       break;
 
     case 'customer.updated':
-      logger.log('👤 Customer updated:', event.data.object.id);
+      logger.log('ðŸ‘¤ Customer updated:', event.data.object.id);
       break;
 
     case 'customer.deleted':
-      logger.log('👤 Customer deleted:', event.data.object.id);
+      logger.log('ðŸ‘¤ Customer deleted:', event.data.object.id);
       break;
 
     default:
-      logger.log(`⚠️ Unhandled webhook event type: ${event.type}`);
+      logger.log(`âš ï¸ Unhandled webhook event type: ${event.type}`);
     }
 
     res.status(200).json({ received: true });
   } catch (error) {
-    logger.error('❌ Stripe Webhook Error:', error);
+    logger.error('âŒ Stripe Webhook Error:', error);
     res.status(400).json({
       success: false,
       message: 'Webhook processing error',
@@ -170,7 +170,7 @@ const handleSubscriptionCreated = async (subscription) => {
 
     await salon.save();
 
-    logger.log(`✅ Subscription created for salon: ${salon.slug}`);
+    logger.log(`âœ… Subscription created for salon: ${salon.slug}`);
   } catch (error) {
     logger.error('Error handling subscription created:', error);
   }
@@ -202,7 +202,7 @@ const handleSubscriptionUpdated = async (subscription) => {
 
     await salon.save();
 
-    logger.log(`✅ Subscription updated for salon: ${salon.slug}`);
+    logger.log(`âœ… Subscription updated for salon: ${salon.slug}`);
   } catch (error) {
     logger.error('Error handling subscription updated:', error);
   }
@@ -225,19 +225,19 @@ const handleSubscriptionDeleted = async (subscription) => {
     salon.subscription.status = 'canceled';
     await salon.save();
 
-    logger.log(`✅ Subscription deleted for salon: ${salon.slug}`);
+    logger.log(`âœ… Subscription deleted for salon: ${salon.slug}`);
 
     // Send email notification to salon owner
     try {
       const { sendEmail } = await import('../services/emailService.js');
       await sendEmail({
         to: salon.email,
-        subject: 'Ihr Abonnement wurde gekündigt - JN Business',
-        body: `Hallo,\n\nIhr JN Business Abonnement für "${salon.name}" wurde gekündigt.\n\nSie können jederzeit ein neues Abonnement abschließen, um alle Premium-Funktionen wieder zu nutzen.\n\nBei Fragen stehen wir Ihnen gerne zur Verfügung.\n\nMit freundlichen Grüßen,\nIhr JN Business Team`,
+        subject: 'Ihr Abonnement wurde gekÃ¼ndigt - JN Business',
+        body: `Hallo,\n\nIhr JN Business Abonnement fÃ¼r "${salon.name}" wurde gekÃ¼ndigt.\n\nSie kÃ¶nnen jederzeit ein neues Abonnement abschlieÃŸen, um alle Premium-Funktionen wieder zu nutzen.\n\nBei Fragen stehen wir Ihnen gerne zur VerfÃ¼gung.\n\nMit freundlichen GrÃ¼ÃŸen,\nIhr JN Business Team`,
         type: 'subscription_canceled'
       });
     } catch (emailError) {
-      logger.error('❌ Failed to send subscription canceled email:', emailError.message);
+      logger.error('âŒ Failed to send subscription canceled email:', emailError.message);
     }
   } catch (error) {
     logger.error('Error handling subscription deleted:', error);
@@ -258,7 +258,7 @@ const handleTrialWillEnd = async (subscription) => {
       return;
     }
 
-    logger.log(`⚠️ Trial ending soon for salon: ${salon.slug}`);
+    logger.log(`âš ï¸ Trial ending soon for salon: ${salon.slug}`);
 
     // Send email notification about trial ending
     try {
@@ -267,11 +267,11 @@ const handleTrialWillEnd = async (subscription) => {
       await sendEmail({
         to: salon.email,
         subject: 'Ihre Testphase endet bald - JN Business',
-        body: `Hallo,\n\nIhre kostenlose Testphase für "${salon.name}" endet am ${trialEndDate}.\n\nUm alle Premium-Funktionen weiterhin nutzen zu können, stellen Sie bitte sicher, dass eine gültige Zahlungsmethode hinterlegt ist.\n\nNach Ende der Testphase wird Ihr gewähltes Abonnement automatisch aktiviert.\n\nMit freundlichen Grüßen,\nIhr JN Business Team`,
+        body: `Hallo,\n\nIhre kostenlose Testphase fÃ¼r "${salon.name}" endet am ${trialEndDate}.\n\nUm alle Premium-Funktionen weiterhin nutzen zu kÃ¶nnen, stellen Sie bitte sicher, dass eine gÃ¼ltige Zahlungsmethode hinterlegt ist.\n\nNach Ende der Testphase wird Ihr gewÃ¤hltes Abonnement automatisch aktiviert.\n\nMit freundlichen GrÃ¼ÃŸen,\nIhr JN Business Team`,
         type: 'trial_ending'
       });
     } catch (emailError) {
-      logger.error('❌ Failed to send trial ending email:', emailError.message);
+      logger.error('âŒ Failed to send trial ending email:', emailError.message);
     }
   } catch (error) {
     logger.error('Error handling trial will end:', error);
@@ -298,7 +298,7 @@ const handlePaymentActionRequired = async (invoice) => {
       return;
     }
 
-    logger.log(`⚠️ Payment action required for salon: ${salon.slug}`);
+    logger.log(`âš ï¸ Payment action required for salon: ${salon.slug}`);
 
     // Send email notification about payment action required
     try {
@@ -306,11 +306,11 @@ const handlePaymentActionRequired = async (invoice) => {
       await sendEmail({
         to: salon.email,
         subject: 'Zahlungsaktion erforderlich - JN Business',
-        body: `Hallo,\n\nFür Ihr JN Business Abonnement für "${salon.name}" ist eine Zahlungsaktion erforderlich.\n\nBitte überprüfen Sie Ihre Zahlungsmethode und bestätigen Sie die Zahlung, um eine Unterbrechung Ihres Services zu vermeiden.\n\nSie können dies in Ihren Kontoeinstellungen tun.\n\nMit freundlichen Grüßen,\nIhr JN Business Team`,
+        body: `Hallo,\n\nFÃ¼r Ihr JN Business Abonnement fÃ¼r "${salon.name}" ist eine Zahlungsaktion erforderlich.\n\nBitte Ã¼berprÃ¼fen Sie Ihre Zahlungsmethode und bestÃ¤tigen Sie die Zahlung, um eine Unterbrechung Ihres Services zu vermeiden.\n\nSie kÃ¶nnen dies in Ihren Kontoeinstellungen tun.\n\nMit freundlichen GrÃ¼ÃŸen,\nIhr JN Business Team`,
         type: 'payment_action_required'
       });
     } catch (emailError) {
-      logger.error('❌ Failed to send payment action email:', emailError.message);
+      logger.error('âŒ Failed to send payment action email:', emailError.message);
     }
   } catch (error) {
     logger.error('Error handling payment action required:', error);

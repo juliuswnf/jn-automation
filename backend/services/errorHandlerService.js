@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 
 // ==================== ERROR TYPES ====================
 
@@ -44,7 +44,7 @@ class ConflictError extends AppError {
 }
 
 class RateLimitError extends AppError {
-  constructor(message = 'Zu viele Anfragen. Bitte versuchen Sie es später') {
+  constructor(message = 'Zu viele Anfragen. Bitte versuchen Sie es spÃ¤ter') {
     super(message, 429, 'RATE_LIMIT');
   }
 }
@@ -99,11 +99,11 @@ class ErrorHandlerService {
       }
 
       // MVP: Console logging instead of DB
-      logger.error('📝 Error logged:', errorData);
+      logger.error('ðŸ“ Error logged:', errorData);
 
       return errorData;
     } catch (err) {
-      logger.error('❌ Failed to log error:', err);
+      logger.error('âŒ Failed to log error:', err);
       return null;
     }
   }
@@ -174,7 +174,7 @@ class ErrorHandlerService {
     }
 
     if (error.name === 'CastError') {
-      return new ValidationError(`Ungültiges ${error.kind}: ${error.value}`);
+      return new ValidationError(`UngÃ¼ltiges ${error.kind}: ${error.value}`);
     }
 
     return new DatabaseError('Datenbankfehler', error);
@@ -182,7 +182,7 @@ class ErrorHandlerService {
 
   static handleJWTError(error) {
     if (error.name === 'JsonWebTokenError') {
-      return new AuthenticationError('Ungültiger Token');
+      return new AuthenticationError('UngÃ¼ltiger Token');
     }
 
     if (error.name === 'TokenExpiredError') {

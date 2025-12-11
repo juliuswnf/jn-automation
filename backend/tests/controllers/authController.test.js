@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Auth Controller Unit Tests
  * Tests for authentication operations
  */
@@ -10,7 +10,6 @@ import { createMockRequest, createMockResponse } from '../mocks/request.js';
 const mockUserFindOne = jest.fn();
 const mockUserFindById = jest.fn();
 const mockUserCreate = jest.fn();
-const mockMatchPassword = jest.fn();
 
 jest.unstable_mockModule('../../models/User.js', () => ({
   default: {
@@ -69,7 +68,7 @@ process.env.JWT_SECRET = 'test-secret';
 process.env.JWT_EXPIRE = '7d';
 
 // Import controller after mocking
-const { register, login, getProfile } = 
+const { register, login, getProfile } =
   await import('../../controllers/authController.js');
 
 describe('Auth Controller', () => {
@@ -95,7 +94,7 @@ describe('Auth Controller', () => {
       req.body = validUserData;
 
       mockUserFindOne.mockResolvedValue(null); // No existing user
-      
+
       const createdUser = {
         _id: 'user_123',
         email: 'newuser@example.com',

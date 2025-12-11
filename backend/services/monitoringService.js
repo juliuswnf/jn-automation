@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 import mongoose from 'mongoose';
 import cacheService from './cacheService.js';
 
@@ -33,7 +33,7 @@ const metrics = {
  */
 export const recordRequest = (req, res, duration) => {
   metrics.requests.total++;
-  
+
   if (res.statusCode >= 400) {
     metrics.requests.errors++;
   } else {
@@ -56,7 +56,7 @@ export const recordRequest = (req, res, duration) => {
 
   // Log slow requests
   if (duration > 1000) {
-    logger.performance(endpoint, duration, { 
+    logger.performance(endpoint, duration, {
       statusCode: res.statusCode,
       userId: req.user?._id?.toString()
     });
@@ -68,7 +68,7 @@ export const recordRequest = (req, res, duration) => {
  */
 export const recordError = (error, req) => {
   const errorType = error.name || 'UnknownError';
-  
+
   if (!metrics.errors.byType[errorType]) {
     metrics.errors.byType[errorType] = 0;
   }
@@ -176,7 +176,7 @@ export const getMetrics = () => {
  */
 export const requestTimingMiddleware = (req, res, next) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     recordRequest(req, res, duration);

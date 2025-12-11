@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Public Booking Controller
  * Handles booking creation without customer authentication
@@ -76,7 +76,7 @@ export const getAllSalons = async (req, res) => {
 export const searchSalons = async (req, res) => {
   try {
     const { q } = req.query;
-    
+
     if (!q || q.length < 2) {
       return res.status(400).json({
         success: false,
@@ -359,20 +359,20 @@ export const createPublicBooking = async (req, res) => {
     // Check booking limits for Starter plan
     const planId = (salon.subscription?.planId || '').toLowerCase();
     const isStarterPlan = planId.includes('starter') || (!planId.includes('pro') && salon.subscription?.status !== 'trial');
-    
+
     if (isStarterPlan || salon.subscription?.status === 'trial') {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
-      
+
       const bookingsThisMonth = await Booking.countDocuments({
         salonId: salon._id,
         createdAt: { $gte: startOfMonth },
         status: { $ne: 'cancelled' }
       });
-      
+
       const limit = salon.subscription?.status === 'trial' ? 50 : 100;
-      
+
       if (bookingsThisMonth >= limit) {
         return res.status(403).json({
           success: false,
@@ -455,7 +455,7 @@ export const createPublicBooking = async (req, res) => {
       // Mark email as sent
       await booking.markEmailSent('confirmation');
 
-      logger.log(`✉️  Sent confirmation email to ${customerEmail}`);
+      logger.log(`âœ‰ï¸  Sent confirmation email to ${customerEmail}`);
     } catch (emailError) {
       logger.error('Error sending confirmation email:', emailError);
       // Don't fail the booking if email fails

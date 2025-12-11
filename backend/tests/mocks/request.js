@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Mock Express Request/Response for Controller Tests
  */
 
@@ -19,26 +19,26 @@ export const createMockResponse = () => {
   const res = {
     statusCode: 200,
     jsonData: null,
-    
+
     status: jest.fn().mockImplementation(function(code) {
       this.statusCode = code;
       return this;
     }),
-    
+
     json: jest.fn().mockImplementation(function(data) {
       this.jsonData = data;
       return this;
     }),
-    
+
     send: jest.fn().mockImplementation(function(data) {
       this.jsonData = data;
       return this;
     }),
-    
+
     cookie: jest.fn().mockReturnThis(),
     clearCookie: jest.fn().mockReturnThis(),
     redirect: jest.fn().mockReturnThis(),
-    
+
     // Helper to get response data
     getResponse: function() {
       return {
@@ -47,7 +47,7 @@ export const createMockResponse = () => {
       };
     }
   };
-  
+
   return res;
 };
 

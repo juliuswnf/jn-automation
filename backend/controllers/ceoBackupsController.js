@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Backups Controller
  * Database backup management
@@ -6,16 +6,14 @@ import logger from '../utils/logger.js';
 
 import Backup from '../models/Backup.js';
 import mongoose from 'mongoose';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import path from 'path';
 import fs from 'fs';
 
-const execAsync = promisify(exec);
-
 // Helper function to format bytes
 function formatBytes(bytes, decimals = 2) {
-  if (!bytes || bytes === 0) return '0 Bytes';
+  if (!bytes || bytes === 0) {
+    return '0 Bytes';
+  }
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -180,7 +178,7 @@ async function performBackup(backupId) {
 
     // Create backup directory and file
     const backupPath = path.join(process.cwd(), 'backups', `${backup._id}.json`);
-    
+
     // Ensure backups directory exists
     const backupsDir = path.join(process.cwd(), 'backups');
     if (!fs.existsSync(backupsDir)) {
@@ -194,7 +192,7 @@ async function performBackup(backupId) {
       collections: collectionStats,
       databaseName: mongoose.connection?.db?.databaseName || 'unknown'
     };
-    
+
     fs.writeFileSync(backupPath, JSON.stringify(manifest, null, 2));
 
     // Calculate file size
@@ -218,7 +216,7 @@ async function performBackup(backupId) {
     backup.errorMessage = error.message;
     backup.completedAt = new Date();
     await backup.save();
-    
+
     logger.error(`Backup ${backup._id} failed:`, error);
   }
 }

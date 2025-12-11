@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { checkTenantAccess, enforceTenantFilter } from '../middleware/tenantMiddleware.js';
 import bookingController from '../controllers/bookingController.js';

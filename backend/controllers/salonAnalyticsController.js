@@ -1,12 +1,10 @@
-/**
+﻿/**
  * Salon Analytics Controller
  * Provides success metrics and KPIs for salon owners
  * Shows them the value they get from JN Automation
  */
 
 import Booking from '../models/Booking.js';
-import Salon from '../models/Salon.js';
-import Service from '../models/Service.js';
 import logger from '../utils/logger.js';
 
 // ==================== GET SALON METRICS OVERVIEW ====================
@@ -60,12 +58,12 @@ export const getMetricsOverview = async (req, res) => {
 
     // This month revenue
     const thisMonthRevenueAgg = await Booking.aggregate([
-      { 
-        $match: { 
-          salonId: salonId, 
+      {
+        $match: {
+          salonId: salonId,
           status: { $in: ['confirmed', 'completed'] },
           createdAt: { $gte: startOfMonth }
-        } 
+        }
       },
       { $group: { _id: null, total: { $sum: '$totalPrice' } } }
     ]);
@@ -83,13 +81,13 @@ export const getMetricsOverview = async (req, res) => {
 
     // Calculate averages
     const avgBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
-    const bookingGrowth = lastMonthBookings > 0 
+    const bookingGrowth = lastMonthBookings > 0
       ? Math.round(((thisMonthBookings - lastMonthBookings) / lastMonthBookings) * 100)
       : thisMonthBookings > 0 ? 100 : 0;
 
     // No-show rate (cancelled / total)
-    const noShowRate = totalBookings > 0 
-      ? Math.round((cancelledBookings / totalBookings) * 100) 
+    const noShowRate = totalBookings > 0
+      ? Math.round((cancelledBookings / totalBookings) * 100)
       : 0;
 
     // Time saved estimate (average 5 min per phone booking)
@@ -105,22 +103,22 @@ export const getMetricsOverview = async (req, res) => {
         lastMonthBookings,
         thisWeekBookings,
         bookingGrowth,
-        
+
         // Status breakdown
         confirmedBookings,
         completedBookings,
         cancelledBookings,
         noShowRate,
-        
+
         // Revenue
         totalRevenue,
         thisMonthRevenue,
         avgBookingValue: Math.round(avgBookingValue * 100) / 100,
-        
+
         // Customers
         totalCustomers,
         newCustomersThisMonth: newCustomersThisMonth.length,
-        
+
         // Value metrics
         timeSavedHours,
         timeSavedMinutes
@@ -171,7 +169,7 @@ export const getBookingTrends = async (req, res) => {
 
     const bookingTrend = await Booking.aggregate([
       { $match: { salonId: salonId, createdAt: { $gte: startDate } } },
-      { $group: { 
+      { $group: {
         _id: groupBy,
         bookings: { $sum: 1 },
         revenue: { $sum: '$totalPrice' }

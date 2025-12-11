@@ -1,16 +1,16 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
- * Test Script für alle 3 Schritte
- * Führt automatisierte Überprüfungen durch
- * 
- * Ausführen: node scripts/testAllSteps.js
+ * Test Script fÃ¼r alle 3 Schritte
+ * FÃ¼hrt automatisierte ÃœberprÃ¼fungen durch
+ *
+ * AusfÃ¼hren: node scripts/testAllSteps.js
  */
 
 const http = require('http');
 
 const API_URL = process.env.API_URL || 'http://localhost:5000';
 
-// Colors für Console
+// Colors fÃ¼r Console
 const colors = {
   reset: '\x1b[0m',
   green: '\x1b[32m',
@@ -21,10 +21,10 @@ const colors = {
 };
 
 const log = {
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  warn: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
+  success: (msg) => console.log(`${colors.green}âœ… ${msg}${colors.reset}`),
+  error: (msg) => console.log(`${colors.red}âŒ ${msg}${colors.reset}`),
+  info: (msg) => console.log(`${colors.blue}â„¹ï¸  ${msg}${colors.reset}`),
+  warn: (msg) => console.log(`${colors.yellow}âš ï¸  ${msg}${colors.reset}`),
   header: (msg) => console.log(`\n${colors.bold}${colors.blue}${'='.repeat(50)}\n${msg}\n${'='.repeat(50)}${colors.reset}\n`)
 };
 
@@ -59,11 +59,11 @@ const makeRequest = (url, options = {}) => {
     });
 
     req.on('error', reject);
-    
+
     if (options.body) {
       req.write(JSON.stringify(options.body));
     }
-    
+
     req.end();
   });
 };
@@ -72,10 +72,10 @@ const makeRequest = (url, options = {}) => {
 
 async function testHealthEndpoint() {
   log.info('Testing /health endpoint...');
-  
+
   try {
     const response = await makeRequest(`${API_URL}/health`);
-    
+
     if (response.status === 200) {
       log.success(`Health Check: ${response.data.status}`);
       log.info(`  - MongoDB: ${response.data.services?.mongodb?.status || 'unknown'}`);
@@ -95,10 +95,10 @@ async function testHealthEndpoint() {
 
 async function testMetricsProtection() {
   log.info('Testing /api/metrics protection...');
-  
+
   try {
     const response = await makeRequest(`${API_URL}/api/metrics`);
-    
+
     if (response.status === 401) {
       log.success('Metrics endpoint is protected (401 without auth)');
       return true;
@@ -117,7 +117,7 @@ async function testMetricsProtection() {
 
 async function testRateLimiting() {
   log.info('Testing rate limiting...');
-  
+
   try {
     // Send 5 quick requests
     const results = [];
@@ -125,7 +125,7 @@ async function testRateLimiting() {
       const response = await makeRequest(`${API_URL}/health`);
       results.push(response.status);
     }
-    
+
     // All should be 200 (under rate limit)
     if (results.every(s => s === 200)) {
       log.success('Rate limiting allows normal traffic');
@@ -145,14 +145,14 @@ async function testRateLimiting() {
 
 async function testAuthEndpoint() {
   log.info('Testing auth validation...');
-  
+
   try {
     const response = await makeRequest(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: { email: 'test@test.com', password: 'wrongpassword' }
     });
-    
+
     if (response.status === 401 || response.status === 400) {
       log.success('Auth rejects invalid credentials');
       return true;
@@ -168,10 +168,10 @@ async function testAuthEndpoint() {
 
 async function testPublicBookingEndpoint() {
   log.info('Testing public booking endpoint structure...');
-  
+
   try {
     const response = await makeRequest(`${API_URL}/api/bookings/public/s/test-salon`);
-    
+
     // Should return 404 (salon not found) or data
     if (response.status === 404 || response.status === 200) {
       log.success('Public booking endpoint responds correctly');
@@ -188,10 +188,10 @@ async function testPublicBookingEndpoint() {
 
 async function testWidgetEndpoint() {
   log.info('Testing widget embed endpoint...');
-  
+
   try {
     const response = await makeRequest(`${API_URL}/api/widget/embed/test-salon`);
-    
+
     // Should return 404 or widget config
     if (response.status === 404 || response.status === 200) {
       log.success('Widget endpoint responds correctly');
@@ -210,8 +210,8 @@ async function testWidgetEndpoint() {
 
 async function runAllTests() {
   console.log('\n');
-  log.header('🧪 JN AUTOMATION - COMPLETE SYSTEM TEST');
-  
+  log.header('ðŸ§ª JN AUTOMATION - COMPLETE SYSTEM TEST');
+
   const results = {
     passed: 0,
     failed: 0,
@@ -220,7 +220,7 @@ async function runAllTests() {
 
   // Test 1: Health Endpoint
   log.header('SCHRITT 3: Monitoring & Health Checks');
-  
+
   const tests = [
     { name: 'Health Endpoint', fn: testHealthEndpoint },
     { name: 'Metrics Protection', fn: testMetricsProtection },
@@ -233,28 +233,31 @@ async function runAllTests() {
   for (const test of tests) {
     const passed = await test.fn();
     results.tests.push({ name: test.name, passed });
-    if (passed) results.passed++;
-    else results.failed++;
+    if (passed) {
+      results.passed++;
+    } else {
+      results.failed++;
+    }
   }
 
   // Summary
-  log.header('📊 TEST SUMMARY');
-  
+  log.header('ðŸ“Š TEST SUMMARY');
+
   console.log(`Total Tests: ${results.tests.length}`);
   console.log(`${colors.green}Passed: ${results.passed}${colors.reset}`);
   console.log(`${colors.red}Failed: ${results.failed}${colors.reset}`);
-  
+
   console.log('\nDetailed Results:');
   results.tests.forEach(t => {
-    console.log(`  ${t.passed ? '✅' : '❌'} ${t.name}`);
+    console.log(`  ${t.passed ? 'âœ…' : 'âŒ'} ${t.name}`);
   });
 
   if (results.failed === 0) {
-    log.header('🎉 ALL TESTS PASSED!');
+    log.header('ðŸŽ‰ ALL TESTS PASSED!');
     console.log('System is ready for deployment.\n');
     process.exit(0);
   } else {
-    log.header('⚠️ SOME TESTS FAILED');
+    log.header('âš ï¸ SOME TESTS FAILED');
     console.log('Please review the failures above.\n');
     process.exit(1);
   }

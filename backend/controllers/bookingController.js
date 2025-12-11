@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 import cacheService from '../services/cacheService.js';
 /**
  * Booking Controller - MVP Simplified

@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 /**
  * ErrorLog Model
- * Für System-Fehlermeldungen und Error-Tracking im CEO Dashboard
+ * FÃ¼r System-Fehlermeldungen und Error-Tracking im CEO Dashboard
  */
 
 const errorLogSchema = new mongoose.Schema({
@@ -48,7 +48,7 @@ const errorLogSchema = new mongoose.Schema({
     default: null
   },
 
-  // Stack trace (für debugging)
+  // Stack trace (fÃ¼r debugging)
   stackTrace: {
     type: String,
     select: false

@@ -1,21 +1,21 @@
-/**
+﻿/**
  * Payment Controller Unit Tests - Simplified
  * Direct testing of payment logic with minimal mocking
  */
 
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 
 // Test the validation logic and business rules
 describe('Payment Controller - Business Logic', () => {
-  
+
   // ==================== AMOUNT VALIDATION TESTS ====================
-  
+
   describe('Amount Validation', () => {
-    
+
     const validateAmount = (amount) => {
       return !isNaN(amount) && amount > 0 && amount <= 999999.99;
     };
-    
+
     it('should accept valid amounts', () => {
       expect(validateAmount(1)).toBe(true);
       expect(validateAmount(35.50)).toBe(true);
@@ -48,9 +48,9 @@ describe('Payment Controller - Business Logic', () => {
   // ==================== CURRENCY CONVERSION TESTS ====================
 
   describe('Currency Conversion (EUR to Cents)', () => {
-    
+
     const euroToCents = (amount) => Math.round(amount * 100);
-    
+
     it('should convert whole euros correctly', () => {
       expect(euroToCents(1)).toBe(100);
       expect(euroToCents(35)).toBe(3500);
@@ -78,11 +78,11 @@ describe('Payment Controller - Business Logic', () => {
   // ==================== PAYMENT STATUS TESTS ====================
 
   describe('Payment Status Handling', () => {
-    
+
     const isSuccessfulPayment = (status) => {
       return status === 'succeeded';
     };
-    
+
     it('should recognize successful payment', () => {
       expect(isSuccessfulPayment('succeeded')).toBe(true);
     });
@@ -105,20 +105,20 @@ describe('Payment Controller - Business Logic', () => {
   // ==================== REFUND VALIDATION TESTS ====================
 
   describe('Refund Validation', () => {
-    
+
     const canRefund = (payment) => {
-      return payment.status === 'completed' && 
-             payment.paymentIntentId && 
+      return payment.status === 'completed' &&
+             payment.paymentIntentId &&
              payment.amount > 0;
     };
-    
+
     it('should allow refund for completed payment', () => {
       const payment = {
         status: 'completed',
         paymentIntentId: 'pi_test_123',
         amount: 35.00
       };
-      
+
       expect(canRefund(payment)).toBe(true);
     });
 
@@ -128,7 +128,7 @@ describe('Payment Controller - Business Logic', () => {
         paymentIntentId: 'pi_test_123',
         amount: 35.00
       };
-      
+
       expect(canRefund(payment)).toBe(false);
     });
 
@@ -138,7 +138,7 @@ describe('Payment Controller - Business Logic', () => {
         paymentIntentId: null,
         amount: 35.00
       };
-      
+
       expect(canRefund(payment)).toBeFalsy();
     });
   });
@@ -146,15 +146,15 @@ describe('Payment Controller - Business Logic', () => {
   // ==================== REQUIRED FIELDS TESTS ====================
 
   describe('Required Fields Validation', () => {
-    
+
     const validatePaymentIntent = (data) => {
       return !!(data.bookingId && data.amount);
     };
-    
+
     const validateProcessPayment = (data) => {
       return !!(data.bookingId && data.paymentIntentId && data.amount);
     };
-    
+
     it('should require bookingId and amount for payment intent', () => {
       expect(validatePaymentIntent({ bookingId: '123', amount: 35 })).toBe(true);
       expect(validatePaymentIntent({ bookingId: '123' })).toBe(false);
@@ -168,15 +168,15 @@ describe('Payment Controller - Business Logic', () => {
         paymentIntentId: 'pi_123',
         amount: 35
       };
-      
+
       expect(validateProcessPayment(validData)).toBe(true);
-      
+
       // Missing bookingId
       expect(validateProcessPayment({ paymentIntentId: 'pi_123', amount: 35 })).toBe(false);
-      
+
       // Missing paymentIntentId
       expect(validateProcessPayment({ bookingId: '123', amount: 35 })).toBe(false);
-      
+
       // Missing amount
       expect(validateProcessPayment({ bookingId: '123', paymentIntentId: 'pi_123' })).toBe(false);
     });

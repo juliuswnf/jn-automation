@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+﻿/* eslint-disable no-console */
 import winston from 'winston';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -32,8 +32,8 @@ const winstonLogger = winston.createLogger({
         winston.format.colorize(),
         winston.format.timestamp({ format: 'HH:mm:ss' }),
         winston.format.printf(({ level, message, timestamp, ...meta }) => {
-          const metaStr = Object.keys(meta).filter(k => k !== 'service').length 
-            ? ` ${JSON.stringify(meta)}` 
+          const metaStr = Object.keys(meta).filter(k => k !== 'service').length
+            ? ` ${JSON.stringify(meta)}`
             : '';
           return `${timestamp} ${level}: ${message}${metaStr}`;
         })
@@ -45,14 +45,14 @@ const winstonLogger = winston.createLogger({
 // Add file transport in production
 if (isProduction) {
   const logsDir = path.join(__dirname, '..', 'logs');
-  
+
   winstonLogger.add(new winston.transports.File({
     filename: path.join(logsDir, 'error.log'),
     level: 'error',
     maxsize: 5242880, // 5MB
     maxFiles: 5
   }));
-  
+
   winstonLogger.add(new winston.transports.File({
     filename: path.join(logsDir, 'combined.log'),
     maxsize: 5242880,
@@ -83,7 +83,7 @@ const logger = {
   log: (message, meta = {}) => winstonLogger.info(message, meta),
   warn: (message, meta = {}) => winstonLogger.warn(message, meta),
   debug: (message, meta = {}) => winstonLogger.debug(message, meta),
-  
+
   error: (message, errorOrMeta = {}) => {
     // Handle Error objects
     if (errorOrMeta instanceof Error) {
@@ -93,7 +93,7 @@ const logger = {
         stack: errorOrMeta.stack
       };
       winstonLogger.error(message, errorMeta);
-      
+
       // Send to Sentry if available
       if (Sentry) {
         Sentry.captureException(errorOrMeta, {
@@ -102,7 +102,7 @@ const logger = {
       }
     } else {
       winstonLogger.error(message, errorOrMeta);
-      
+
       // Send to Sentry if available
       if (Sentry && typeof message === 'string') {
         Sentry.captureMessage(message, {
@@ -130,7 +130,7 @@ const logger = {
       ...details,
       timestamp: new Date().toISOString()
     });
-    
+
     // Always send security events to Sentry
     if (Sentry) {
       Sentry.captureMessage(`Security Event: ${event}`, {

@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+﻿import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
@@ -8,13 +8,13 @@ dotenv.config();
 const createCEO = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    logger.log('✅ Database connected');
+    logger.log('âœ… Database connected');
 
     const existingCEO = await User.findOne({ role: 'ceo' });
     if (existingCEO) {
-      logger.log(`✅ CEO already exists: ${existingCEO.email}`);
+      logger.log(`âœ… CEO already exists: ${existingCEO.email}`);
       await User.deleteOne({ role: 'ceo' });
-      logger.log('🗑️  Old CEO deleted');
+      logger.log('ðŸ—‘ï¸  Old CEO deleted');
     }
 
     const ceo = await User.create({
@@ -26,7 +26,7 @@ const createCEO = async () => {
       emailVerified: true
     });
 
-    logger.log('✅ CEO created successfully:');
+    logger.log('âœ… CEO created successfully:');
     logger.log(`   Email: ${ceo.email}`);
     logger.log(`   Name: ${ceo.name}`);
     logger.log(`   Role: ${ceo.role}`);
@@ -34,7 +34,7 @@ const createCEO = async () => {
 
     process.exit(0);
   } catch (error) {
-    logger.error('❌ Error:', error.message);
+    logger.error('âŒ Error:', error.message);
     process.exit(1);
   }
 };

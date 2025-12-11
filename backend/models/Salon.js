@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 const emailTemplateSchema = new mongoose.Schema({
   subject: {
@@ -213,10 +213,10 @@ salonSchema.methods.initializeDefaultTemplates = function() {
   this.emailTemplates = {
     confirmation: {
       de: {
-        subject: 'Buchungsbestätigung - {{salon_name}}',
+        subject: 'BuchungsbestÃ¤tigung - {{salon_name}}',
         body: `Hallo {{customer_name}},
 
-Ihre Buchung wurde erfolgreich bestätigt!
+Ihre Buchung wurde erfolgreich bestÃ¤tigt!
 
 Details:
 - Service: {{service_name}}
@@ -233,7 +233,7 @@ Telefon: {{salon_phone}}
 
 Wir freuen uns auf Ihren Besuch!
 
-Mit freundlichen Grüßen,
+Mit freundlichen GrÃ¼ÃŸen,
 {{salon_name}}`,
         language: 'de'
       },
@@ -306,9 +306,9 @@ We look forward to seeing you!
         subject: 'Wie war Ihr Besuch bei {{salon_name}}?',
         body: `Hallo {{customer_name}},
 
-vielen Dank für Ihren Besuch bei uns!
+vielen Dank fÃ¼r Ihren Besuch bei uns!
 
-Wir würden uns sehr über Ihr Feedback freuen. Ihre Meinung hilft uns, unseren Service kontinuierlich zu verbessern.
+Wir wÃ¼rden uns sehr Ã¼ber Ihr Feedback freuen. Ihre Meinung hilft uns, unseren Service kontinuierlich zu verbessern.
 
 Bitte teilen Sie Ihre Erfahrung auf Google:
 {{google_review_url}}

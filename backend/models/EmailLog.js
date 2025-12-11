@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
 
 const emailLogSchema = new mongoose.Schema(
@@ -6,7 +6,7 @@ const emailLogSchema = new mongoose.Schema(
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,  // ✅ ADDED: Multi-tenant support
+      required: true,  // âœ… ADDED: Multi-tenant support
       index: true
     },
 
@@ -22,12 +22,12 @@ const emailLogSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 255  // ✅ ADDED: Validation
+      maxlength: 255  // âœ… ADDED: Validation
     },
 
     status: {
       type: String,
-      enum: ['sent', 'failed', 'pending', 'bounced'],  // ✅ ADDED: bounced status
+      enum: ['sent', 'failed', 'pending', 'bounced'],  // âœ… ADDED: bounced status
       default: 'pending',
       index: true
     },
@@ -35,8 +35,8 @@ const emailLogSchema = new mongoose.Schema(
     error: {
       type: String,
       default: null,
-      maxlength: 1000,  // ✅ ADDED: Limit error msg
-      sparse: true  // ✅ ADDED: Sparse index
+      maxlength: 1000,  // âœ… ADDED: Limit error msg
+      sparse: true  // âœ… ADDED: Sparse index
     },
 
     sentAt: {
@@ -47,61 +47,61 @@ const emailLogSchema = new mongoose.Schema(
 
     emailType: {
       type: String,
-      enum: ['booking-confirmation', 'booking-reminder', 'cancellation', 'review-request', 'password-reset', 'general'],  // ✅ IMPROVED: Specific types
+      enum: ['booking-confirmation', 'booking-reminder', 'cancellation', 'review-request', 'password-reset', 'general'],  // âœ… IMPROVED: Specific types
       default: 'general',
-      index: true  // ✅ ADDED: Index for filtering
+      index: true  // âœ… ADDED: Index for filtering
     },
 
     attempts: {
       type: Number,
       default: 1,
-      min: 1,  // ✅ ADDED: Validation
-      max: 10  // ✅ ADDED: Max retries
+      min: 1,  // âœ… ADDED: Validation
+      max: 10  // âœ… ADDED: Max retries
     },
 
     lastAttemptAt: {
       type: Date,
       default: Date.now,
-      sparse: true  // ✅ ADDED: Sparse index
+      sparse: true  // âœ… ADDED: Sparse index
     },
 
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null,
-      index: true,  // ✅ ADDED: Index
-      sparse: true  // ✅ ADDED: Sparse index
+      index: true,  // âœ… ADDED: Index
+      sparse: true  // âœ… ADDED: Sparse index
     },
 
     recipientName: {
       type: String,
       default: null,
-      sparse: true  // ✅ ADDED
+      sparse: true  // âœ… ADDED
     },
 
     emailContent: {
       type: String,
       default: null,
-      sparse: true  // ✅ ADDED: Store template used
+      sparse: true  // âœ… ADDED: Store template used
     },
 
     templateUsed: {
       type: String,
       default: null,
-      sparse: true  // ✅ ADDED: Track template
+      sparse: true  // âœ… ADDED: Track template
     },
 
     variables: {
       type: Map,
       of: String,
       default: {},
-      sparse: true  // ✅ ADDED: Store template variables
+      sparse: true  // âœ… ADDED: Store template variables
     },
 
     responseCode: {
       type: Number,
       default: null,
-      sparse: true  // ✅ ADDED: SMTP response code
+      sparse: true  // âœ… ADDED: SMTP response code
     },
 
     createdAt: {
@@ -121,21 +121,21 @@ const emailLogSchema = new mongoose.Schema(
 
 // ==================== INDEXES (OPTIMIZED) ====================
 
-// ✅ Primary queries - per company
+// âœ… Primary queries - per company
 emailLogSchema.index({ companyId: 1, recipientEmail: 1, sentAt: -1 });
 emailLogSchema.index({ companyId: 1, status: 1, sentAt: -1 });
 emailLogSchema.index({ companyId: 1, createdAt: -1 });
 
-// ✅ Email type queries
+// âœ… Email type queries
 emailLogSchema.index({ companyId: 1, emailType: 1, status: 1 });
 
-// ✅ User email queries
+// âœ… User email queries
 emailLogSchema.index({ companyId: 1, userId: 1, sentAt: -1 }, { sparse: true });
 
-// ✅ Failed email queries
+// âœ… Failed email queries
 emailLogSchema.index({ companyId: 1, status: 1, attempts: -1 });
 
-// ✅ TTL Index - auto-delete after 90 days
+// âœ… TTL Index - auto-delete after 90 days
 emailLogSchema.index(
   { createdAt: 1 },
   {
@@ -183,10 +183,10 @@ emailLogSchema.methods.markAsRetry = async function() {
     this.attempts += 1;
     this.lastAttemptAt = new Date();
     this.status = 'pending';
-    logger.log(`🔄 Email retry scheduled: ${this.recipientEmail} (Attempt ${this.attempts})`);
+    logger.log(`ðŸ”„ Email retry scheduled: ${this.recipientEmail} (Attempt ${this.attempts})`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as retry error:', err.message);
+    logger.error('âŒ Mark as retry error:', err.message);
     throw err;
   }
 };
@@ -196,10 +196,10 @@ emailLogSchema.methods.markAsSent = async function(responseCode = 250) {
     this.status = 'sent';
     this.sentAt = new Date();
     this.responseCode = responseCode;
-    logger.log(`✅ Email sent: ${this.recipientEmail}`);
+    logger.log(`âœ… Email sent: ${this.recipientEmail}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as sent error:', err.message);
+    logger.error('âŒ Mark as sent error:', err.message);
     throw err;
   }
 };
@@ -209,10 +209,10 @@ emailLogSchema.methods.markAsFailed = async function(errorMessage, errorCode = '
     this.status = 'failed';
     this.error = errorMessage;
     this.responseCode = errorCode;
-    logger.error(`❌ Email failed: ${this.recipientEmail} - ${errorMessage}`);
+    logger.error(`âŒ Email failed: ${this.recipientEmail} - ${errorMessage}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as failed error:', err.message);
+    logger.error('âŒ Mark as failed error:', err.message);
     throw err;
   }
 };
@@ -221,10 +221,10 @@ emailLogSchema.methods.markAsBounced = async function(bounceType = 'permanent') 
   try {
     this.status = 'bounced';
     this.error = `Email bounced (${bounceType})`;
-    logger.warn(`⚠️ Email bounced: ${this.recipientEmail} - ${bounceType}`);
+    logger.warn(`âš ï¸ Email bounced: ${this.recipientEmail} - ${bounceType}`);
     return await this.save();
   } catch (err) {
-    logger.error('❌ Mark as bounced error:', err.message);
+    logger.error('âŒ Mark as bounced error:', err.message);
     throw err;
   }
 };
@@ -247,12 +247,12 @@ emailLogSchema.statics.getFailedEmails = function(companyId, limit = 50) {
     return this.find({
       companyId,
       status: 'failed',
-      canRetry: true  // ✅ Only retry-able emails
+      canRetry: true  // âœ… Only retry-able emails
     })
       .sort({ lastAttemptAt: 1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get failed emails error:', err.message);
+    logger.error('âŒ Get failed emails error:', err.message);
     throw err;
   }
 };
@@ -265,7 +265,7 @@ emailLogSchema.statics.getSentCount = async function(companyId, startDate, endDa
       sentAt: { $gte: startDate, $lte: endDate }
     });
   } catch (err) {
-    logger.error('❌ Get sent count error:', err.message);
+    logger.error('âŒ Get sent count error:', err.message);
     throw err;
   }
 };
@@ -278,7 +278,7 @@ emailLogSchema.statics.getFailedCount = async function(companyId, startDate, end
       sentAt: { $gte: startDate, $lte: endDate }
     });
   } catch (err) {
-    logger.error('❌ Get failed count error:', err.message);
+    logger.error('âŒ Get failed count error:', err.message);
     throw err;
   }
 };
@@ -304,12 +304,12 @@ emailLogSchema.statics.getStatistics = async function(companyId, startDate, endD
       }
     ]);
   } catch (err) {
-    logger.error('❌ Get statistics error:', err.message);
+    logger.error('âŒ Get statistics error:', err.message);
     throw err;
   }
 };
 
-// ✅ NEW: Get email stats by type
+// âœ… NEW: Get email stats by type
 emailLogSchema.statics.getStatsByType = async function(companyId, startDate, endDate) {
   try {
     return this.aggregate([
@@ -330,12 +330,12 @@ emailLogSchema.statics.getStatsByType = async function(companyId, startDate, end
       }
     ]);
   } catch (err) {
-    logger.error('❌ Get stats by type error:', err.message);
+    logger.error('âŒ Get stats by type error:', err.message);
     throw err;
   }
 };
 
-// ✅ NEW: Get recipient email history
+// âœ… NEW: Get recipient email history
 emailLogSchema.statics.getRecipientHistory = function(companyId, recipientEmail, limit = 20) {
   try {
     return this.find({
@@ -345,12 +345,12 @@ emailLogSchema.statics.getRecipientHistory = function(companyId, recipientEmail,
       .sort({ createdAt: -1 })
       .limit(limit);
   } catch (err) {
-    logger.error('❌ Get recipient history error:', err.message);
+    logger.error('âŒ Get recipient history error:', err.message);
     throw err;
   }
 };
 
-// ✅ NEW: Get pending emails for retry
+// âœ… NEW: Get pending emails for retry
 emailLogSchema.statics.getPendingForRetry = function(companyId, maxAttempts = 10) {
   try {
     return this.find({
@@ -361,12 +361,12 @@ emailLogSchema.statics.getPendingForRetry = function(companyId, maxAttempts = 10
       .sort({ lastAttemptAt: 1 })
       .limit(100);  // Batch processing
   } catch (err) {
-    logger.error('❌ Get pending for retry error:', err.message);
+    logger.error('âŒ Get pending for retry error:', err.message);
     throw err;
   }
 };
 
-// ✅ NEW: Get bounced emails
+// âœ… NEW: Get bounced emails
 emailLogSchema.statics.getBouncedEmails = function(companyId, days = 30) {
   try {
     const startDate = new Date();
@@ -378,12 +378,12 @@ emailLogSchema.statics.getBouncedEmails = function(companyId, days = 30) {
       createdAt: { $gte: startDate }
     }).sort({ createdAt: -1 });
   } catch (err) {
-    logger.error('❌ Get bounced emails error:', err.message);
+    logger.error('âŒ Get bounced emails error:', err.message);
     throw err;
   }
 };
 
-// ✅ NEW: Get email delivery rate
+// âœ… NEW: Get email delivery rate
 emailLogSchema.statics.getDeliveryRate = async function(companyId, days = 7) {
   try {
     const startDate = new Date();
@@ -425,7 +425,7 @@ emailLogSchema.statics.getDeliveryRate = async function(companyId, days = 7) {
 
     return stats[0] || { total: 0, sent: 0, failed: 0, bounced: 0, deliveryRate: 0 };
   } catch (err) {
-    logger.error('❌ Get delivery rate error:', err.message);
+    logger.error('âŒ Get delivery rate error:', err.message);
     throw err;
   }
 };
@@ -445,7 +445,7 @@ emailLogSchema.pre('save', async function(next) {
 
     next();
   } catch (err) {
-    logger.error('❌ Pre-save hook error:', err.message);
+    logger.error('âŒ Pre-save hook error:', err.message);
     next(err);
   }
 });

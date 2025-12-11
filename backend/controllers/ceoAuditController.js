@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Audit Log Controller
  * Security audit trail management
@@ -9,33 +9,33 @@ import AuditLog from '../models/AuditLog.js';
 // ==================== GET AUDIT LOGS ====================
 export const getAuditLogs = async (req, res) => {
   try {
-    const { 
-      category, 
+    const {
+      category,
       action,
       userId,
       resourceType,
       status,
       startDate,
       endDate,
-      page = 1, 
+      page = 1,
       limit = 50,
-      search 
+      search
     } = req.query;
 
     const query = {};
-    
+
     if (category) query.category = category;
     if (action) query.action = { $regex: action, $options: 'i' };
     if (userId) query.userId = userId;
     if (resourceType) query.resourceType = resourceType;
     if (status) query.status = status;
-    
+
     if (startDate || endDate) {
       query.createdAt = {};
       if (startDate) query.createdAt.$gte = new Date(startDate);
       if (endDate) query.createdAt.$lte = new Date(endDate);
     }
-    
+
     if (search) {
       query.$or = [
         { userEmail: { $regex: search, $options: 'i' } },
@@ -99,7 +99,7 @@ export const getLogDetails = async (req, res) => {
 export const getAuditStats = async (req, res) => {
   try {
     const { period = '7d' } = req.query;
-    
+
     const now = new Date();
     let startDate;
     switch (period) {
@@ -249,7 +249,7 @@ export const exportAuditLogs = async (req, res) => {
       const fields = ['createdAt', 'userEmail', 'action', 'category', 'status', 'ipAddress', 'description'];
       const csv = [
         fields.join(','),
-        ...logs.map(log => 
+        ...logs.map(log =>
           fields.map(f => `"${(log[f] || '').toString().replace(/"/g, '""')}"`).join(',')
         )
       ].join('\n');
