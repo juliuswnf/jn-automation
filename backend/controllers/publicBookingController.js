@@ -23,6 +23,10 @@ export const getAllSalons = async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
+    // Debug: Log all salons count
+    const allSalonsCount = await Salon.countDocuments({});
+    logger.info(`Total salons in DB: ${allSalonsCount}`);
+
     // Get all salons (show all for now, can filter by subscription later)
     // For production: filter by subscription.status: 'active' or 'trialing'
     const salons = await Salon.find({})
@@ -30,6 +34,8 @@ export const getAllSalons = async (req, res) => {
       .sort({ name: 1 })
       .skip(skip)
       .limit(limit);
+
+    logger.info(`Found ${salons.length} salons after query`);
 
     const total = await Salon.countDocuments({});
 
