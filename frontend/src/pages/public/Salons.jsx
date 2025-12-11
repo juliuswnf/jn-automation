@@ -57,7 +57,7 @@ const Salons = () => {
   const cities = [...new Set(salons.map(s => s.city || s.address?.city).filter(Boolean))];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* SEO Header */}
       <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,7 +77,7 @@ const Salons = () => {
                 placeholder="Salonname oder Stadt eingeben..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-12 pr-4 py-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -86,17 +86,17 @@ const Salons = () => {
 
       {/* City Quick Filters */}
       {cities.length > 0 && (
-        <div className="bg-white border-b">
+        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-2 overflow-x-auto">
-              <span className="text-sm text-gray-600 font-medium whitespace-nowrap">
+              <span className="text-sm text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap">
                 Beliebte Städte:
               </span>
               {cities.slice(0, 8).map(city => (
                 <Link
                   key={city}
                   to={`/salons/${city.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')}`}
-                  className="px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-700 hover:text-indigo-700 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
                 >
                   {city}
                 </Link>
@@ -111,23 +111,23 @@ const Salons = () => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 animate-pulse">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
               </div>
             ))}
           </div>
         ) : filteredSalons.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
               Keine Salons gefunden. Versuche einen anderen Suchbegriff.
             </p>
           </div>
         ) : (
           <>
             <div className="mb-6">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 {filteredSalons.length} {filteredSalons.length === 1 ? 'Salon' : 'Salons'} gefunden
               </p>
             </div>
@@ -136,15 +136,15 @@ const Salons = () => {
               {filteredSalons.map((salon) => (
                 <div
                   key={salon._id}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-200"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                     {salon.name}
                   </h3>
 
                   {/* Location */}
-                  <div className="flex items-start gap-2 text-gray-600 mb-3">
-                    <MapPinIcon className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400 mb-3">
+                    <MapPinIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
                     <div className="text-sm">
                       {salon.address?.street && <div>{salon.address.street}</div>}
                       <div>
@@ -155,7 +155,7 @@ const Salons = () => {
 
                   {/* Service Count */}
                   {salon.serviceCount > 0 && (
-                    <div className="text-sm text-gray-500 mb-4">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                       {salon.serviceCount} {salon.serviceCount === 1 ? 'Service' : 'Services'} verfügbar
                     </div>
                   )}
@@ -178,17 +178,17 @@ const Salons = () => {
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                   disabled={pagination.page === 1}
-                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Zurück
                 </button>
-                <span className="px-4 py-2 text-gray-700">
+                <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
                   Seite {pagination.page} von {pagination.pages}
                 </span>
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={pagination.page === pagination.pages}
-                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Weiter
                 </button>
