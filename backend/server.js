@@ -9,6 +9,16 @@ import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import logger from './utils/logger.js';
+import structuredLogger, { addRequestContext } from './utils/structuredLogger.js';
+import { generalLimiter, getRateLimitStatus, resetRateLimiter } from './middleware/rateLimiterMiddleware.js';
+import requestTimingMiddleware from './middleware/requestTimingMiddleware.js';
+import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
+import { initializeCronJobs } from './services/cronService.js';
+import emailQueueWorker from './workers/emailQueueWorker.js';
+import lifecycleEmailWorker from './workers/lifecycleEmailWorker.js';
+import { getHealthStatus } from './services/healthCheckService.js';
+import { getMetrics } from './services/metricsService.js';
 
 // Load environment variables
 dotenv.config();
@@ -105,6 +115,9 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 
 // 4️⃣ LOGGING & MONITORING
+// ✅ AUDIT FIX: Add request context middleware for structured logging
+app.use(addRequestContext);
+
 if (ENVIRONMENT === 'development') {
   app.use(morgan('dev'));
 } else {

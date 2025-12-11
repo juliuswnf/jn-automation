@@ -1,4 +1,5 @@
 ﻿import logger from '../utils/logger.js';
+import timezoneHelpers from '../utils/timezoneHelpers.js';
 import { 
   escapeRegex, 
   sanitizePagination, 
@@ -402,8 +403,24 @@ export const createPublicBooking = async (req, res) => {
     }
 
     // Validate and parse date
-    const parsedBookingDate = parseValidDate(bookingDate);
-    if (!parsedBookingDate) {
+    // ✅ AUDIT FIX: Support both legacy ISO string and new { date, time } format
+    let parsedBookingDate;
+    
+    if (typeof bookingDate === 'string') {
+      // Legacy format: ISO string
+      parsedBookingDate = parseValidDate(bookingDate);
+    } else if (bookingDate.date && bookingDate.time) {
+      // ✅ NEW FORMAT: { date: "2025-12-11", time: "14:00" }
+      // Salon loaded below, validate after getting salon
+      parsedBookingDate = null; // Will be set after salon loaded
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid bookingDate format. Use { date: "YYYY-MM-DD", time: "HH:mm" }'
+      });
+    }
+
+    if (!parsedBookingDate && typeof bookingDate === 'string') {
       return res.status(400).json({
         success: false,
         message: 'Invalid date format'
@@ -437,6 +454,30 @@ export const createPublicBooking = async (req, res) => {
         success: false,
         message: 'Salon not found'
       });
+    }
+
+    // ✅ AUDIT FIX: Convert bookingDate to UTC using salon timezone
+    if (!parsedBookingDate && bookingDate.date && bookingDate.time) {
+      // Validate booking time (DST check)
+      const validation = timezoneHelpers.validateBookingTime(
+        bookingDate.date,
+        bookingDate.time,
+        salon.timezone || 'Europe/Berlin'
+      );
+
+      if (!validation.valid) {
+        return res.status(400).json({
+          success: false,
+          message: validation.error || 'Invalid booking time'
+        });
+      }
+
+      // Convert to UTC
+      parsedBookingDate = timezoneHelpers.toUTC(
+        bookingDate.date,
+        bookingDate.time,
+        salon.timezone || 'Europe/Berlin'
+      );
     }
 
     // Check subscription

@@ -1,4 +1,5 @@
 ﻿import mongoose from 'mongoose';
+import { multiTenantPlugin } from '../middleware/multiTenantPlugin.js';
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -376,6 +377,9 @@ bookingSchema.index({ salonId: 1, status: 1, bookingDate: -1 }); // Filter by st
 bookingSchema.index({ salonId: 1, employeeId: 1, bookingDate: 1 }); // Employee schedule
 bookingSchema.index({ customerEmail: 1, salonId: 1 }); // Customer lookup
 bookingSchema.index({ salonId: 1, createdAt: -1 }); // Recent bookings
+
+// ✅ AUDIT FIX: Multi-tenant plugin for automatic salonId filtering
+bookingSchema.plugin(multiTenantPlugin);
 
 // ==================== EXPORT ====================
 

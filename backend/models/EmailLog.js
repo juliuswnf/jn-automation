@@ -1,5 +1,6 @@
 ﻿import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
+import { multiTenantPlugin } from '../middleware/multiTenantPlugin.js';
 
 const emailLogSchema = new mongoose.Schema(
   {
@@ -445,11 +446,13 @@ emailLogSchema.pre('save', async function(next) {
 
     next();
   } catch (err) {
-    logger.error('âŒ Pre-save hook error:', err.message);
+    logger.error('❌ Pre-save hook error:', err.message);
     next(err);
   }
 });
 
+// ✅ AUDIT FIX: Multi-tenant plugin (companyId = salonId)
+emailLogSchema.plugin(multiTenantPlugin);
 
 // ==================== EXPORT ====================
 

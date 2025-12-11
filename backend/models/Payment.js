@@ -1,5 +1,6 @@
 ﻿import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
+import { multiTenantPlugin } from '../middleware/multiTenantPlugin.js';
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -862,11 +863,13 @@ paymentSchema.pre('save', async function(next) {
     this.updatedAt = new Date();
     next();
   } catch (err) {
-    logger.error('âŒ Pre-save hook error:', err.message);
+    logger.error('❌ Pre-save hook error:', err.message);
     next(err);
   }
 });
 
+// ✅ AUDIT FIX: Multi-tenant plugin (companyId = salonId)
+paymentSchema.plugin(multiTenantPlugin);
 
 // ==================== EXPORT ====================
 
