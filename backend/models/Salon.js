@@ -34,7 +34,8 @@ const salonSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true // ✅ Performance optimization for owner queries
   },
 
   // Contact & Location
@@ -167,7 +168,8 @@ const salonSchema = new mongoose.Schema({
   // Status
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
+    index: true // ✅ Performance optimization for active salon queries
   },
   isPremium: {
     type: Boolean,
@@ -210,6 +212,8 @@ salonSchema.index({ owner: 1 });
 salonSchema.index({ 'subscription.status': 1 });
 salonSchema.index({ isActive: 1 });
 salonSchema.index({ deletedAt: 1 }); // For soft delete queries
+salonSchema.index({ owner: 1, isActive: 1 }); // ✅ Compound index for owner's active salons
+salonSchema.index({ owner: 1, deletedAt: 1 }); // ✅ Compound index for owner's non-deleted salons
 
 // ==================== QUERY MIDDLEWARE - EXCLUDE DELETED ====================
 

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
 import hpp from 'hpp';
 import compression from 'compression';
 import morgan from 'morgan';
@@ -97,7 +98,8 @@ app.post('/api/rate-limit/reset', resetRateLimiter);
 // ==================== MIDDLEWARE EXECUTION ORDER ====================
 // 1️⃣ SECURITY FIRST
 app.use(helmet());
-app.use(mongoSanitize());
+app.use(mongoSanitize()); // ✅ Prevent MongoDB injection
+app.use(xss()); // ✅ FREE OPTIMIZATION: XSS protection
 app.use(hpp());
 // Compression should be applied after security middleware
 app.use(compression());

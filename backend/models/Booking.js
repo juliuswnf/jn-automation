@@ -78,19 +78,19 @@ const bookingSchema = new mongoose.Schema(
       min: 15
     },
 
-    notes: {
-      type: String,
-      trim: true,
-      maxlength: 500,
-      default: ''
-    },
-
     // ==================== Status ====================
     status: {
       type: String,
       enum: ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'],
       default: 'pending',
-      index: true
+      index: true // ✅ Performance optimization
+    },
+
+    notes: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: ''
     },
 
     // ==================== Payment ====================
@@ -172,6 +172,9 @@ bookingSchema.index({ status: 1, bookingDate: 1 });
 bookingSchema.index({ bookingDate: 1, status: 1 });
 bookingSchema.index({ employeeId: 1, bookingDate: 1 });
 bookingSchema.index({ deletedAt: 1 }); // For soft delete queries
+bookingSchema.index({ customerId: 1, bookingDate: -1 }); // ✅ Customer booking history (descending)
+bookingSchema.index({ salonId: 1, createdAt: -1 }); // ✅ Recent bookings per salon
+bookingSchema.index({ paymentStatus: 1, bookingDate: 1 }); // ✅ Payment tracking
 
 // ==================== QUERY MIDDLEWARE - EXCLUDE DELETED ====================
 
