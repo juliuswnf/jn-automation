@@ -568,6 +568,7 @@ export const createPublicBooking = async (req, res) => {
 export default {
   getAllSalons,
   searchSalons,
+  getSalonsByCity,
   getSalonBySlug,
   getAvailableSlots,
   createPublicBooking
