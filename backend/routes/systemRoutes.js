@@ -140,7 +140,8 @@ router.post('/backups/restore', async (req, res) => {
       success: true,
       message: 'Restore completed',
       ...result
-    });\n  } catch (error) {
+    });
+  } catch (error) {
     logger.error('❌ Restore failed:', error);
     return res.status(500).json({
       success: false,

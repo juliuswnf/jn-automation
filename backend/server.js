@@ -13,13 +13,12 @@ import dotenv from 'dotenv';
 import logger from './utils/logger.js';
 import structuredLogger, { addRequestContext } from './utils/structuredLogger.js';
 import { generalLimiter, getRateLimitStatus, resetRateLimiter } from './middleware/rateLimiterMiddleware.js';
-import requestTimingMiddleware from './middleware/requestTimingMiddleware.js';
+import { requestTimingMiddleware } from './services/monitoringService.js';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
 import { initializeCronJobs } from './services/cronService.js';
 import emailQueueWorker from './workers/emailQueueWorker.js';
 import lifecycleEmailWorker from './workers/lifecycleEmailWorker.js';
-import { getHealthStatus } from './services/healthCheckService.js';
-import { getMetrics } from './services/metricsService.js';
+import { getHealthStatus, getMetrics } from './services/healthCheckService.js';
 
 // Load environment variables
 dotenv.config();
@@ -39,20 +38,10 @@ import systemRoutes from './routes/systemRoutes.js'; // ✅ MEDIUM FIX #13 & #14
 
 // Import Middleware
 import authMiddleware from './middleware/authMiddleware.js';
-import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
-import { generalLimiter, getRateLimitStatus, resetRateLimiter } from './middleware/rateLimiterMiddleware.js';
 import webhookMiddleware from './middleware/webhookMiddleware.js';
 
 // Import Controllers
 import stripeWebhookController from './controllers/stripeWebhookController.js';
-
-// Import Services
-import { initializeCronJobs } from './services/cronService.js';
-import emailQueueWorker from './workers/emailQueueWorker.js';
-import lifecycleEmailWorker from './workers/lifecycleEmailWorker.js';
-import logger from './utils/logger.js';
-import { requestTimingMiddleware, getHealthStatus, getMetrics } from './services/monitoringService.js';
-import alertingService from './services/alertingService.js';
 
 // Initialize Express App
 const app = express();
