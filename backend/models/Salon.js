@@ -160,6 +160,19 @@ const salonSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+
+  // ==================== SOFT DELETE ====================
+  deletedAt: {
+    type: Date,
+    default: null,
+    index: true
+  },
+
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   }
 }, {
   timestamps: true
@@ -170,6 +183,41 @@ salonSchema.index({ slug: 1 });
 salonSchema.index({ owner: 1 });
 salonSchema.index({ 'subscription.status': 1 });
 salonSchema.index({ isActive: 1 });
+salonSchema.index({ deletedAt: 1 }); // For soft delete queries
+
+// ==================== QUERY MIDDLEWARE - EXCLUDE DELETED ====================
+
+// Automatically exclude soft-deleted documents from queries
+salonSchema.pre(/^find/, function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
+
+salonSchema.pre('countDocuments', function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
+
+// ==================== CASCADE DELETE PREVENTION ====================
+
+salonSchema.pre('findOneAndDelete', async function(next) {
+  const salon = await this.model.findOne(this.getFilter());
+  if (!salon) return next();
+
+  const error = new Error('Direct deletion not allowed. Use softDelete method instead.');
+  error.name = 'CascadeDeleteError';
+  return next(error);
+});
+
+salonSchema.pre('deleteOne', async function(next) {
+  const error = new Error('Direct deletion not allowed. Use softDelete method instead.');
+  error.name = 'CascadeDeleteError';
+  return next(error);
+});
 
 // Virtual for public booking URL
 salonSchema.virtual('bookingUrl').get(function() {
@@ -357,6 +405,96 @@ salonSchema.pre('save', function(next) {
 
   next();
 });
+
+// Soft delete method with cascade to related data
+salonSchema.methods.softDeleteWithCascade = async function(userId) {
+  const Service = mongoose.model('Service');
+  const Booking = mongoose.model('Booking');
+  const Widget = mongoose.model('Widget');
+  const User = mongoose.model('User');
+
+  // Soft delete the salon
+  this.deletedAt = new Date();
+  this.deletedBy = userId;
+  this.isActive = false;
+
+  // Soft delete all related services
+  await Service.updateMany(
+    { companyId: this._id },
+    { 
+      deletedAt: new Date(),
+      deletedBy: userId,
+      isAvailable: false
+    }
+  );
+
+  // Soft delete all related bookings
+  await Booking.updateMany(
+    { salonId: this._id },
+    { 
+      deletedAt: new Date(),
+      deletedBy: userId,
+      status: 'cancelled'
+    }
+  );
+
+  // Hard delete widget (no sensitive data)
+  await Widget.deleteOne({ salonId: this._id });
+
+  // Archive employees (don't break their accounts)
+  await User.updateMany(
+    { salonId: this._id, role: 'employee' },
+    { 
+      isActive: false,
+      salonId: null
+    }
+  );
+
+  return await this.save();
+};
+
+// Restore soft-deleted salon and related data
+salonSchema.methods.restoreWithCascade = async function() {
+  const Service = mongoose.model('Service');
+  const Booking = mongoose.model('Booking');
+
+  // Restore the salon
+  this.deletedAt = null;
+  this.deletedBy = null;
+  this.isActive = true;
+
+  // Restore all related services
+  await Service.updateMany(
+    { companyId: this._id, deletedAt: { $ne: null } },
+    { 
+      deletedAt: null,
+      deletedBy: null,
+      isAvailable: true
+    }
+  );
+
+  // Restore bookings (only future ones)
+  const now = new Date();
+  await Booking.updateMany(
+    { 
+      salonId: this._id, 
+      deletedAt: { $ne: null },
+      bookingDate: { $gte: now }
+    },
+    { 
+      deletedAt: null,
+      deletedBy: null,
+      status: 'pending'
+    }
+  );
+
+  return await this.save();
+};
+
+// Check if soft-deleted
+salonSchema.methods.isDeleted = function() {
+  return this.deletedAt !== null;
+};
 
 // Statics
 salonSchema.statics.findBySlug = function(slug) {

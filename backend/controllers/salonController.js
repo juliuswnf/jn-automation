@@ -79,13 +79,31 @@ export const getSalonServices = async (req, res) => {
   try {
     const salonId = req.params.salonId || req.user.salonId;
 
+    // ✅ PAGINATION - prevent unbounded queries (DoS protection)
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50)); // Default 50, max 100
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination metadata
+    const total = await Service.countDocuments({ salonId });
+
     const services = await Service.find({ salonId })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json({
       success: true,
       count: services.length,
-      services
+      services,
+      // ✅ Pagination metadata
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+        hasMore: skip + services.length < total
+      }
     });
   } catch (error) {
     logger.error('GetSalonServices Error:', error);

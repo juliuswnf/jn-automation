@@ -231,8 +231,27 @@ export const updateBooking = async (req, res) => {
 
     const { bookingDate, status, notes } = req.body;
 
+    // Load booking first
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    // ✅ TENANT ISOLATION CHECK
+    if (req.user.role !== 'ceo' && booking.salonId.toString() !== req.user.salonId?.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - Resource belongs to another salon'
+      });
+    }
+
     // Build update data with validation
-    let updateData = { status, notes, updatedAt: Date.now() };
+    if (status) booking.status = status;
+    if (notes !== undefined) booking.notes = notes;
     
     if (bookingDate) {
       const parsedDate = parseValidDate(bookingDate);
@@ -242,29 +261,21 @@ export const updateBooking = async (req, res) => {
           message: 'Invalid date format'
         });
       }
-      updateData.bookingDate = parsedDate;
+      booking.bookingDate = parsedDate;
     }
 
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    ).populate('serviceId');
+    booking.updatedAt = Date.now();
 
-    if (!booking) {
-      return res.status(404).json({
-        success: false,
-        message: 'Booking not found'
-      });
-    }
+    await booking.save();
+    await booking.populate('serviceId');
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       booking
     });
   } catch (error) {
     logger.error('UpdateBooking Error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error'
     });
@@ -275,11 +286,15 @@ export const updateBooking = async (req, res) => {
 
 export const confirmBooking = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      { status: 'confirmed', confirmedAt: Date.now() },
-      { new: true }
-    ).populate('serviceId');
+    // Validate ObjectId
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid booking ID format'
+      });
+    }
+
+    const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
       return res.status(404).json({
@@ -288,14 +303,27 @@ export const confirmBooking = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    // ✅ TENANT ISOLATION CHECK
+    if (req.user.role !== 'ceo' && booking.salonId.toString() !== req.user.salonId?.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - Resource belongs to another salon'
+      });
+    }
+
+    booking.status = 'confirmed';
+    booking.confirmedAt = Date.now();
+    await booking.save();
+    await booking.populate('serviceId');
+
+    return res.status(200).json({
       success: true,
       message: 'Booking confirmed',
       booking
     });
   } catch (error) {
     logger.error('ConfirmBooking Error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error'
     });
@@ -306,11 +334,15 @@ export const confirmBooking = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      { status: 'cancelled', cancelledAt: Date.now() },
-      { new: true }
-    ).populate('serviceId');
+    // Validate ObjectId
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid booking ID format'
+      });
+    }
+
+    const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
       return res.status(404).json({
@@ -319,7 +351,80 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    // ✅ TENANT ISOLATION CHECK
+    if (req.user.role !== 'ceo' && booking.salonId.toString() !== req.user.salonId?.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - Resource belongs to another salon'
+      });
+    }
+
+    booking.status = 'cancelled';
+    booking.cancelledAt = Date.now();
+    await booking.save();
+    await booking.populate('serviceId');
+
+    return res.status(200).json({
+      success: true,
+      message: 'Booking cancelled',
+      booking
+    });
+  } catch (error) {
+    logger.error('CancelBooking Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+// ==================== COMPLETE BOOKING ====================
+
+export const completeBooking = async (req, res) => {
+  try {
+    // Validate ObjectId
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid booking ID format'
+      });
+    }
+
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    // ✅ TENANT ISOLATION CHECK
+    if (req.user.role !== 'ceo' && booking.salonId.toString() !== req.user.salonId?.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - Resource belongs to another salon'
+      });
+    }
+
+    booking.status = 'completed';
+    booking.completedAt = Date.now();
+    await booking.save();
+    await booking.populate('serviceId');
+
+    return res.status(200).json({
+      success: true,
+      message: 'Booking completed',
+      booking
+    });
+  } catch (error) {
+    logger.error('CompleteBooking Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+};
       success: true,
       message: 'Booking cancelled',
       booking
@@ -368,7 +473,15 @@ export const completeBooking = async (req, res) => {
 
 export const deleteBooking = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndDelete(req.params.id);
+    // Validate ObjectId
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid booking ID format'
+      });
+    }
+
+    const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
       return res.status(404).json({
@@ -377,13 +490,24 @@ export const deleteBooking = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    // ✅ TENANT ISOLATION CHECK
+    if (req.user.role !== 'ceo' && booking.salonId.toString() !== req.user.salonId?.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - Resource belongs to another salon'
+      });
+    }
+
+    // ✅ SOFT DELETE instead of hard delete
+    await booking.softDelete(req.user.id);
+
+    return res.status(200).json({
       success: true,
-      message: 'Booking deleted'
+      message: 'Booking deleted successfully'
     });
   } catch (error) {
     logger.error('DeleteBooking Error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error'
     });
@@ -457,15 +581,21 @@ export const getBookingsByDate = async (req, res) => {
       filter.salonId = salonId;
     }
 
+    // ✅ PAGINATION - single day should be reasonable, but limit for safety
+    const limit = Math.min(500, parseInt(req.query.limit) || 500); // Max 500 bookings per day
+
     const bookings = await Booking.find(filter)
       .populate('serviceId', 'name duration')
       .populate('employeeId', 'name')
-      .sort({ bookingDate: 1 });
+      .sort({ bookingDate: 1 })
+      .limit(limit);
 
     res.status(200).json({
       success: true,
       count: bookings.length,
-      bookings
+      bookings,
+      // Warning if limit reached
+      ...(bookings.length === limit && { warning: 'Result limit reached, some bookings may not be shown' })
     });
   } catch (error) {
     logger.error('GetBookingsByDate Error:', error);

@@ -327,8 +327,21 @@ const paymentSchema = new mongoose.Schema(
 
     completedAt: {
       type: Date,
-      sparse: true,  // âœ… Added
+      sparse: true,  // ✅ Added
       index: true
+    },
+
+    // ==================== SOFT DELETE ====================
+    deletedAt: {
+      type: Date,
+      default: null,
+      index: true
+    },
+
+    deletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     }
   },
   { timestamps: true }
@@ -337,17 +350,37 @@ const paymentSchema = new mongoose.Schema(
 
 // ==================== INDEXES (OPTIMIZED) ====================
 
-// âœ… Primary queries
+// ✅ Primary queries
 paymentSchema.index({ companyId: 1, status: 1, createdAt: -1 });
 paymentSchema.index({ companyId: 1, createdAt: -1 });
 
-// âœ… Customer queries
+// ✅ Customer queries
 paymentSchema.index({ companyId: 1, customerId: 1, createdAt: -1 }, { sparse: true });
 
-// âœ… Booking queries
+// ✅ Booking queries
 paymentSchema.index({ bookingId: 1, status: 1 });
 
-// âœ… Status queries
+// ✅ Soft delete queries
+paymentSchema.index({ deletedAt: 1 });
+
+// ==================== QUERY MIDDLEWARE - EXCLUDE DELETED ====================
+
+// Automatically exclude soft-deleted documents from queries
+paymentSchema.pre(/^find/, function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
+
+paymentSchema.pre('countDocuments', function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
+
+// ✅ Status queries
 paymentSchema.index({ status: 1, createdAt: -1 });
 
 // âœ… Transaction tracking

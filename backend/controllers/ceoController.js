@@ -276,7 +276,8 @@ export const deleteBusiness = async (req, res) => {
 
     const { businessId } = req.params;
 
-    const salon = await Salon.findByIdAndDelete(businessId);
+    // Load salon to check existence
+    const salon = await Salon.findById(businessId);
 
     if (!salon) {
       return res.status(404).json({
@@ -285,9 +286,14 @@ export const deleteBusiness = async (req, res) => {
       });
     }
 
+    // ✅ SOFT DELETE WITH CASCADE - preserves data and handles related records
+    await salon.softDeleteWithCascade(req.user._id);
+
+    logger.info(`Salon soft-deleted with cascade: ${salon.name} (ID: ${businessId}) by CEO ${req.user._id}`);
+
     res.status(200).json({
       success: true,
-      message: 'Salon deleted successfully'
+      message: 'Salon deleted successfully (soft delete with cascade)'
     });
   } catch (error) {
     logger.error('DeleteBusiness Error:', error);

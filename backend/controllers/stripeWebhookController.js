@@ -7,6 +7,7 @@
 import Stripe from 'stripe';
 import stripeService from '../services/stripeService.js';
 import Salon from '../models/Salon.js';
+import StripeEvent from '../models/StripeEvent.js';
 
 // Lazy initialization of Stripe (after dotenv is loaded)
 let stripe = null;
@@ -59,9 +60,20 @@ export const handleStripeWebhook = async (req, res) => {
       });
     }
 
-    logger.log(`âœ… Stripe webhook received: ${event.type}`);
+    logger.log(`âœ… Stripe webhook received: ${event.type} (ID: ${event.id})`);
 
-    // Handle different event types
+    // ✅ IDEMPOTENCY CHECK - prevent duplicate processing
+    const alreadyProcessed = await StripeEvent.hasBeenProcessed(event.id);
+    if (alreadyProcessed) {
+      logger.log(`âš ï¸ Event ${event.id} already processed, skipping...`);
+      return res.status(200).json({ received: true, duplicate: true });
+    }
+
+    // Record event in database (idempotent)
+    const stripeEventRecord = await StripeEvent.recordEvent(event.id, event.type, event.data.object);
+
+    try {
+      // Handle different event types
     switch (event.type) {
     // ==================== SUBSCRIPTION EVENTS ====================
 
@@ -126,12 +138,20 @@ export const handleStripeWebhook = async (req, res) => {
       break;
 
     default:
-      logger.log(`âš ï¸ Unhandled webhook event type: ${event.type}`);
+      logger.log(`âš ï¸ Unhandled webhook event type: ${event.type}`);
     }
 
-    res.status(200).json({ received: true });
+      // ✅ Mark event as successfully processed
+      await stripeEventRecord.markProcessed();
+
+      res.status(200).json({ received: true });
+    } catch (processingError) {
+      // Mark event as failed for retry
+      await stripeEventRecord.markFailed(processingError.message);
+      throw processingError; // Re-throw to outer catch block
+    }
   } catch (error) {
-    logger.error('âŒ Stripe Webhook Error:', error);
+    logger.error('âŒ Stripe Webhook Error:', error);
     res.status(400).json({
       success: false,
       message: 'Webhook processing error',

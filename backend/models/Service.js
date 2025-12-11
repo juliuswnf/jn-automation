@@ -336,8 +336,21 @@ const serviceSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      sparse: true,  // âœ… Added
+      sparse: true,  // ✅ Added
       index: true
+    },
+
+    // ==================== SOFT DELETE ====================
+    deletedAt: {
+      type: Date,
+      default: null,
+      index: true
+    },
+
+    deletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     }
   },
   { timestamps: true }
@@ -354,7 +367,24 @@ serviceSchema.index({ isFeatured: 1, rating: -1, createdAt: -1 });
 serviceSchema.index({ companyId: 1, price: 1 });
 serviceSchema.index({ isBestseller: 1, totalBookings: -1 });
 serviceSchema.index({ isNewService: 1, newUntil: -1 });
+serviceSchema.index({ deletedAt: 1 }); // For soft delete queries
 
+// ==================== QUERY MIDDLEWARE - EXCLUDE DELETED ====================
+
+// Automatically exclude soft-deleted documents from queries
+serviceSchema.pre(/^find/, function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
+
+serviceSchema.pre('countDocuments', function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
 
 // ==================== VIRTUALS ====================
 
@@ -486,9 +516,29 @@ serviceSchema.methods.incrementViewCount = async function() {
     this.viewCount += 1;
     return await this.save();
   } catch (err) {
-    logger.error('âŒ Increment view count error:', err.message);
+    logger.error('❌ Increment view count error:', err.message);
     throw err;
   }
+};
+
+// Soft delete method
+serviceSchema.methods.softDelete = async function(userId) {
+  this.deletedAt = new Date();
+  this.deletedBy = userId;
+  this.isAvailable = false; // Also mark as unavailable
+  return await this.save();
+};
+
+// Restore soft-deleted service
+serviceSchema.methods.restore = async function() {
+  this.deletedAt = null;
+  this.deletedBy = null;
+  return await this.save();
+};
+
+// Check if soft-deleted
+serviceSchema.methods.isDeleted = function() {
+  return this.deletedAt !== null;
 };
 
 serviceSchema.methods.markAsFeatured = async function(daysValid = 30) {

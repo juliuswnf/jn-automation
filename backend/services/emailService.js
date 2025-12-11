@@ -84,21 +84,35 @@ export const sendEmail = async (emailData) => {
 
 export const sendBookingConfirmation = async (booking) => {
   try {
-    await booking.populate('salonId serviceId');
+    // ✅ RACE CONDITION FIX - Load fresh immutable snapshot with .lean()
+    // This prevents "booking modified after email queued" bug (GDPR violation)
+    const bookingSnapshot = await booking.constructor
+      .findById(booking._id)
+      .populate('salonId serviceId')
+      .lean(); // Immutable snapshot - cannot be modified
 
-    const salon = booking.salonId;
-    const service = booking.serviceId;
+    if (!bookingSnapshot) {
+      throw new Error('Booking not found');
+    }
+
+    const salon = bookingSnapshot.salonId;
+    const service = bookingSnapshot.serviceId;
+
+    // Validate email recipient (prevent sending to wrong email after update)
+    if (!bookingSnapshot.customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingSnapshot.customerEmail)) {
+      throw new Error('Invalid customer email address');
+    }
 
     // Get email template
-    const template = salon.getEmailTemplate('confirmation', booking.language);
+    const template = salon.getEmailTemplate('confirmation', bookingSnapshot.language);
     if (!template) {
       throw new Error('Confirmation email template not found');
     }
 
     // Format date and time
-    const bookingDate = new Date(booking.bookingDate);
-    const dateStr = bookingDate.toLocaleDateString(booking.language === 'de' ? 'de-DE' : 'en-US');
-    const timeStr = bookingDate.toLocaleTimeString(booking.language === 'de' ? 'de-DE' : 'en-US', {
+    const bookingDate = new Date(bookingSnapshot.bookingDate);
+    const dateStr = bookingDate.toLocaleDateString(bookingSnapshot.language === 'de' ? 'de-DE' : 'en-US');
+    const timeStr = bookingDate.toLocaleTimeString(bookingSnapshot.language === 'de' ? 'de-DE' : 'en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -126,18 +140,24 @@ export const sendBookingConfirmation = async (booking) => {
       salon_phone: salon.phone || ''
     });
 
-    // Queue email
+    // Queue email with audit trail
     await EmailQueue.create({
-      to: booking.customerEmail,
+      to: bookingSnapshot.customerEmail,
       subject,
       body,
       type: 'booking_confirmation',
-      bookingId: booking._id,
+      bookingId: bookingSnapshot._id,
       priority: 'high',
-      language: booking.language
+      language: bookingSnapshot.language,
+      // ✅ Audit metadata for GDPR compliance
+      metadata: {
+        customerName: bookingSnapshot.customerName,
+        salonId: salon._id.toString(),
+        capturedAt: new Date()
+      }
     });
 
-    logger.log(`âœ… Confirmation email queued for: ${booking.customerEmail}`);
+    logger.log(`âœ… Confirmation email queued for: ${bookingSnapshot.customerEmail} (Booking: ${bookingSnapshot._id})`);
 
     return { success: true };
   } catch (error) {
@@ -150,21 +170,34 @@ export const sendBookingConfirmation = async (booking) => {
 
 export const sendBookingReminder = async (booking) => {
   try {
-    await booking.populate('salonId serviceId');
+    // ✅ RACE CONDITION FIX - Load immutable snapshot
+    const bookingSnapshot = await booking.constructor
+      .findById(booking._id)
+      .populate('salonId serviceId')
+      .lean();
 
-    const salon = booking.salonId;
-    const service = booking.serviceId;
+    if (!bookingSnapshot) {
+      throw new Error('Booking not found');
+    }
+
+    const salon = bookingSnapshot.salonId;
+    const service = bookingSnapshot.serviceId;
+
+    // Validate email recipient
+    if (!bookingSnapshot.customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingSnapshot.customerEmail)) {
+      throw new Error('Invalid customer email address');
+    }
 
     // Get email template
-    const template = salon.getEmailTemplate('reminder', booking.language);
+    const template = salon.getEmailTemplate('reminder', bookingSnapshot.language);
     if (!template) {
       throw new Error('Reminder email template not found');
     }
 
     // Format date and time
-    const bookingDate = new Date(booking.bookingDate);
-    const dateStr = bookingDate.toLocaleDateString(booking.language === 'de' ? 'de-DE' : 'en-US');
-    const timeStr = bookingDate.toLocaleTimeString(booking.language === 'de' ? 'de-DE' : 'en-US', {
+    const bookingDate = new Date(bookingSnapshot.bookingDate);
+    const dateStr = bookingDate.toLocaleDateString(bookingSnapshot.language === 'de' ? 'de-DE' : 'en-US');
+    const timeStr = bookingDate.toLocaleTimeString(bookingSnapshot.language === 'de' ? 'de-DE' : 'en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -177,24 +210,42 @@ export const sendBookingReminder = async (booking) => {
     // Replace placeholders
     const subject = replacePlaceholders(template.subject, {
       salon_name: salon.name,
-      customer_name: booking.customerName
+      customer_name: bookingSnapshot.customerName
     });
 
     const body = replacePlaceholders(template.body, {
       salon_name: salon.name,
-      customer_name: booking.customerName,
+      customer_name: bookingSnapshot.customerName,
       service_name: service.name,
       booking_date: dateStr,
       booking_time: timeStr,
       salon_address: addressStr
     });
 
-    // Queue email
+    // Queue email with audit trail
     await EmailQueue.create({
-      to: booking.customerEmail,
+      to: bookingSnapshot.customerEmail,
       subject,
       body,
       type: 'booking_reminder',
+      bookingId: bookingSnapshot._id,
+      priority: 'high',
+      language: bookingSnapshot.language,
+      metadata: {
+        customerName: bookingSnapshot.customerName,
+        salonId: salon._id.toString(),
+        capturedAt: new Date()
+      }
+    });
+
+    logger.log(`âœ… Reminder email queued for: ${bookingSnapshot.customerEmail} (Booking: ${bookingSnapshot._id})`);
+
+    return { success: true };
+  } catch (error) {
+    logger.error('âŒ SendBookingReminder Error:', error);
+    throw error;
+  }
+};
       bookingId: booking._id,
       priority: 'normal',
       language: booking.language

@@ -135,6 +135,19 @@ const bookingSchema = new mongoose.Schema(
     updatedAt: {
       type: Date,
       default: Date.now
+    },
+
+    // ==================== SOFT DELETE ====================
+    deletedAt: {
+      type: Date,
+      default: null,
+      index: true
+    },
+
+    deletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     }
   },
   { timestamps: true }
@@ -148,6 +161,26 @@ bookingSchema.index({ customerEmail: 1, salonId: 1 });
 bookingSchema.index({ status: 1, bookingDate: 1 });
 bookingSchema.index({ bookingDate: 1, status: 1 });
 bookingSchema.index({ employeeId: 1, bookingDate: 1 });
+bookingSchema.index({ deletedAt: 1 }); // For soft delete queries
+
+// ==================== QUERY MIDDLEWARE - EXCLUDE DELETED ====================
+
+// Automatically exclude soft-deleted documents from queries
+bookingSchema.pre(/^find/, function(next) {
+  // Allow explicit inclusion of deleted documents
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
+
+// Also handle countDocuments
+bookingSchema.pre('countDocuments', function(next) {
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
 
 // ==================== VIRTUALS ====================
 
@@ -178,14 +211,34 @@ bookingSchema.virtual('canCancel').get(function() {
 bookingSchema.methods.confirm = async function() {
   this.status = 'confirmed';
   this.confirmedAt = new Date();
+bookingSchema.methods.markEmailSent = async function(type) {
+  if (['confirmation', 'reminder', 'review'].includes(type)) {
+    this.emailsSent[type] = true;
+    return await this.save();
+  }
+};
+
+// Soft delete method
+bookingSchema.methods.softDelete = async function(userId) {
+  this.deletedAt = new Date();
+  this.deletedBy = userId;
+  this.status = 'cancelled'; // Also mark as cancelled
   return await this.save();
 };
 
-bookingSchema.methods.complete = async function() {
-  this.status = 'completed';
-  this.completedAt = new Date();
+// Restore soft-deleted booking
+bookingSchema.methods.restore = async function() {
+  this.deletedAt = null;
+  this.deletedBy = null;
   return await this.save();
 };
+
+// Check if soft-deleted
+bookingSchema.methods.isDeleted = function() {
+  return this.deletedAt !== null;
+};
+
+// ==================== STATICS ====================
 
 bookingSchema.methods.cancel = async function() {
   this.status = 'cancelled';

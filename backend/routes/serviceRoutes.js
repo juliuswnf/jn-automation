@@ -75,19 +75,37 @@ router.put('/:id', checkTenantAccess('service'), async (req, res) => {
     // eslint-disable-next-line no-unused-vars
     const { salonId, ...updateData } = req.body;
 
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    // ✅ OPTIMISTIC LOCKING - load, check version, update, save
+    const service = await Service.findById(req.params.id);
 
     if (!service) {
       return res.status(404).json({ success: false, message: 'Service not found' });
     }
 
-    logger.log(`âœ… Service updated: ${service.name}`);
+    // Check version if client provided it (prevents lost updates)
+    if (updateData.__v !== undefined && updateData.__v !== service.__v) {
+      return res.status(409).json({
+        success: false,
+        message: 'Conflict - Service was modified by another user. Please refresh and try again.',
+        currentVersion: service.__v
+      });
+    }
+
+    // Apply updates
+    Object.assign(service, updateData);
+
+    // Save with version increment
+    await service.save();
+
+    logger.log(`âœ… Service updated: ${service.name} (version ${service.__v})`);
     res.json({ success: true, data: service });
   } catch (error) {
+    if (error.name === 'VersionError') {
+      return res.status(409).json({
+        success: false,
+        message: 'Conflict - Service was modified by another user. Please refresh and try again.'
+      });
+    }
     res.status(400).json({ success: false, message: error.message });
   }
 });
@@ -96,13 +114,18 @@ router.put('/:id', checkTenantAccess('service'), async (req, res) => {
 router.delete('/:id', checkTenantAccess('service'), async (req, res) => {
   try {
     const { Service } = await import('../models/index.js').then(m => m.default);
-    const service = await Service.findByIdAndDelete(req.params.id);
+
+    // ✅ SOFT DELETE - load first, then soft delete with audit trail
+    const service = await Service.findById(req.params.id);
 
     if (!service) {
       return res.status(404).json({ success: false, message: 'Service not found' });
     }
 
-    logger.log(`ðŸ—‘ï¸ Service deleted: ${service.name}`);
+    // Soft delete with user ID for audit trail
+    await service.softDelete(req.user._id);
+
+    logger.log(`🗑️ Service soft-deleted: ${service.name} by user ${req.user._id}`);
     res.json({ success: true, message: 'Service deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
