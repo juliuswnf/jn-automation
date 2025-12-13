@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+ï»¿import logger from '../utils/logger.js';
 import cacheService from '../services/cacheService.js';
 import mongoose from 'mongoose';
 import timezoneHelpers from '../utils/timezoneHelpers.js';
@@ -149,7 +149,7 @@ export const createBooking = async (req, res) => {
         logger.warn(`?? Capacity exceeded: ${concurrentBookings}/${maxConcurrentBookings} for salon ${salonId}`);
         return res.status(409).json({
           success: false,
-          message: `Kapazität erreicht. Maximal ${maxConcurrentBookings} gleichzeitige Buchungen möglich.`,
+          message: `Kapazitï¿½t erreicht. Maximal ${maxConcurrentBookings} gleichzeitige Buchungen mï¿½glich.`,
           capacity: {
             current: concurrentBookings,
             max: maxConcurrentBookings

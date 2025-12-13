@@ -1,4 +1,4 @@
-import Booking from '../models/Booking.js';
+﻿import Booking from '../models/Booking.js';
 import ProgressEntry from '../models/ProgressEntry.js';
 import ClinicalNote from '../models/ClinicalNote.js';
 import Package from '../models/Package.js';

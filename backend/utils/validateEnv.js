@@ -1,4 +1,4 @@
-import logger from './logger.js';
+﻿import logger from './logger.js';
 // ==================== VALIDATE ENVIRONMENT VARIABLES ====================
 
 import dotenv from 'dotenv';

@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Subscription Middleware
  * Ensures salon has active subscription before allowing access

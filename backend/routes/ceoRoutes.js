@@ -1,4 +1,4 @@
-import express from 'express';
+ï»¿import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 import securityMiddleware from '../middleware/securityMiddleware.js';
 import ceoMiddleware from '../middleware/ceoMiddleware.js';
@@ -87,7 +87,7 @@ router.get('/settings', ceoMiddleware.verifyCEOAuth, ceoController.getSystemSett
 router.put('/settings', securityMiddleware.validateContentType, ceoController.updateSystemSettings);
 
 // ==================== CEO HIDDEN LOGIN ROUTE ====================
-// Nur über spezielle URL erreichbar
+// Nur ï¿½ber spezielle URL erreichbar
 router.get('/hidden-login', (req, res) => {
   return res.json({
     success: true,
@@ -97,7 +97,7 @@ router.get('/hidden-login', (req, res) => {
 });
 
 // ==================== CEO STATUS ROUTE ====================
-// Für System-Überwachung
+// Fï¿½r System-ï¿½berwachung
 router.get('/status', ceoMiddleware.verifyCEOAuth, (req, res) => {
   return res.json({
     success: true,

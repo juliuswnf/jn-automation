@@ -1,4 +1,4 @@
-import Widget from '../models/Widget.js';
+﻿import Widget from '../models/Widget.js';
 import Salon from '../models/Salon.js';
 import Service from '../models/Service.js';
 import logger from '../utils/logger.js';

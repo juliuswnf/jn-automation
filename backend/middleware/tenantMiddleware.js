@@ -1,4 +1,4 @@
-import Booking from '../models/Booking.js';
+﻿import Booking from '../models/Booking.js';
 import Service from '../models/Service.js';
 import Salon from '../models/Salon.js';
 import logger from '../utils/logger.js';

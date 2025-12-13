@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Lifecycle Email Worker
  * Cron job that processes and sends lifecycle emails
  *

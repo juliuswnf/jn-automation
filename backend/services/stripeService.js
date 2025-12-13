@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Stripe Subscription Service
  * Handles Stripe integration for salon subscriptions

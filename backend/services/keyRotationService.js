@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+﻿import crypto from 'crypto';
 import ClinicalNote from '../models/ClinicalNote.js';
 import ConsentForm from '../models/ConsentForm.js';
 import logger from '../utils/logger.js';

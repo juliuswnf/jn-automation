@@ -1,4 +1,4 @@
-import ArtistPortfolio from '../models/ArtistPortfolio.js';
+﻿import ArtistPortfolio from '../models/ArtistPortfolio.js';
 import Salon from '../models/Salon.js';
 import logger from '../utils/logger.js';
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinaryHelper.js';

@@ -1,4 +1,4 @@
-import express from 'express';
+ï»¿import express from 'express';
 import Salon from '../models/Salon.js';
 import Service from '../models/Service.js';
 import Booking from '../models/Booking.js';
@@ -14,9 +14,9 @@ const router = express.Router();
 
 /**
  * Widget Routes - Embeddable Booking Widget API
- * Public endpoints für externe Salon-Websites
+ * Public endpoints fï¿½r externe Salon-Websites
  * Kein Auth erforderlich - Slug-basiert
- * Rate-Limited für Spam-Schutz
+ * Rate-Limited fï¿½r Spam-Schutz
  */
 
 // ? HIGH FIX #12: Apply CORS middleware (allowedDomains whitelist)

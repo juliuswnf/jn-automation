@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+ï»¿import nodemailer from 'nodemailer';
 import EmailQueue from '../models/EmailQueue.js';
 import EmailLog from '../models/EmailLog.js';
 import logger from '../utils/logger.js';
@@ -242,7 +242,7 @@ export const sendBookingReminder = async (booking) => {
 
     return { success: true };
   } catch (error) {
-    logger.error('âŒ SendBookingReminder Error:', error);
+    logger.error('ï¿½ SendBookingReminder Error:', error);
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * Verify Database Backup Integrity
  *
  * Run after restoring from backup to verify:
@@ -39,7 +39,7 @@ async function verifyBackup() {
   try {
     console.log('');
     console.log('+----------------------------------------------------------+');
-    console.log('¦       Database Backup Integrity Verification            ¦');
+    console.log('ï¿½       Database Backup Integrity Verification            ï¿½');
     console.log('+----------------------------------------------------------+');
     console.log('');
 

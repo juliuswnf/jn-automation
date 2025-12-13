@@ -1,4 +1,4 @@
-import Resource from '../models/Resource.js';
+﻿import Resource from '../models/Resource.js';
 import Salon from '../models/Salon.js';
 import Booking from '../models/Booking.js';
 

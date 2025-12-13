@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+﻿/* eslint-disable no-console */
 /**
  * Environment Validation Script
  * Run before deployment to ensure all required variables are set

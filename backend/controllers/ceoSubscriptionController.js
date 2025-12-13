@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * CEO Subscription Controller
  * Admin management of salon subscriptions

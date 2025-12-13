@@ -1,4 +1,4 @@
-import { tierHasFeature, getRequiredTierForFeature, compareTiers } from '../config/pricing.js';
+﻿import { tierHasFeature, getRequiredTierForFeature, compareTiers } from '../config/pricing.js';
 import Salon from '../models/Salon.js';
 import logger from '../utils/logger.js';
 

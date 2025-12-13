@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+ï»¿import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from '../models/User.js';
 
@@ -60,7 +60,7 @@ const changeUserRole = async () => {
 
     process.exit(0);
   } catch (error) {
-    console.error('âŒ Error:', error.message);
+    console.error('ï¿½ Error:', error.message);
     process.exit(1);
   }
 };

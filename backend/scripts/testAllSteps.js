@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Test Script für alle 3 Schritte
  * Führt automatisierte Überprüfungen durch

@@ -1,4 +1,4 @@
-import ProgressEntry from '../models/ProgressEntry.js';
+﻿import ProgressEntry from '../models/ProgressEntry.js';
 import Salon from '../models/Salon.js';
 import { uploadToCloudinary } from '../utils/cloudinaryHelper.js';
 import fs from 'fs';

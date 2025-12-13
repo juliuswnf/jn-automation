@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+﻿import logger from '../utils/logger.js';
 /**
  * Email Queue Worker
  * Processes scheduled emails (reminders and review requests)

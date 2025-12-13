@@ -1,4 +1,4 @@
-import Stripe from 'stripe';
+﻿import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import logger from '../utils/logger.js';
 import { PRICING_TIERS } from '../config/pricing.js';

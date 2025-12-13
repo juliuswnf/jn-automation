@@ -1,4 +1,4 @@
-import stripePaymentService from '../services/stripePaymentService.js';
+﻿import stripePaymentService from '../services/stripePaymentService.js';
 import { PRICING_TIERS, compareTiers } from '../config/pricing.js';
 
 /**

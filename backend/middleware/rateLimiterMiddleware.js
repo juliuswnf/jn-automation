@@ -1,4 +1,4 @@
-import logger from '../utils/logger.js';
+ï»¿import logger from '../utils/logger.js';
 /**
  * Rate Limiter Middleware Suite
  * Version: 1.0.0
@@ -260,7 +260,7 @@ const bookingCreationLimiter = rateLimit({
 const mutationLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: parseInt(process.env.RATE_LIMIT_MUTATIONS || '30'), // 30 mutations per minute
-  message: { success: false, message: 'Zu viele Änderungen in kurzer Zeit' },
+  message: { success: false, message: 'Zu viele ï¿½nderungen in kurzer Zeit' },
   standardHeaders: true,
   legacyHeaders: false,
   store: memoryStoreAdapter,
@@ -270,7 +270,7 @@ const mutationLimiter = rateLimit({
     logger.warn(`?? Mutation rate limit exceeded: ${req.user?.id || req.ip}`);
     res.status(429).json({
       success: false,
-      message: 'Zu viele Änderungen. Bitte verlangsamen Sie Ihre Anfragen.',
+      message: 'Zu viele ï¿½nderungen. Bitte verlangsamen Sie Ihre Anfragen.',
       retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
     });
   }

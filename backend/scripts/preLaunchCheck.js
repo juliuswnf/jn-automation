@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+﻿/* eslint-disable no-console */
 /**
  * Pre-Launch Checklist Script
  * Validates the entire system is ready for production
