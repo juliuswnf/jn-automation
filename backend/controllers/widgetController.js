@@ -1,4 +1,4 @@
-import Widget from '../models/Widget.js';
+ï»¿import Widget from '../models/Widget.js';
 import Salon from '../models/Salon.js';
 import Service from '../models/Service.js';
 import logger from '../utils/logger.js';
@@ -50,7 +50,7 @@ export const createWidget = async (req, res) => {
       });
     }
 
-    logger.error('âŒ CreateWidget Error:', error);
+    logger.error('ï¿½ CreateWidget Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to create widget'
@@ -155,7 +155,7 @@ export const getWidgetByApiKey = async (req, res) => {
       }
     });
   } catch (error) {
-    logger.error('âŒ GetWidgetByApiKey Error:', error);
+    logger.error('ï¿½ GetWidgetByApiKey Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to fetch widget'
@@ -204,7 +204,7 @@ export const updateWidget = async (req, res) => {
       widget
     });
   } catch (error) {
-    logger.error('âŒ UpdateWidget Error:', error);
+    logger.error('ï¿½ UpdateWidget Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to update widget'

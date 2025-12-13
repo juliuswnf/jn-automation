@@ -1,4 +1,4 @@
-import ClinicalNote from '../models/ClinicalNote.js';
+﻿import ClinicalNote from '../models/ClinicalNote.js';
 import Salon from '../models/Salon.js';
 import AuditLog from '../models/AuditLog.js';
 

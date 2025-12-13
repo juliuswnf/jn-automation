@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Shield, CheckCircle, AlertTriangle, XCircle, Upload, Download, Calendar, Users, FileText, Lock } from 'lucide-react';
 
 /**

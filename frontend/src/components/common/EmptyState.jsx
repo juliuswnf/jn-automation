@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 export default function EmptyState({ icon: Icon, title, description, action = null }) {
   return (

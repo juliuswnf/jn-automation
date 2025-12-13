@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 export default function FAQ({ questions = [] }) {
   const [openIndex, setOpenIndex] = useState(null);

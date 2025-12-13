@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Pricing Configuration for JN Automation
  * Updated: December 13, 2025
  * 

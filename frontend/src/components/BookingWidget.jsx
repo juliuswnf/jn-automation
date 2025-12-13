@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const BookingWidget = ({ salonId }) => {
   const widgetCode = `<iframe src="https://yourapp.com/widget/${salonId}" width="100%" height="600px" style="border: none;"></iframe>`;

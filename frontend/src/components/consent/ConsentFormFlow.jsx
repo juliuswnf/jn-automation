@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { FileText, CheckCircle, XCircle, AlertTriangle, Download, Upload, Edit, Eye, FileSignature } from 'lucide-react';
 import SignatureCanvas from 'react-signature-canvas';
 

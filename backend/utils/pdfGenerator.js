@@ -1,4 +1,4 @@
-import PDFDocument from 'pdfkit';
+﻿import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 import logger from './logger.js';

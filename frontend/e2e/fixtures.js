@@ -1,4 +1,4 @@
-/**
+﻿/**
  * E2E Test Fixtures and Helpers
  * Shared utilities for all E2E tests
  */

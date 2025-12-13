@@ -1,4 +1,4 @@
-import cors from 'cors';
+﻿import cors from 'cors';
 import Widget from '../models/Widget.js';
 import logger from '../utils/logger.js';
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, CheckCircle, AlertCircle, Plus, Trash2, Settings } from 'lucide-react';
 
 /**

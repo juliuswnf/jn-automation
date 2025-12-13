@@ -1,4 +1,4 @@
-import Stripe from 'stripe';
+﻿import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import Salon from '../models/Salon.js';
 import { PRICING_TIERS } from '../config/pricing.js';

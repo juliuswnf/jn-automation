@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Error Tracking Service for Frontend
  * Provides error boundary support and optional Sentry integration
  */

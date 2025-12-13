@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 const WidgetGenerator = ({ salonSlug }) => {
   const [copied, setCopied] = useState(false);

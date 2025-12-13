@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Booking Pages Export
  * Public and authenticated booking pages
  */

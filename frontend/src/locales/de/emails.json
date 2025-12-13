@@ -1,4 +1,4 @@
-{
+﻿{
   "booking_confirmation": {
     "subject": "Buchungsbestätigung - {{salonName}}",
     "title": "Ihr Termin wurde gebucht!",
