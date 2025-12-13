@@ -44,6 +44,9 @@ import packageRoutes from './routes/packageRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import resourceRoutes from './routes/resourceRoutes.js';
 
+// Pricing & Feature Gate Routes - Phase 5
+import pricingRoutes from './routes/pricing.js';
+
 // Import Middleware
 import authMiddleware from './middleware/authMiddleware.js';
 import webhookMiddleware from './middleware/webhookMiddleware.js';
@@ -197,6 +200,7 @@ app.use('/api/bookings/public', publicBookingRoutes);
 app.use('/api/widget', widgetRoutes); // Embeddable Widget API
 app.use('/api/subscriptions', subscriptionRoutes); // Stripe Subscription Management
 app.use('/api/system', systemRoutes); // ✅ MEDIUM FIX #13 & #14: Health & Backups
+app.use('/api/pricing', pricingRoutes); // Pricing & Feature Access (Mixed: public + protected)
 
 // Protected Routes (Auth Required)
 app.use('/api/salon', authMiddleware.protect, salonRoutes);

@@ -219,9 +219,51 @@ const salonSchema = new mongoose.Schema({
       enum: ['trial', 'active', 'past_due', 'canceled', 'inactive'],
       default: 'trial'
     },
+    // Pricing Tier (starter/professional/enterprise)
+    tier: {
+      type: String,
+      enum: ['starter', 'professional', 'enterprise'],
+      default: 'starter'
+    },
+    // Billing Cycle (monthly/yearly)
+    billingCycle: {
+      type: String,
+      enum: ['monthly', 'yearly'],
+      default: 'monthly'
+    },
+    // Payment Method (stripe/sepa/invoice)
+    paymentMethod: {
+      type: String,
+      enum: ['stripe', 'sepa', 'invoice'],
+      default: 'stripe'
+    },
+    // SMS Usage Tracking (Enterprise tier only)
+    smsUsedThisMonth: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    smsResetDate: {
+      type: Date,
+      default: () => {
+        const date = new Date();
+        date.setMonth(date.getMonth() + 1);
+        date.setDate(1);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+    },
+    // Grandfathered customers (keep old pricing)
+    grandfathered: {
+      type: Boolean,
+      default: false
+    },
+    oldPlanId: String, // For reference if grandfathered
+    // Stripe Integration
     stripeCustomerId: String,
     stripeSubscriptionId: String,
     planId: String,
+    // Trial & Billing Periods
     trialEndsAt: Date,
     currentPeriodStart: Date,
     currentPeriodEnd: Date,
@@ -332,6 +374,135 @@ salonSchema.methods.hasActiveSubscription = function() {
   // Active subscription
   return this.subscription.status === 'active';
 };
+
+// ==================== PRICING TIER HELPERS ====================
+
+// Check if salon has access to a specific feature
+salonSchema.methods.hasFeature = function(featureName) {
+  // Import pricing config
+  const { tierHasFeature } = require('../config/pricing.js');
+  
+  // Check if subscription is active
+  if (!this.hasActiveSubscription()) {
+    return false;
+  }
+  
+  // Check if tier has feature
+  return tierHasFeature(this.subscription.tier || 'starter', featureName);
+};
+
+// Check if salon can send SMS (Enterprise only)
+salonSchema.methods.canSendSMS = function() {
+  const { tierHasFeature, calculateSMSLimit } = require('../config/pricing.js');
+  
+  // Check if subscription is active
+  if (!this.hasActiveSubscription()) {
+    return false;
+  }
+  
+  // Check if tier has SMS feature (Enterprise only)
+  if (!tierHasFeature(this.subscription.tier || 'starter', 'smsNotifications')) {
+    return false;
+  }
+  
+  // Calculate SMS limit based on tier and staff count
+  const staffCount = this.staff?.length || 0;
+  const smsLimit = calculateSMSLimit(this.subscription.tier, staffCount);
+  
+  // Check if under limit
+  return (this.subscription.smsUsedThisMonth || 0) < smsLimit;
+};
+
+// Get remaining SMS for this month (Enterprise only)
+salonSchema.methods.getRemainingSMS = function() {
+  const { tierHasFeature, calculateSMSLimit } = require('../config/pricing.js');
+  
+  // If no SMS feature, return 0
+  if (!tierHasFeature(this.subscription.tier || 'starter', 'smsNotifications')) {
+    return 0;
+  }
+  
+  const staffCount = this.staff?.length || 0;
+  const smsLimit = calculateSMSLimit(this.subscription.tier, staffCount);
+  const used = this.subscription.smsUsedThisMonth || 0;
+  
+  return Math.max(0, smsLimit - used);
+};
+
+// Get SMS limit for this month (Enterprise only)
+salonSchema.methods.getSMSLimit = function() {
+  const { calculateSMSLimit } = require('../config/pricing.js');
+  const staffCount = this.staff?.length || 0;
+  return calculateSMSLimit(this.subscription.tier || 'starter', staffCount);
+};
+
+// Increment SMS usage counter
+salonSchema.methods.incrementSMSUsage = async function() {
+  // Reset counter if reset date passed
+  const now = new Date();
+  if (this.subscription.smsResetDate && now >= this.subscription.smsResetDate) {
+    await this.resetMonthlySMS();
+  }
+  
+  // Increment counter
+  this.subscription.smsUsedThisMonth = (this.subscription.smsUsedThisMonth || 0) + 1;
+  await this.save();
+};
+
+// Reset monthly SMS counter (runs on 1st of each month)
+salonSchema.methods.resetMonthlySMS = async function() {
+  this.subscription.smsUsedThisMonth = 0;
+  
+  // Set next reset date to 1st of next month
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  nextMonth.setDate(1);
+  nextMonth.setHours(0, 0, 0, 0);
+  this.subscription.smsResetDate = nextMonth;
+  
+  await this.save();
+};
+
+// Get remaining bookings for this month (for Starter/Professional tiers)
+salonSchema.methods.getRemainingBookings = function() {
+  const { PRICING_TIERS } = require('../config/pricing.js');
+  
+  const tier = this.subscription.tier || 'starter';
+  const tierConfig = PRICING_TIERS[tier];
+  
+  // Enterprise has unlimited bookings
+  if (!tierConfig?.limits?.bookingsPerMonth) {
+    return Infinity;
+  }
+  
+  // Calculate bookings this month
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  
+  // Note: This would need to query Booking model to get actual count
+  // For now, return the limit (implement booking tracking separately)
+  return tierConfig.limits.bookingsPerMonth;
+};
+
+// Get current tier name (user-friendly)
+salonSchema.methods.getTierName = function() {
+  const tierNames = {
+    starter: 'Starter',
+    professional: 'Professional',
+    enterprise: 'Enterprise'
+  };
+  return tierNames[this.subscription.tier || 'starter'] || 'Starter';
+};
+
+// Check if salon needs to upgrade for a feature
+salonSchema.methods.getRequiredTierForFeature = function(featureName) {
+  const { getRequiredTierForFeature } = require('../config/pricing.js');
+  return getRequiredTierForFeature(featureName);
+};
+
+// ==================== END PRICING TIER HELPERS ====================
+
 
 // Get email template with fallback
 salonSchema.methods.getEmailTemplate = function(type, language) {
@@ -493,10 +664,39 @@ salonSchema.pre('save', function(next) {
     this.initializeDefaultTemplates();
   }
 
-  // Set trial end date if new trial
+  // Set trial end date if new trial (14-day Enterprise trial)
   if (this.isNew && this.subscription.status === 'trial' && !this.subscription.trialEndsAt) {
-    const trialDays = 14; // 14 day trial
+    const { TRIAL_CONFIG } = require('../config/pricing.js');
+    const trialDays = TRIAL_CONFIG.durationDays || 14;
+    
+    // Set trial end date
     this.subscription.trialEndsAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000);
+    
+    // Set trial tier to Enterprise (show full power of platform)
+    this.subscription.tier = TRIAL_CONFIG.tier || 'enterprise';
+    
+    // Initialize SMS counter for trial
+    this.subscription.smsUsedThisMonth = 0;
+    
+    // Set SMS reset date to 1st of next month
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    nextMonth.setDate(1);
+    nextMonth.setHours(0, 0, 0, 0);
+    this.subscription.smsResetDate = nextMonth;
+  }
+
+  // Auto-reset SMS counter if reset date passed
+  const now = new Date();
+  if (this.subscription.smsResetDate && now >= this.subscription.smsResetDate && !this.isNew) {
+    this.subscription.smsUsedThisMonth = 0;
+    
+    // Set next reset date
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    nextMonth.setDate(1);
+    nextMonth.setHours(0, 0, 0, 0);
+    this.subscription.smsResetDate = nextMonth;
   }
 
   next();
