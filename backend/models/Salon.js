@@ -288,6 +288,50 @@ const salonSchema = new mongoose.Schema({
     default: false
   },
 
+  // ==================== BRANDING / CUSTOM STYLING ====================
+  branding: {
+    logo: {
+      type: String,
+      default: null,
+      comment: 'URL to salon logo'
+    },
+    favicon: {
+      type: String,
+      default: null,
+      comment: 'URL to salon favicon'
+    },
+    primaryColor: {
+      type: String,
+      default: '#EF4444',
+      match: /^#[0-9A-Fa-f]{6}$/
+    },
+    secondaryColor: {
+      type: String,
+      default: '#1F2937',
+      match: /^#[0-9A-Fa-f]{6}$/
+    },
+    accentColor: {
+      type: String,
+      default: '#10B981',
+      match: /^#[0-9A-Fa-f]{6}$/
+    },
+    fontFamily: {
+      type: String,
+      enum: ['inter', 'roboto', 'open-sans', 'lato', 'montserrat', 'poppins'],
+      default: 'inter'
+    },
+    buttonStyle: {
+      type: String,
+      enum: ['rounded', 'square', 'pill'],
+      default: 'rounded'
+    },
+    showPoweredBy: {
+      type: Boolean,
+      default: true,
+      comment: 'Show "Powered by JN Automation" (false for Enterprise white-label)'
+    }
+  },
+
   // Metadata
   createdAt: {
     type: Date,

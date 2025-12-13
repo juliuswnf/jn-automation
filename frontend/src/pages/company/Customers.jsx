@@ -1,108 +1,320 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useNotification } from '../../hooks/useNotification';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function Customers() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [customers, setCustomers] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customerDetails, setCustomerDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  // Get auth token
+  const getToken = () => {
+    return localStorage.getItem('jnAuthToken') || localStorage.getItem('token');
+  };
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch customers
+  const fetchCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = getToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.append('search', debouncedSearch);
+
+      const res = await fetch(`${API_URL}/crm/customers?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setCustomers(data.customers || []);
+        }
+      }
+    } catch (error) {
+      showNotification('Fehler beim Laden der Kunden', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearch, showNotification]);
+
+  // Fetch stats
+  const fetchStats = useCallback(async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const res = await fetch(`${API_URL}/crm/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setStats(data.stats);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  }, []);
 
   useEffect(() => {
     fetchCustomers();
-  }, []);
+    fetchStats();
+  }, [fetchCustomers, fetchStats]);
 
-  const fetchCustomers = async () => {
+  // Fetch customer details
+  const handleViewCustomer = async (email) => {
+    setSelectedCustomer(email);
+    setLoadingDetails(true);
+
     try {
-      setLoading(true);
-      // TODO: Integrate with API
-      // const response = await customerAPI.getAll();
-      // setCustomers(response.data.data);
-      setLoading(false);
+      const token = getToken();
+      const res = await fetch(`${API_URL}/crm/customers/${encodeURIComponent(email)}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setCustomerDetails(data.customer);
+        }
+      }
     } catch (error) {
-      showNotification('Error loading customers', 'error');
-      setLoading(false);
+      showNotification('Fehler beim Laden der Kundendetails', 'error');
+    } finally {
+      setLoadingDetails(false);
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  // Get tier badge
+  const getTierBadge = (tier) => {
+    const badges = {
+      vip: { label: 'VIP', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+      gold: { label: 'Gold', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+      regular: { label: 'Stammkunde', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+      new: { label: 'Neu', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' }
+    };
+    return badges[tier] || badges.new;
+  };
+
+  if (loading && customers.length === 0) return <LoadingSpinner />;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Customers</h1>
-          <p className="text-slate-350">Manage your customers and their bookings</p>
-        </div>
-        <button
-          onClick={() => navigate('/company/customers/add')}
-          className="px-6 py-2 rounded-lg bg-accent hover:bg-accent-light text-primary font-semibold transition duration-300"
-        >
-          + Add Customer
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-secondary/50 border border-accent/20 p-4 rounded-lg">
-          <p className="text-slate-350 text-sm mb-2">Total Customers</p>
-          <p className="text-3xl font-bold text-accent">{customers.length}</p>
-        </div>
-        <div className="bg-secondary/50 border border-accent/20 p-4 rounded-lg">
-          <p className="text-slate-350 text-sm mb-2">New This Month</p>
-          <p className="text-3xl font-bold text-green-500">0</p>
-        </div>
-        <div className="bg-secondary/50 border border-accent/20 p-4 rounded-lg">
-          <p className="text-slate-350 text-sm mb-2">Avg Lifetime Value</p>
-          <p className="text-3xl font-bold text-blue-500">€0</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Kunden</h1>
+          <p className="text-gray-400">Verwalten Sie Ihre Kunden und deren Buchungen</p>
         </div>
       </div>
 
-      <div className="bg-secondary/50 border border-accent/20 rounded-lg overflow-hidden">
-        <div className="p-6 border-b border-accent/20">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm mb-2">Gesamt Kunden</p>
+          <p className="text-3xl font-bold text-white">{stats?.totalCustomers || customers.length}</p>
+        </div>
+        <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm mb-2">Neu diesen Monat</p>
+          <div className="flex items-center gap-2">
+            <p className="text-3xl font-bold text-green-500">{stats?.newThisMonth || 0}</p>
+            {stats?.customerGrowth !== undefined && (
+              <span className={`text-sm ${stats.customerGrowth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {stats.customerGrowth >= 0 ? '+' : ''}{stats.customerGrowth}%
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm mb-2">Durchschn. Kundenwert</p>
+          <p className="text-3xl font-bold text-blue-500">€{stats?.avgLifetimeValue || 0}</p>
+        </div>
+        <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg">
+          <p className="text-gray-400 text-sm mb-2">VIP Kunden</p>
+          <p className="text-3xl font-bold text-purple-500">{stats?.tiers?.vip || 0}</p>
+        </div>
+      </div>
+
+      {/* Customer Detail Modal */}
+      {selectedCustomer && customerDetails && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-800 flex justify-between items-start">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-xl font-bold text-white">{customerDetails.name}</h2>
+                  <span className={`text-xs px-2 py-1 rounded-full border ${getTierBadge(customerDetails.tier).color}`}>
+                    {getTierBadge(customerDetails.tier).label}
+                  </span>
+                </div>
+                <p className="text-gray-400">{customerDetails.email}</p>
+                {customerDetails.phone && <p className="text-gray-400">{customerDetails.phone}</p>}
+              </div>
+              <button onClick={() => { setSelectedCustomer(null); setCustomerDetails(null); }} className="text-gray-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {loadingDetails ? (
+              <div className="p-8 flex justify-center"><LoadingSpinner /></div>
+            ) : (
+              <div className="p-6">
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-white">{customerDetails.stats.totalBookings}</p>
+                    <p className="text-sm text-gray-400">Buchungen</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-green-500">€{customerDetails.stats.totalSpent}</p>
+                    <p className="text-sm text-gray-400">Gesamtumsatz</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-blue-500">€{customerDetails.stats.averageSpent}</p>
+                    <p className="text-sm text-gray-400">Pro Besuch</p>
+                  </div>
+                </div>
+
+                {/* Favorite Services */}
+                {customerDetails.favoriteServices?.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-400 mb-2">Lieblingsleistungen</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {customerDetails.favoriteServices.map((s, i) => (
+                        <span key={i} className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
+                          {s.name} ({s.count}x)
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Bookings */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Letzte Buchungen</h3>
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {customerDetails.bookings?.slice(0, 10).map((b, i) => (
+                      <div key={i} className="bg-gray-800 rounded-lg p-3 flex justify-between items-center">
+                        <div>
+                          <p className="text-white font-medium">{b.service}</p>
+                          <p className="text-sm text-gray-400">
+                            {new Date(b.date).toLocaleDateString('de-DE')}
+                            {b.employee && ` • ${b.employee}`}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white">€{b.price}</p>
+                          <p className={`text-xs ${b.status === 'completed' ? 'text-green-400' : b.status === 'cancelled' ? 'text-red-400' : 'text-gray-400'}`}>
+                            {b.status === 'completed' ? 'Abgeschlossen' : b.status === 'cancelled' ? 'Abgesagt' : b.status}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Customer Table */}
+      <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+        <div className="p-6 border-b border-gray-800">
           <input
             type="text"
-            placeholder="Search customers..."
+            placeholder="Kunden suchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-primary/50 border border-accent/20 text-white placeholder:text-slate-350"
+            className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-primary/50">
+            <thead className="bg-gray-800">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Email</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Phone</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Bookings</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Spent</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Kunde</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Kontakt</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Buchungen</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Umsatz</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Status</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Aktion</th>
               </tr>
             </thead>
             <tbody>
               {customers.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-slate-350">
-                    No customers yet
+                  <td colSpan="6" className="px-6 py-8 text-center text-gray-400">
+                    {searchTerm ? 'Keine Kunden gefunden' : 'Noch keine Kunden vorhanden'}
                   </td>
                 </tr>
               ) : (
                 customers.map((customer) => (
-                  <tr key={customer._id} className="border-t border-accent/10 hover:bg-accent/5 transition">
-                    <td className="px-6 py-4 text-white font-semibold">{customer.firstName} {customer.lastName}</td>
-                    <td className="px-6 py-4 text-slate-350">{customer.email}</td>
-                    <td className="px-6 py-4 text-slate-350">{customer.phone}</td>
-                    <td className="px-6 py-4 text-white">{customer.bookingCount || 0}</td>
-                    <td className="px-6 py-4 text-white">€{customer.totalSpent?.toLocaleString() || 0}</td>
+                  <tr key={customer.id} className="border-t border-gray-800 hover:bg-gray-800/50 transition">
+                    <td className="px-6 py-4">
+                      <p className="text-white font-medium">{customer.name}</p>
+                      <p className="text-sm text-gray-400">
+                        Seit {new Date(customer.firstBooking).toLocaleDateString('de-DE')}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-gray-300">{customer.email}</p>
+                      {customer.phone && <p className="text-sm text-gray-400">{customer.phone}</p>}
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-white">{customer.bookingCount}</p>
+                      <p className="text-xs text-gray-500">
+                        {customer.completedBookings} abgeschlossen
+                      </p>
+                    </td>
+                    <td className="px-6 py-4 text-white font-medium">€{customer.totalSpent?.toLocaleString() || 0}</td>
+                    <td className="px-6 py-4">
+                      <span className={`text-xs px-2 py-1 rounded-full border ${getTierBadge(customer.tier).color}`}>
+                        {getTierBadge(customer.tier).label}
+                      </span>
+                    </td>
                     <td className="px-6 py-4">
                       <button
-                        onClick={() => navigate(`/company/customers/${customer._id}`)}
-                        className="text-accent hover:text-accent-light text-sm font-semibold"
+                        onClick={() => handleViewCustomer(customer.email)}
+                        className="text-red-500 hover:text-red-400 text-sm font-medium"
                       >
-                        View
+                        Details
                       </button>
                     </td>
                   </tr>

@@ -35,11 +35,14 @@ const Bookings = lazy(() => import('./pages/dashboard/Bookings'));
 const CustomerBooking = lazy(() => import('./pages/customer/Booking'));
 const CustomerSettings = lazy(() => import('./pages/customer/Settings'));
 const CustomerProfile = lazy(() => import('./pages/customer/Profile'));
+const CustomerSupport = lazy(() => import('./pages/customer/Support'));
 const Services = lazy(() => import('./pages/dashboard/Services'));
 const Employees = lazy(() => import('./pages/dashboard/Employees'));
 const Customers = lazy(() => import('./pages/company/Customers'));
 const WidgetSetup = lazy(() => import('./pages/dashboard/WidgetSetup'));
 const Settings = lazy(() => import('./pages/dashboard/Settings'));
+const BrandingSettings = lazy(() => import('./pages/dashboard/BrandingSettings'));
+const MultiLocationDashboard = lazy(() => import('./pages/dashboard/MultiLocationDashboard'));
 const SuccessMetrics = lazy(() => import('./pages/dashboard/SuccessMetrics'));
 const GettingStarted = lazy(() => import('./pages/help/GettingStarted'));
 const FAQ = lazy(() => import('./pages/help/FAQ'));
@@ -242,6 +245,16 @@ function App() {
           }
         />
         <Route
+          path="/customer/support"
+          element={
+            <ProtectedRoute requiredRole="customer">
+              <CustomerLayout>
+                <LazyPage><CustomerSupport /></LazyPage>
+              </CustomerLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/profile"
           element={
             <ProtectedRoute>
@@ -342,6 +355,26 @@ function App() {
             <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><Settings /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/branding"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
+              <DashboardLayout>
+                <LazyPage><BrandingSettings /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/locations"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
+              <DashboardLayout>
+                <LazyPage><MultiLocationDashboard /></LazyPage>
               </DashboardLayout>
             </ProtectedRoute>
           }

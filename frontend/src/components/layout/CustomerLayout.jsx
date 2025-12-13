@@ -12,6 +12,7 @@ const CustomerLayout = ({ children }) => {
   const navLinks = [
     { to: '/customer/dashboard', label: 'Meine Termine' },
     { to: '/customer/booking', label: 'Neuer Termin' },
+    { to: '/customer/support', label: 'Support' },
     { to: '/customer/settings', label: 'Einstellungen' },
   ];
   

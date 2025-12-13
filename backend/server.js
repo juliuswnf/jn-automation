@@ -48,6 +48,18 @@ import resourceRoutes from './routes/resourceRoutes.js';
 // Pricing & Feature Gate Routes - Phase 5
 import pricingRoutes from './routes/pricing.js';
 
+// Customer Support Routes
+import supportRoutes from './routes/supportRoutes.js';
+
+// CRM Routes
+import crmRoutes from './routes/crmRoutes.js';
+
+// Branding Routes
+import brandingRoutes from './routes/brandingRoutes.js';
+
+// Multi-Location Routes
+import multiLocationRoutes from './routes/multiLocationRoutes.js';
+
 // Import Middleware
 import authMiddleware from './middleware/authMiddleware.js';
 import webhookMiddleware from './middleware/webhookMiddleware.js';
@@ -219,6 +231,10 @@ app.use('/api/consent-forms', consentFormRoutes); // Mixed: signing public, mana
 app.use('/api/packages', packageRoutes); // Mixed: purchase flow public/protected
 app.use('/api/progress', authMiddleware.protect, progressRoutes); // ALL PROTECTED - Client privacy
 app.use('/api/resources', resourceRoutes); // Mixed: availability public, management protected
+app.use('/api/support', authMiddleware.protect, supportRoutes); // Customer Support Tickets
+app.use('/api/crm', authMiddleware.protect, crmRoutes); // CRM - Customer Management
+app.use('/api/branding', authMiddleware.protect, brandingRoutes); // Custom Branding
+app.use('/api/locations', authMiddleware.protect, multiLocationRoutes); // Multi-Location (Enterprise)
 
 // ==================== 404 HANDLER (BEFORE ERROR HANDLER) ====================
 app.use('*', (req, res, _next) => {

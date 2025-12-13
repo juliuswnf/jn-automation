@@ -56,6 +56,12 @@ const userSchema = new mongoose.Schema(
       index: true
     },
 
+    // Multi-Location: Additional salons for Enterprise tier
+    additionalSalonIds: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Salon'
+    }],
+
     // ==================== Account Status ====================
     isActive: {
       type: Boolean,
