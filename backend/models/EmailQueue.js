@@ -65,7 +65,7 @@ const emailQueueSchema = new mongoose.Schema({
   salon: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Salon',
-    required: true,
+    required: false, // Optional for direct emails
     index: true
   },
   booking: {

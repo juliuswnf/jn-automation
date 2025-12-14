@@ -14,7 +14,7 @@ const createTransporter = () => {
   // Use SMTP or development mode
   if (process.env.NODE_ENV === 'development') {
     // Development: Log emails to console
-    return nodemailer.createTransporter({
+    return nodemailer.createTransport({
       streamTransport: true,
       newline: 'unix',
       buffer: true
@@ -22,7 +22,7 @@ const createTransporter = () => {
   }
 
   // Production: Use SMTP
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || '587'),
     secure: (process.env.EMAIL_SECURE || process.env.SMTP_SECURE) === 'true',
@@ -49,16 +49,23 @@ export const sendEmail = async (emailData) => {
 
     const info = await transporter.sendMail(mailOptions);
 
-    // Log email
-    await EmailLog.create({
-      to: emailData.to,
-      subject: emailData.subject,
-      body: emailData.body,
-      type: emailData.type || 'general',
-      status: 'sent',
-      sentAt: new Date(),
-      messageId: info.messageId
-    });
+    // Log email (only if companyId provided)
+    if (emailData.companyId || emailData.salonId) {
+      try {
+        await EmailLog.create({
+          companyId: emailData.companyId || emailData.salonId,
+          recipientEmail: emailData.to,
+          subject: emailData.subject,
+          emailType: emailData.type || 'general',
+          status: 'sent',
+          sentAt: new Date(),
+          attempts: 1
+        });
+      } catch (logError) {
+        // Non-blocking - log error but don't fail email send
+        logger.warn(`⚠️  Failed to log email: ${logError.message}`);
+      }
+    }
 
     logger.log(`✅ Email sent to: ${emailData.to}`);
 
@@ -66,15 +73,23 @@ export const sendEmail = async (emailData) => {
   } catch (error) {
     logger.error('❌ Email send error:', error);
 
-    // Log failed email
-    await EmailLog.create({
-      to: emailData.to,
-      subject: emailData.subject,
-      body: emailData.body,
-      type: emailData.type || 'general',
-      status: 'failed',
-      error: error.message
-    });
+    // Log failed email (only if companyId provided)
+    if (emailData.companyId || emailData.salonId) {
+      try {
+        await EmailLog.create({
+          companyId: emailData.companyId || emailData.salonId,
+          recipientEmail: emailData.to,
+          subject: emailData.subject,
+          emailType: emailData.type || 'general',
+          status: 'failed',
+          error: error.message,
+          attempts: 1
+        });
+      } catch (logError) {
+        // Non-blocking
+        logger.warn(`⚠️  Failed to log email error: ${logError.message}`);
+      }
+    }
 
     throw error;
   }

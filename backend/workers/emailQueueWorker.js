@@ -22,16 +22,23 @@ const processEmailQueue = async () => {
     const pendingEmails = await EmailQueue.find({
       status: 'pending',
       scheduledFor: { $lte: now },
-      retries: { $lt: 3 } // Max 3 retries
+      $or: [
+        { attempts: { $exists: false } },
+        { attempts: { $lt: 3 } }
+      ]
     }).limit(50); // Process in batches
+    
     if (pendingEmails.length === 0) {
       return;
     }
+    
     logger.log(`📧 Processing ${pendingEmails.length} pending emails...`);
+    
     for (const queueItem of pendingEmails) {
       await processEmailQueueItem(queueItem);
     }
-    logger.log('✅ Finished processing email queue');
+    
+    logger.log(`✅ Finished processing email queue - ${pendingEmails.length} emails processed`);
   } catch (error) {
     logger.error('❌ Error processing email queue:', error);
   }
@@ -43,6 +50,30 @@ const processEmailQueue = async () => {
  */
 const processEmailQueueItem = async (queueItem) => {
   try {
+    logger.log(`📤 Processing email: ${queueItem._id} | Type: ${queueItem.type} | To: ${queueItem.to || 'N/A'}`);
+    
+    // If no bookingId, treat as direct email (notification/custom)
+    if (!queueItem.bookingId) {
+      logger.log(`📧 Direct email (no booking) - sending to: ${queueItem.to}`);
+      
+      // Send direct email
+      const result = await emailService.sendEmail({
+        to: queueItem.to,
+        subject: queueItem.subject,
+        body: queueItem.body,
+        html: queueItem.html || queueItem.body.replace(/\n/g, '<br>')
+      });
+      
+      // Mark as sent
+      queueItem.status = 'sent';
+      queueItem.sentAt = new Date();
+      queueItem.attempts = (queueItem.attempts || 0) + 1;
+      await queueItem.save();
+      
+      logger.log(`✅ Email sent successfully: ${queueItem._id} | MessageID: ${result?.messageId || 'N/A'}`);
+      return;
+    }
+    
     // Get booking with related data
     const booking = await Booking.findById(queueItem.bookingId)
       .populate('salonId')
@@ -50,7 +81,11 @@ const processEmailQueueItem = async (queueItem) => {
     if (!booking) {
       logger.warn(`⚠️  Booking not found: ${queueItem.bookingId}`);
       queueItem.status = 'failed';
-      queueItem.error = 'Booking not found';
+      queueItem.error = {
+        message: 'Booking not found',
+        code: 'BOOKING_NOT_FOUND'
+      };
+      queueItem.attempts = (queueItem.attempts || 0) + 1;
       await queueItem.save();
       return;
     }
@@ -59,7 +94,10 @@ const processEmailQueueItem = async (queueItem) => {
     if (!salon) {
       logger.warn('⚠️  Salon not found');
       queueItem.status = 'failed';
-      queueItem.error = 'Salon not found';
+      queueItem.error = {
+        message: 'Salon not found',
+        code: 'SALON_NOT_FOUND'
+      };
       await queueItem.save();
       return;
     }
@@ -81,7 +119,7 @@ const processEmailQueueItem = async (queueItem) => {
       throw new Error(`Unknown email type: ${queueItem.type}`);
     }
     // Send email
-    await emailService.sendEmail({
+    const result = await emailService.sendEmail({
       to: booking.customerEmail,
       subject: emailData.subject,
       text: emailData.body,
@@ -90,43 +128,71 @@ const processEmailQueueItem = async (queueItem) => {
     // Mark as sent
     queueItem.status = 'sent';
     queueItem.sentAt = new Date();
+    queueItem.attempts = (queueItem.attempts || 0) + 1;
     await queueItem.save();
-    // Log successful send
-    await EmailLog.create({
-      salonId: salon._id,
-      bookingId: booking._id,
-      type: queueItem.type,
-      recipient: booking.customerEmail,
-      subject: emailData.subject,
-      status: 'sent',
-      sentAt: new Date()
-    });
-    logger.log(`?? Sent ${queueItem.type} email (booking: ${booking._id})`);
+    
+    logger.log(`✅ Email sent successfully: ${queueItem._id} | To: ${booking.customerEmail} | MessageID: ${result?.messageId || 'N/A'}`);
+    
+    // Log successful send (with required fields)
+    try {
+      await EmailLog.create({
+        companyId: salon._id,
+        recipientEmail: booking.customerEmail,
+        subject: emailData.subject,
+        emailType: queueItem.type === 'reminder' ? 'booking-reminder' : 
+                   queueItem.type === 'review' ? 'review-request' : 
+                   queueItem.type === 'confirmation' ? 'booking-confirmation' : 'general',
+        status: 'sent',
+        sentAt: new Date(),
+        attempts: 1,
+        userId: booking.customerId
+      });
+    } catch (logError) {
+      // Non-blocking
+      logger.warn(`⚠️  Failed to log email: ${logError.message}`);
+    }
+    
+    logger.log(`📧 Sent ${queueItem.type} email (booking: ${booking._id})`);
   } catch (error) {
     logger.error(`❌ Failed to send email ${queueItem._id}:`, error.message);
+    logger.error(`   Error stack: ${error.stack}`);
+    
     // Increment retry counter
-    queueItem.retries = (queueItem.retries || 0) + 1;
-    queueItem.error = error.message;
+    queueItem.attempts = (queueItem.attempts || 0) + 1;
+    queueItem.lastAttemptAt = new Date();
+    queueItem.error = {
+      message: error.message,
+      stack: error.stack,
+      code: error.code || 'UNKNOWN'
+    };
+    
     // If max retries reached, mark as failed
-    if (queueItem.retries >= 3) {
+    if (queueItem.attempts >= queueItem.maxAttempts) {
       queueItem.status = 'failed';
-      logger.error(`💀 Email ${queueItem._id} failed after ${queueItem.retries} retries`);
-      // Log failed send
-      await EmailLog.create({
-        salonId: queueItem.salonId,
-        bookingId: queueItem.bookingId,
-        type: queueItem.type,
-        recipient: queueItem.recipient || 'unknown',
-        subject: `Failed: ${queueItem.type}`,
-        status: 'failed',
-        error: error.message,
-        sentAt: new Date()
-      });
+      logger.error(`💀 Email ${queueItem._id} failed after ${queueItem.attempts} attempts - PERMANENT FAILURE`);
+      
+      // Log failed send (with required fields, non-blocking)
+      try {
+        await EmailLog.create({
+          companyId: queueItem.salonId || queueItem.salon,
+          recipientEmail: queueItem.to || 'unknown',
+          subject: `Failed: ${queueItem.type}`,
+          emailType: 'general',
+          status: 'failed',
+          error: error.message,
+          sentAt: new Date(),
+          attempts: queueItem.attempts
+        });
+      } catch (logError) {
+        // Non-blocking
+        logger.warn(`⚠️  Failed to log email failure: ${logError.message}`);
+      }
     } else {
       // Schedule retry with exponential backoff
-      const backoffMinutes = Math.pow(2, queueItem.retries) * 5; // 5, 10, 20 minutes
+      const backoffMinutes = Math.pow(2, queueItem.attempts) * 5; // 5, 10, 20 minutes
       queueItem.scheduledFor = new Date(Date.now() + backoffMinutes * 60 * 1000);
-      logger.log(`🔄 Scheduled retry #${queueItem.retries} in ${backoffMinutes} minutes`);
+      queueItem.status = 'pending'; // Keep as pending for retry
+      logger.log(`🔄 Scheduled retry #${queueItem.attempts} in ${backoffMinutes} minutes`);
     }
     await queueItem.save();
   }
