@@ -5,9 +5,7 @@ import Consent from '../models/Consent.js';
 import Package from '../models/Package.js';
 import Membership from '../models/Membership.js';
 import Booking from '../models/Booking.js';
-import { createLogger } from '../config/logger.js';
-
-const logger = createLogger('WorkflowController');
+import logger from '../utils/logger.js';
 
 /**
  * ==================== WORKFLOW MANAGEMENT ====================

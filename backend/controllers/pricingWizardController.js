@@ -1,8 +1,6 @@
 import calculateTierRecommendation, { getTierDetails } from '../utils/tierRecommendationEngine.js';
 import PricingWizardResponse from '../models/PricingWizardResponse.js';
-import { createLogger } from '../config/logger.js';
-
-const logger = createLogger('PricingWizardController');
+import logger from '../utils/logger.js';
 
 /**
  * GET /api/pricing-wizard/questions
