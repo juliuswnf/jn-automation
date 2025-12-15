@@ -17,7 +17,7 @@ import {
   downloadConsentPDF,
   getPortfolio
 } from '../controllers/tattooController.js';
-import { protect } from '../middleware/auth.js';
+import { protect } from '../middleware/authMiddleware.js';
 import { checkRole } from '../middleware/checkRole.js';
 
 const router = express.Router();
