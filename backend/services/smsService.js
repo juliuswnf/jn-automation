@@ -3,8 +3,15 @@ import SMSLog from '../models/SMSLog.js';
 import SMSConsent from '../models/SMSConsent.js';
 import SMSProviderFactory from './smsProviders/SMSProviderFactory.js';
 
-// Get SMS Provider (Twilio or MessageBird)
-const smsProvider = SMSProviderFactory.getProvider();
+// Get SMS Provider lazily (only when needed)
+let smsProvider = null;
+const getSmsProvider = () => {
+  if (!smsProvider) {
+    smsProvider = SMSProviderFactory.getProvider();
+  }
+  return smsProvider;
+};
+
 const RATE_LIMIT = parseInt(process.env.SMS_RATE_LIMIT_PER_SECOND || '10');
 
 // Redis client for rate limiting
@@ -191,7 +198,8 @@ async function sendSMSImmediate(phoneNumber, message, salonId, template, booking
     }
 
     // Send via configured SMS provider
-    const result = await smsProvider.sendSMS({
+    const provider = getSmsProvider();
+    const result = await provider.sendSMS({
       phoneNumber,
       message,
       from: process.env.SMS_ORIGINATOR || process.env.TWILIO_PHONE_NUMBER
