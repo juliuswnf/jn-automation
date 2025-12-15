@@ -7,7 +7,10 @@
   "scripts": {
     "dev": "nodemon backend/server.js",
     "start": "node backend/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint backend --ext .js,.cjs",
+    "lint:fix": "eslint backend --ext .js,.cjs --fix",
+    "format": "powershell -Command \"Get-ChildItem -Recurse -Filter '*.js' backend | Where-Object { $_.FullName -notmatch 'node_modules' } | ForEach-Object { $content = Get-Content $_.FullName -Raw; $content = $content -replace ' +\\r?\\n', '`n'; $utf8NoBom = New-Object System.Text.UTF8Encoding $false; [System.IO.File]::WriteAllText($_.FullName, $content, $utf8NoBom) }\""
   },
   "dependencies": {
     "express": "^4.18.2",
