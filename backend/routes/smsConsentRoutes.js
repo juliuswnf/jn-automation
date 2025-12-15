@@ -1,6 +1,6 @@
 import express from 'express';
 import SMSConsent from '../models/SMSConsent.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -117,7 +117,7 @@ router.post('/opt-out', async (req, res) => {
  * @desc    Check SMS consent status for a customer
  * @access  Private (authenticated)
  */
-router.get('/:customerId/:salonId', authenticateToken, async (req, res) => {
+router.get('/:customerId/:salonId', authMiddleware.protect, async (req, res) => {
   try {
     const { customerId, salonId } = req.params;
 
@@ -166,7 +166,7 @@ router.get('/:customerId/:salonId', authenticateToken, async (req, res) => {
  * @desc    Get all SMS consents for a salon (admin dashboard)
  * @access  Private (salon owner only)
  */
-router.get('/salon/:salonId', authenticateToken, async (req, res) => {
+router.get('/salon/:salonId', authMiddleware.protect, async (req, res) => {
   try {
     const { salonId } = req.params;
 

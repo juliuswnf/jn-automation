@@ -2,7 +2,7 @@ import express from 'express';
 import BookingConfirmation from '../models/BookingConfirmation.js';
 import Booking from '../models/Booking.js';
 import { sendBookingConfirmation } from '../services/smsService.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const router = express.Router();
  * @desc    Create a booking confirmation (48h requirement)
  * @access  Private (called by confirmationSenderWorker)
  */
-router.post('/:bookingId', authenticateToken, async (req, res) => {
+router.post('/:bookingId', authMiddleware.protect, async (req, res) => {
   try {
     const { bookingId } = req.params;
 
@@ -182,7 +182,7 @@ router.get('/confirm/:token', async (req, res) => {
  * @desc    Get confirmation status for a booking
  * @access  Private (authenticated)
  */
-router.get('/:bookingId', authenticateToken, async (req, res) => {
+router.get('/:bookingId', authMiddleware.protect, async (req, res) => {
   try {
     const { bookingId } = req.params;
 

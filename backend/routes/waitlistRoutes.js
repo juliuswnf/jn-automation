@@ -1,6 +1,6 @@
 import express from 'express';
 import Waitlist from '../models/Waitlist.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -89,7 +89,7 @@ router.post('/', async (req, res) => {
  * @desc    Get all active waitlist entries for a salon (sorted by priority)
  * @access  Private (salon owner only)
  */
-router.get('/:salonId', authenticateToken, async (req, res) => {
+router.get('/:salonId', authMiddleware.protect, async (req, res) => {
   try {
     const { salonId } = req.params;
 
@@ -175,7 +175,7 @@ router.get('/customer/:customerId/:salonId', async (req, res) => {
  * @desc    Update waitlist entry (e.g., change preferred time)
  * @access  Private (customer or salon owner)
  */
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authMiddleware.protect, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -229,7 +229,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
  * @desc    Remove customer from waitlist
  * @access  Private (customer or salon owner)
  */
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authMiddleware.protect, async (req, res) => {
   try {
     const { id } = req.params;
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import SlotSuggestion from '../models/SlotSuggestion.js';
 import Booking from '../models/Booking.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -188,7 +188,7 @@ router.post('/reject/:id', async (req, res) => {
  * @desc    Get all slot suggestions for a salon (admin dashboard)
  * @access  Private (salon owner only)
  */
-router.get('/:salonId', authenticateToken, async (req, res) => {
+router.get('/:salonId', authMiddleware.protect, async (req, res) => {
   try {
     const { salonId } = req.params;
     const { status, days = 7 } = req.query;
@@ -235,7 +235,7 @@ router.get('/:salonId', authenticateToken, async (req, res) => {
  * @desc    Get urgent slot suggestions that need attention (expiring soon)
  * @access  Private (salon owner only)
  */
-router.get('/urgent/:salonId', authenticateToken, async (req, res) => {
+router.get('/urgent/:salonId', authMiddleware.protect, async (req, res) => {
   try {
     const { salonId } = req.params;
 
