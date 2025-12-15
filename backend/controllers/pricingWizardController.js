@@ -13,14 +13,14 @@ export const getQuestions = async (req, res) => {
         id: 1,
         key: 'customerCount',
         title: 'Wie viele Kunden hast du aktuell?',
-        subtitle: 'Hilft uns, die richtige GrÃ¶ÃŸe fÃ¼r dein Business zu finden',
+        subtitle: 'Hilft uns, die richtige GrÃƒÂ¶ÃƒÅ¸e fÃƒÂ¼r dein Business zu finden',
         type: 'single',
-        icon: 'ðŸ‘¥',
+        icon: 'Ã°Å¸â€˜Â¥',
         options: [
           { value: '0-50', label: '0-50 Kunden', subtitle: 'Gerade gestartet' },
           { value: '51-200', label: '51-200 Kunden', subtitle: 'Etabliertes Business' },
           { value: '201-500', label: '201-500 Kunden', subtitle: 'Gut laufend' },
-          { value: '500+', label: '500+ Kunden', subtitle: 'GroÃŸes Business' }
+          { value: '500+', label: '500+ Kunden', subtitle: 'GroÃƒÅ¸es Business' }
         ]
       },
       {
@@ -29,7 +29,7 @@ export const getQuestions = async (req, res) => {
         title: 'Wie viele Termine hast du pro Woche?',
         subtitle: 'Zeigt uns, wie viel Automatisierung du brauchst',
         type: 'single',
-        icon: 'ðŸ“…',
+        icon: 'Ã°Å¸â€œâ€¦',
         options: [
           { value: '0-20', label: '0-20 Termine/Woche', subtitle: 'Entspanntes Tempo' },
           { value: '21-50', label: '21-50 Termine/Woche', subtitle: 'Moderate Auslastung' },
@@ -43,7 +43,7 @@ export const getQuestions = async (req, res) => {
         title: 'Wie viele Standorte hast du?',
         subtitle: 'Multi-Location Features ab Professional',
         type: 'single',
-        icon: 'ðŸ“',
+        icon: 'Ã°Å¸â€œÂ',
         options: [
           { value: 1, label: '1 Standort', subtitle: 'Ein Ort, volle Konzentration' },
           { value: 2, label: '2-3 Standorte', subtitle: 'Expandierend' },
@@ -54,17 +54,17 @@ export const getQuestions = async (req, res) => {
         id: 4,
         key: 'features',
         title: 'Welche Features brauchst du?',
-        subtitle: 'WÃ¤hle alles, was fÃ¼r dich wichtig ist (mehrere mÃ¶glich)',
+        subtitle: 'WÃƒÂ¤hle alles, was fÃƒÂ¼r dich wichtig ist (mehrere mÃƒÂ¶glich)',
         type: 'multiple',
-        icon: 'âœ¨',
+        icon: 'Ã¢Å“Â¨',
         options: [
-          { value: 'sms_reminders', label: 'SMS-Erinnerungen', subtitle: 'Reduziere No-Shows um 70%', icon: 'ðŸ“±' },
-          { value: 'marketing', label: 'Marketing-Kampagnen', subtitle: 'Email & SMS Automation', icon: 'ðŸ“§' },
-          { value: 'multi_session', label: 'Multi-Session-Projekte', subtitle: 'FÃ¼r Tattoo, Medical', icon: 'ðŸŽ¨' },
-          { value: 'memberships', label: 'Packages & Memberships', subtitle: 'Recurring Revenue', icon: 'ðŸ’Ž' },
-          { value: 'waitlist', label: 'Waitlist-Management', subtitle: 'FÃ¼lle freie Slots automatisch', icon: 'â°' },
-          { value: 'analytics', label: 'Analytics & Reports', subtitle: 'Datenbasierte Entscheidungen', icon: 'ðŸ“Š' },
-          { value: 'white_label', label: 'White-Label Branding', subtitle: 'Deine eigene Brand', icon: 'ðŸ·ï¸' }
+          { value: 'sms_reminders', label: 'SMS-Erinnerungen', subtitle: 'Reduziere No-Shows um 70%', icon: 'Ã°Å¸â€œÂ±' },
+          { value: 'marketing', label: 'Marketing-Kampagnen', subtitle: 'Email & SMS Automation', icon: 'Ã°Å¸â€œÂ§' },
+          { value: 'multi_session', label: 'Multi-Session-Projekte', subtitle: 'FÃƒÂ¼r Tattoo, Medical', icon: 'Ã°Å¸Å½Â¨' },
+          { value: 'memberships', label: 'Packages & Memberships', subtitle: 'Recurring Revenue', icon: 'Ã°Å¸â€™Å½' },
+          { value: 'waitlist', label: 'Waitlist-Management', subtitle: 'FÃƒÂ¼lle freie Slots automatisch', icon: 'Ã¢ÂÂ°' },
+          { value: 'analytics', label: 'Analytics & Reports', subtitle: 'Datenbasierte Entscheidungen', icon: 'Ã°Å¸â€œÅ ' },
+          { value: 'white_label', label: 'White-Label Branding', subtitle: 'Deine eigene Brand', icon: 'Ã°Å¸ÂÂ·Ã¯Â¸Â' }
         ]
       },
       {
@@ -73,26 +73,26 @@ export const getQuestions = async (req, res) => {
         title: 'Wie viele Mitarbeiter hast du?',
         subtitle: 'Team-Features und User-Limits variieren',
         type: 'single',
-        icon: 'ðŸ‘”',
+        icon: 'Ã°Å¸â€˜â€',
         options: [
           { value: 'solo', label: 'Nur ich', subtitle: 'Solo-Unternehmer' },
           { value: '2-5', label: '2-5 Mitarbeiter', subtitle: 'Kleines Team' },
           { value: '6-10', label: '6-10 Mitarbeiter', subtitle: 'Mittleres Team' },
-          { value: '10+', label: '10+ Mitarbeiter', subtitle: 'GroÃŸes Team' }
+          { value: '10+', label: '10+ Mitarbeiter', subtitle: 'GroÃƒÅ¸es Team' }
         ]
       },
       {
         id: 6,
         key: 'budget',
-        title: 'Was ist dein monatliches Budget fÃ¼r Software?',
-        subtitle: 'Ehrlich sein hilft uns, das beste Preis-Leistungs-VerhÃ¤ltnis zu finden',
+        title: 'Was ist dein monatliches Budget fÃƒÂ¼r Software?',
+        subtitle: 'Ehrlich sein hilft uns, das beste Preis-Leistungs-VerhÃƒÂ¤ltnis zu finden',
         type: 'single',
-        icon: 'ðŸ’°',
+        icon: 'Ã°Å¸â€™Â°',
         options: [
-          { value: 'under-100', label: 'Unter â‚¬100/Monat', subtitle: 'Budget-bewusst' },
-          { value: '100-200', label: 'â‚¬100-200/Monat', subtitle: 'Standard-Budget' },
-          { value: '200-500', label: 'â‚¬200-500/Monat', subtitle: 'GroÃŸzÃ¼giges Budget' },
-          { value: '500+', label: 'â‚¬500+/Monat', subtitle: 'Premium-Budget' }
+          { value: 'under-100', label: 'Unter Ã¢â€šÂ¬100/Monat', subtitle: 'Budget-bewusst' },
+          { value: '100-200', label: 'Ã¢â€šÂ¬100-200/Monat', subtitle: 'Standard-Budget' },
+          { value: '200-500', label: 'Ã¢â€šÂ¬200-500/Monat', subtitle: 'GroÃƒÅ¸zÃƒÂ¼giges Budget' },
+          { value: '500+', label: 'Ã¢â€šÂ¬500+/Monat', subtitle: 'Premium-Budget' }
         ]
       }
     ];
@@ -182,7 +182,7 @@ export const getRecommendation = async (req, res) => {
  */
 export const saveResponse = async (req, res) => {
   try {
-    const { sessionId, selectedTier, converted } = req.body;
+    const { sessionId, selectedTier } = req.body;
 
     if (!sessionId) {
       return res.status(400).json({

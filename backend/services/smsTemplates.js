@@ -1,80 +1,80 @@
 /**
- * SMS Templates fÃ¼r JN Business System
- * 
- * Branchen-spezifische SMS-Templates fÃ¼r verschiedene Workflows
+ * SMS Templates fÃƒÂ¼r JN Business System
+ *
+ * Branchen-spezifische SMS-Templates fÃƒÂ¼r verschiedene Workflows
  */
 
 export const SMS_TEMPLATES = {
   // ==================== STANDARD BOOKING ====================
   booking_confirmation: {
-    name: 'BuchungsbestÃ¤tigung',
-    text: `Hey {{customerName}}! ðŸ‘‹
+    name: 'BuchungsbestÃƒÂ¤tigung',
+    text: `Hey {{customerName}}! Ã°Å¸â€˜â€¹
 
-Dein Termin ist bestÃ¤tigt:
-ðŸ“… {{date}} um {{time}}
-â±ï¸ Dauer: {{duration}} Min
-ðŸ“ {{salonName}}
+Dein Termin ist bestÃƒÂ¤tigt:
+Ã°Å¸â€œâ€¦ {{date}} um {{time}}
+Ã¢ÂÂ±Ã¯Â¸Â Dauer: {{duration}} Min
+Ã°Å¸â€œÂ {{salonName}}
 
 Bei Fragen: {{salonPhone}}
 
-Bis bald! ðŸ’ª`
+Bis bald! Ã°Å¸â€™Âª`
   },
 
   booking_reminder_24h: {
     name: 'Erinnerung 24h vorher',
-    text: `Hey {{customerName}}! ðŸ””
+    text: `Hey {{customerName}}! Ã°Å¸â€â€
 
 Morgen ist dein Termin:
-ðŸ“… {{date}} um {{time}}
-â±ï¸ {{duration}} Min
-ðŸ“ {{salonName}}
+Ã°Å¸â€œâ€¦ {{date}} um {{time}}
+Ã¢ÂÂ±Ã¯Â¸Â {{duration}} Min
+Ã°Å¸â€œÂ {{salonName}}
 
-Nicht vergessen! ðŸ˜Š`
+Nicht vergessen! Ã°Å¸ËœÅ `
   },
 
   booking_reminder_2h: {
     name: 'Erinnerung 2h vorher',
-    text: `Hey {{customerName}}! â°
+    text: `Hey {{customerName}}! Ã¢ÂÂ°
 
 In 2 Stunden ist dein Termin:
-ðŸ“… {{time}}
-ðŸ“ {{salonName}}
+Ã°Å¸â€œâ€¦ {{time}}
+Ã°Å¸â€œÂ {{salonName}}
 
-Wir freuen uns auf dich! ðŸ’ª`
+Wir freuen uns auf dich! Ã°Å¸â€™Âª`
   },
 
   // ==================== TATTOO STUDIO ====================
   tattoo_session_reminder: {
     name: 'Tattoo Session Erinnerung',
-    text: `Hey {{customerName}}! ðŸŽ¨
+    text: `Hey {{customerName}}! Ã°Å¸Å½Â¨
 
 Morgen ist deine Tattoo-Session {{sessionNumber}}/{{totalSessions}}!
 
-ðŸ“… {{date}} um {{time}}
-â±ï¸ Dauer: {{duration}}h
-ðŸ“ {{salonName}}
+Ã°Å¸â€œâ€¦ {{date}} um {{time}}
+Ã¢ÂÂ±Ã¯Â¸Â Dauer: {{duration}}h
+Ã°Å¸â€œÂ {{salonName}}
 
 Bring bitte mit:
 {{checklist}}
 
 Wichtig:
-âŒ Kein Alkohol 24h vorher
-âŒ Keine BlutverdÃ¼nner
+Ã¢ÂÅ’ Kein Alkohol 24h vorher
+Ã¢ÂÅ’ Keine BlutverdÃƒÂ¼nner
 
-Bis morgen! ðŸ’ª
+Bis morgen! Ã°Å¸â€™Âª
 {{salonName}}`
   },
 
   tattoo_aftercare_reminder: {
     name: 'Tattoo Nachsorge',
-    text: `Hey {{customerName}}! ðŸŽ¨
+    text: `Hey {{customerName}}! Ã°Å¸Å½Â¨
 
-Wichtige Nachsorge fÃ¼r dein Tattoo:
+Wichtige Nachsorge fÃƒÂ¼r dein Tattoo:
 
-âœ… 3x tÃ¤glich waschen (pH-neutral)
-âœ… DÃ¼nn eincremen (Panthenol)
-âŒ Keine Sonneneinstrahlung
-âŒ Keine Sauna/Schwimmen (2 Wochen)
+Ã¢Å“â€¦ 3x tÃƒÂ¤glich waschen (pH-neutral)
+Ã¢Å“â€¦ DÃƒÂ¼nn eincremen (Panthenol)
+Ã¢ÂÅ’ Keine Sonneneinstrahlung
+Ã¢ÂÅ’ Keine Sauna/Schwimmen (2 Wochen)
 
 Bei Fragen: {{salonPhone}}
 
@@ -83,12 +83,12 @@ Bei Fragen: {{salonPhone}}
 
   tattoo_followup_appointment: {
     name: 'Tattoo Follow-up Termin',
-    text: `Hey {{customerName}}! ðŸŽ¨
+    text: `Hey {{customerName}}! Ã°Å¸Å½Â¨
 
 Dein Tattoo sollte jetzt gut verheilt sein!
 
-NÃ¤chster Termin fÃ¼r Session {{nextSession}}/{{totalSessions}}:
-ðŸ“… In {{weeks}} Wochen empfohlen
+NÃƒÂ¤chster Termin fÃƒÂ¼r Session {{nextSession}}/{{totalSessions}}:
+Ã°Å¸â€œâ€¦ In {{weeks}} Wochen empfohlen
 
 Jetzt buchen: {{bookingLink}}
 
@@ -98,12 +98,12 @@ Jetzt buchen: {{bookingLink}}
   // ==================== MEDICAL AESTHETICS ====================
   treatment_follow_up: {
     name: 'Behandlungs-Follow-up',
-    text: `Hey {{customerName}}! ðŸ’‰
+    text: `Hey {{customerName}}! Ã°Å¸â€™â€°
 
 Deine {{treatmentType}}-Behandlung wirkt bald aus.
 
 Empfohlener Nachtermin:
-â° In {{weeks}} Wochen
+Ã¢ÂÂ° In {{weeks}} Wochen
 
 Jetzt buchen: {{bookingLink}}
 
@@ -114,14 +114,14 @@ Fragen? {{salonPhone}}
 
   treatment_aftercare: {
     name: 'Behandlungs-Nachsorge',
-    text: `Hey {{customerName}}! ðŸ’‰
+    text: `Hey {{customerName}}! Ã°Å¸â€™â€°
 
 Wichtige Nachsorge nach {{treatmentType}}:
 
-âœ… KÃ¼hlen bei Schwellung (24h)
-âœ… Nicht massieren (48h)
-âŒ Keine Sauna/Sport (24h)
-âŒ Kein Alkohol (24h)
+Ã¢Å“â€¦ KÃƒÂ¼hlen bei Schwellung (24h)
+Ã¢Å“â€¦ Nicht massieren (48h)
+Ã¢ÂÅ’ Keine Sauna/Sport (24h)
+Ã¢ÂÅ’ Kein Alkohol (24h)
 
 Bei Komplikationen sofort melden: {{salonPhone}}
 
@@ -129,32 +129,32 @@ Bei Komplikationen sofort melden: {{salonPhone}}
   },
 
   treatment_confirmation: {
-    name: 'Behandlungs-BestÃ¤tigung',
-    text: `Hey {{customerName}}! ðŸ’‰
+    name: 'Behandlungs-BestÃƒÂ¤tigung',
+    text: `Hey {{customerName}}! Ã°Å¸â€™â€°
 
-Deine {{treatmentType}}-Behandlung ist bestÃ¤tigt:
+Deine {{treatmentType}}-Behandlung ist bestÃƒÂ¤tigt:
 
-ðŸ“… {{date}} um {{time}}
-â±ï¸ ca. {{duration}} Min
-ðŸ“ {{salonName}}
+Ã°Å¸â€œâ€¦ {{date}} um {{time}}
+Ã¢ÂÂ±Ã¯Â¸Â ca. {{duration}} Min
+Ã°Å¸â€œÂ {{salonName}}
 
 Bitte mitbringen:
-âœ… AusgefÃ¼llte Anamnesebogen
-âœ… Personalausweis
+Ã¢Å“â€¦ AusgefÃƒÂ¼llte Anamnesebogen
+Ã¢Å“â€¦ Personalausweis
 
 Bei Fragen: {{salonPhone}}
 
-Bis bald! ðŸ’ª`
+Bis bald! Ã°Å¸â€™Âª`
   },
 
   // ==================== SPA & WELLNESS ====================
   package_reminder: {
     name: 'Package Erinnerung',
-    text: `Hey {{customerName}}! ðŸŽ
+    text: `Hey {{customerName}}! Ã°Å¸Å½Â
 
-Du hast noch {{creditsRemaining}} Credits Ã¼brig in deinem "{{packageName}}"!
+Du hast noch {{creditsRemaining}} Credits ÃƒÂ¼brig in deinem "{{packageName}}"!
 
-âš ï¸ VerfÃ¤llt am {{expiryDate}}
+Ã¢Å¡Â Ã¯Â¸Â VerfÃƒÂ¤llt am {{expiryDate}}
 
 Jetzt buchen: {{bookingLink}}
 
@@ -162,12 +162,12 @@ Jetzt buchen: {{bookingLink}}
   },
 
   package_expiring_soon: {
-    name: 'Package lÃ¤uft ab',
-    text: `Hey {{customerName}}! â°
+    name: 'Package lÃƒÂ¤uft ab',
+    text: `Hey {{customerName}}! Ã¢ÂÂ°
 
-Dein "{{packageName}}" lÃ¤uft in {{daysLeft}} Tagen ab!
+Dein "{{packageName}}" lÃƒÂ¤uft in {{daysLeft}} Tagen ab!
 
-Noch {{creditsRemaining}} Credits verfÃ¼gbar.
+Noch {{creditsRemaining}} Credits verfÃƒÂ¼gbar.
 
 Schnell buchen: {{bookingLink}}
 
@@ -175,14 +175,14 @@ Schnell buchen: {{bookingLink}}
   },
 
   package_purchase_confirmation: {
-    name: 'Package Kauf bestÃ¤tigt',
-    text: `Hey {{customerName}}! ðŸŽ
+    name: 'Package Kauf bestÃƒÂ¤tigt',
+    text: `Hey {{customerName}}! Ã°Å¸Å½Â
 
-Danke fÃ¼r deinen Kauf!
+Danke fÃƒÂ¼r deinen Kauf!
 
 "{{packageName}}"
-âœ… {{creditsTotal}} Credits
-ðŸ“… GÃ¼ltig bis {{expiryDate}}
+Ã¢Å“â€¦ {{creditsTotal}} Credits
+Ã°Å¸â€œâ€¦ GÃƒÂ¼ltig bis {{expiryDate}}
 
 Jetzt buchen: {{bookingLink}}
 
@@ -192,14 +192,14 @@ Jetzt buchen: {{bookingLink}}
   // ==================== MEMBERSHIP ====================
   membership_welcome: {
     name: 'Membership Willkommen',
-    text: `Hey {{customerName}}! ðŸŽ‰
+    text: `Hey {{customerName}}! Ã°Å¸Å½â€°
 
 Willkommen bei "{{membershipName}}"!
 
 Deine Benefits:
 {{benefits}}
 
-NÃ¤chste Abrechnung: {{nextBillingDate}}
+NÃƒÂ¤chste Abrechnung: {{nextBillingDate}}
 
 Jetzt buchen: {{bookingLink}}
 
@@ -208,12 +208,12 @@ Jetzt buchen: {{bookingLink}}
 
   membership_billing_reminder: {
     name: 'Membership Abrechnung',
-    text: `Hey {{customerName}}! ðŸ’³
+    text: `Hey {{customerName}}! Ã°Å¸â€™Â³
 
 Deine "{{membershipName}}"-Abrechnung steht an:
 
-ðŸ“… {{nextBillingDate}}
-ðŸ’° {{priceMonthly}}â‚¬
+Ã°Å¸â€œâ€¦ {{nextBillingDate}}
+Ã°Å¸â€™Â° {{priceMonthly}}Ã¢â€šÂ¬
 
 Zahlungsmethode: {{paymentMethod}}
 
@@ -222,12 +222,12 @@ Zahlungsmethode: {{paymentMethod}}
 
   membership_credits_reset: {
     name: 'Membership Credits erneuert',
-    text: `Hey {{customerName}}! ðŸ”„
+    text: `Hey {{customerName}}! Ã°Å¸â€â€ž
 
 Deine monatlichen Credits wurden erneuert!
 
-âœ… {{creditsMonthly}} Credits verfÃ¼gbar
-ðŸ“… GÃ¼ltig bis {{nextReset}}
+Ã¢Å“â€¦ {{creditsMonthly}} Credits verfÃƒÂ¼gbar
+Ã°Å¸â€œâ€¦ GÃƒÂ¼ltig bis {{nextReset}}
 
 Jetzt buchen: {{bookingLink}}
 
@@ -236,11 +236,11 @@ Jetzt buchen: {{bookingLink}}
 
   membership_paused: {
     name: 'Membership pausiert',
-    text: `Hey {{customerName}}! â¸ï¸
+    text: `Hey {{customerName}}! Ã¢ÂÂ¸Ã¯Â¸Â
 
 Deine "{{membershipName}}" wurde pausiert.
 
-Keine Abrechnung wÃ¤hrend der Pause.
+Keine Abrechnung wÃƒÂ¤hrend der Pause.
 
 Fortsetzen: {{resumeLink}}
 
@@ -249,14 +249,14 @@ Fortsetzen: {{resumeLink}}
 
   // ==================== WAITLIST ====================
   waitlist_spot_available: {
-    name: 'Warteliste - Termin verfÃ¼gbar',
-    text: `Hey {{customerName}}! ðŸŽ‰
+    name: 'Warteliste - Termin verfÃƒÂ¼gbar',
+    text: `Hey {{customerName}}! Ã°Å¸Å½â€°
 
 Ein Termin ist frei geworden!
 
-ðŸ“… {{date}} um {{time}}
-â±ï¸ {{duration}} Min
-ðŸ“ {{salonName}}
+Ã°Å¸â€œâ€¦ {{date}} um {{time}}
+Ã¢ÂÂ±Ã¯Â¸Â {{duration}} Min
+Ã°Å¸â€œÂ {{salonName}}
 
 Schnell buchen: {{bookingLink}}
 
@@ -267,31 +267,31 @@ Angebot gilt 2h!
 
   // ==================== NO-SHOW PREVENTION ====================
   booking_confirmation_required: {
-    name: 'BestÃ¤tigung erforderlich',
-    text: `Hey {{customerName}}! â°
+    name: 'BestÃƒÂ¤tigung erforderlich',
+    text: `Hey {{customerName}}! Ã¢ÂÂ°
 
-Bitte bestÃ¤tige deinen Termin:
-ðŸ“… {{date}} um {{time}}
+Bitte bestÃƒÂ¤tige deinen Termin:
+Ã°Å¸â€œâ€¦ {{date}} um {{time}}
 
-BestÃ¤tigen: {{confirmLink}}
+BestÃƒÂ¤tigen: {{confirmLink}}
 Absagen: {{cancelLink}}
 
-Ohne BestÃ¤tigung wird der Termin storniert.
+Ohne BestÃƒÂ¤tigung wird der Termin storniert.
 
 {{salonName}}`
   },
 
   no_show_warning: {
     name: 'No-Show Warnung',
-    text: `Hey {{customerName}}! âš ï¸
+    text: `Hey {{customerName}}! Ã¢Å¡Â Ã¯Â¸Â
 
 Du hast deinen letzten Termin verpasst.
 
-Bei 3 No-Shows mÃ¼ssen wir leider:
+Bei 3 No-Shows mÃƒÂ¼ssen wir leider:
 - Vorauszahlung verlangen
-- Terminbuchung einschrÃ¤nken
+- Terminbuchung einschrÃƒÂ¤nken
 
-VerstÃ¤ndnis? ðŸ™
+VerstÃƒÂ¤ndnis? Ã°Å¸â„¢Â
 
 {{salonName}}`
   }
@@ -317,14 +317,14 @@ export function getAllTemplates() {
 
 /**
  * Render template with variables
- * 
+ *
  * @param {string} templateKey - Template key (e.g., 'tattoo_session_reminder')
  * @param {object} variables - Variables to replace (e.g., { customerName: 'Max' })
  * @returns {string} Rendered message
  */
 export function renderTemplate(templateKey, variables = {}) {
   const template = getTemplate(templateKey);
-  
+
   if (!template) {
     throw new Error(`Template "${templateKey}" not found`);
   }
@@ -366,7 +366,7 @@ export function getTemplatesByIndustry(industry) {
   };
 
   const keys = industryTemplates[industry] || [];
-  
+
   return keys.map(key => ({
     key,
     ...SMS_TEMPLATES[key]

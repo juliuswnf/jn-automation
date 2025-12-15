@@ -116,7 +116,7 @@ const trackBookingConversions = async () => {
         await recipient.markAsBooked(booking._id, booking.totalPrice || 0);
         conversions++;
 
-        logger.log(`[SUCCESS] Conversion tracked: ${recipient.discountCode} -> ${booking.totalPrice}â‚¬`);
+        logger.log(`[SUCCESS] Conversion tracked: ${recipient.discountCode} -> ${booking.totalPrice}Ã¢â€šÂ¬`);
       }
     }
 
@@ -177,10 +177,10 @@ const updateCampaignROI = async () => {
         campaign.stats.totalClicked = stats.totalClicked;
         campaign.stats.totalBooked = stats.totalBooked;
         campaign.stats.totalRevenue = stats.totalRevenue;
-        
+
         await campaign.save();
 
-        logger.log(`[INFO] Updated stats for campaign ${campaign.name}: ${stats.totalBooked} conversions, ${stats.totalRevenue}â‚¬ revenue`);
+        logger.log(`[INFO] Updated stats for campaign ${campaign.name}: ${stats.totalBooked} conversions, ${stats.totalRevenue}Ã¢â€šÂ¬ revenue`);
       }
     }
   } catch (error) {
@@ -194,7 +194,7 @@ const updateCampaignROI = async () => {
 export const getAnalyticsSummary = async () => {
   try {
     const campaigns = await MarketingCampaign.find({});
-    
+
     const summary = {
       totalCampaigns: campaigns.length,
       activeCampaigns: campaigns.filter(c => c.status === 'active').length,
@@ -251,7 +251,7 @@ export const getAnalyticsSummary = async () => {
  */
 export const startMarketingAnalyticsWorker = () => {
   logger.log('[WORKER] Starting marketing analytics worker...');
-  
+
   // Safe wrapper to prevent crashes
   const updateMarketingAnalyticsSafe = async () => {
     try {

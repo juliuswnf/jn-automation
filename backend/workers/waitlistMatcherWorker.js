@@ -140,8 +140,8 @@ async function processWaitlistMatching() {
         // Send SMS offer
         try {
           await sendWaitlistOffer(topCandidate.entry, suggestion);
-          console.log(`[WaitlistMatcher] âœ… Matched slot ${booking._id} to customer ${topCandidate.entry.customerId._id} (score: ${topCandidate.matchScore})`);
-          
+          console.log(`[WaitlistMatcher] Ã¢Å“â€¦ Matched slot ${booking._id} to customer ${topCandidate.entry.customerId._id} (score: ${topCandidate.matchScore})`);
+
           // Update waitlist entry
           topCandidate.entry.notificationsSent += 1;
           topCandidate.entry.lastNotificationSent = new Date();
@@ -182,7 +182,7 @@ export function startWaitlistMatcher() {
     processWaitlistMatching();
   });
 
-  console.log('[WaitlistMatcher] Worker scheduled âœ…');
+  console.log('[WaitlistMatcher] Worker scheduled Ã¢Å“â€¦');
 }
 
 export default startWaitlistMatcher;

@@ -29,7 +29,7 @@ class SMSProviderFactory {
       this.selectProvider();
       this.initialized = true;
     } catch (error) {
-      console.warn('âš ï¸ SMS Provider initialization deferred:', error.message);
+      console.warn('Ã¢Å¡Â Ã¯Â¸Â SMS Provider initialization deferred:', error.message);
       // Don't throw - allow the app to start without SMS configured
     }
   }
@@ -51,7 +51,7 @@ class SMSProviderFactory {
     const provider = this.providers.get(configuredProvider);
     if (provider && provider.isAvailable()) {
       this.activeProvider = provider;
-      console.log(`âœ… SMS Provider: ${provider.getName().toUpperCase()}`);
+      console.log(`Ã¢Å“â€¦ SMS Provider: ${provider.getName().toUpperCase()}`);
       return;
     }
 
@@ -59,7 +59,7 @@ class SMSProviderFactory {
     for (const [name, prov] of this.providers.entries()) {
       if (prov.isAvailable()) {
         this.activeProvider = prov;
-        console.log(`âš ï¸ SMS Provider ${configuredProvider} not available, using ${name.toUpperCase()} as fallback`);
+        console.log(`Ã¢Å¡Â Ã¯Â¸Â SMS Provider ${configuredProvider} not available, using ${name.toUpperCase()} as fallback`);
         return;
       }
     }
@@ -102,7 +102,7 @@ class SMSProviderFactory {
    */
   switchProvider(providerName) {
     const provider = this.providers.get(providerName.toLowerCase());
-    
+
     if (!provider) {
       throw new Error(`Provider ${providerName} not registered`);
     }
@@ -112,7 +112,7 @@ class SMSProviderFactory {
     }
 
     this.activeProvider = provider;
-    console.log(`ðŸ”„ Switched SMS provider to ${providerName.toUpperCase()}`);
+    console.log(`Ã°Å¸â€â€ž Switched SMS provider to ${providerName.toUpperCase()}`);
     return provider;
   }
 }

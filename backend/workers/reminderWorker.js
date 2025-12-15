@@ -70,17 +70,17 @@ async function processReminders() {
         // Send reminder SMS
         try {
           await sendReminderSMS(booking);
-          
+
           // Update confirmation record
           confirmation.remindersSent += 1;
           confirmation.lastReminderSent = new Date();
           await confirmation.save();
 
-          console.log(`[Reminder] âœ… Sent 24h reminder for booking ${booking._id}`);
+          console.log(`[Reminder] Ã¢Å“â€¦ Sent 24h reminder for booking ${booking._id}`);
           sent++;
 
         } catch (smsError) {
-          console.error(`[Reminder] âŒ Failed to send reminder SMS for booking ${booking._id}:`, smsError.message);
+          console.error(`[Reminder] Ã¢ÂÅ’ Failed to send reminder SMS for booking ${booking._id}:`, smsError.message);
           errors++;
         }
 
@@ -113,7 +113,7 @@ export function startReminderWorker() {
     processReminders();
   });
 
-  console.log('[Reminder] Worker scheduled âœ…');
+  console.log('[Reminder] Worker scheduled Ã¢Å“â€¦');
 }
 
 export default startReminderWorker;

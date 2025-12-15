@@ -10,7 +10,7 @@ const messagebirdLib = require('messagebird');
  * MessageBird SMS Provider Implementation
  *
  * Docs: https://developers.messagebird.com/api/sms-messaging/
- * Pricing: ~â‚¬0.0675 per SMS (Germany)
+ * Pricing: ~Ã¢â€šÂ¬0.0675 per SMS (Germany)
  */
 
 export default class MessageBirdProvider extends ISMSProvider {
@@ -112,7 +112,7 @@ export default class MessageBirdProvider extends ISMSProvider {
     try {
       const payloadString = JSON.stringify(payload);
       const signaturePayload = `${timestamp}${payloadString}`;
-      
+
       const expectedSignature = crypto
         .createHmac('sha256', secret)
         .update(signaturePayload)

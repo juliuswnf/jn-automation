@@ -77,7 +77,7 @@ const processCampaign = async (campaign) => {
 
     if (targetCustomers.length === 0) {
       logger.log(`[INFO] No target customers for campaign ${campaign.name}`);
-      
+
       // Update next run time
       campaign.stats.lastRunAt = new Date();
       campaign.stats.nextRunAt = campaign.calculateNextRun();
@@ -116,7 +116,7 @@ const findTargetCustomers = async (campaign, salonId) => {
     case 'inactive_customers': {
       const inactiveSince = new Date();
       inactiveSince.setDate(inactiveSince.getDate() - (campaign.rules.inactiveDays || 180));
-      
+
       // Find customers with last booking before inactive date
       const lastBookings = await Booking.aggregate([
         { $match: { salonId } },
@@ -141,7 +141,7 @@ const findTargetCustomers = async (campaign, salonId) => {
       // Find customers with birthday in next N days
       const today = new Date();
       const daysAhead = campaign.rules.birthdayDaysBefore || 7;
-      
+
       // Get customers and filter by birthday month/day
       const allCustomers = await User.find({
         phoneNumber: { $exists: true, $ne: null },
@@ -150,11 +150,10 @@ const findTargetCustomers = async (campaign, salonId) => {
 
       const birthdayCustomers = allCustomers.filter(customer => {
         if (!customer.birthdate) return false;
-        
         const birthday = new Date(customer.birthdate);
         const targetDate = new Date(today);
         targetDate.setDate(targetDate.getDate() + daysAhead);
-        
+
         // Check if birthday (month/day) matches target date
         return birthday.getMonth() === targetDate.getMonth() &&
                birthday.getDate() === targetDate.getDate();
@@ -166,7 +165,7 @@ const findTargetCustomers = async (campaign, salonId) => {
     case 'last_minute': {
       // Find customers based on segment
       const segment = campaign.rules.targetSegment || 'all';
-      
+
       if (segment === 'vip' || segment === 'regular') {
         const bookingCounts = await Booking.aggregate([
           { $match: { salonId } },
@@ -190,7 +189,7 @@ const findTargetCustomers = async (campaign, salonId) => {
     case 'upsell': {
       // Find customers with minimum bookings
       const minBookings = campaign.rules.minBookings || 3;
-      
+
       const upsellCustomers = await Booking.aggregate([
         { $match: { salonId } },
         { $group: { _id: '$customerId', count: { $sum: 1 } } },
@@ -209,7 +208,7 @@ const findTargetCustomers = async (campaign, salonId) => {
       // Find VIP customers
       const loyaltyBookings = campaign.rules.minBookings || 10;
       const minSpent = campaign.rules.minSpent || 0;
-      
+
       const loyalCustomers = await Booking.aggregate([
         { $match: { salonId } },
         { $group: {
@@ -254,7 +253,7 @@ const findTargetCustomers = async (campaign, salonId) => {
 
   // Apply max recipients limit
   const maxRecipients = campaign.rules.maxRecipients || 100;
-  
+
   const customers = await User.find(query)
     .limit(maxRecipients)
     .select('name email phoneNumber');
@@ -277,7 +276,7 @@ const sendCampaignMessages = async (campaign, customers, salon) => {
       // Generate discount code
       const codePrefix = campaign.type.toUpperCase().substring(0, 3);
       const discountCode = await MarketingRecipient.generateDiscountCode(codePrefix);
-      
+
       // Generate tracking link
       const trackingLink = await MarketingRecipient.generateTrackingLink();
 
@@ -385,7 +384,7 @@ const formatDiscount = (messageConfig) => {
   if (messageConfig.discountType === 'percentage') {
     return `${messageConfig.discountValue}%`;
   } else if (messageConfig.discountType === 'fixed_amount') {
-    return `${messageConfig.discountValue}â‚¬`;
+    return `${messageConfig.discountValue}Ã¢â€šÂ¬`;
   }
   return '';
 };
@@ -396,7 +395,7 @@ const formatDiscount = (messageConfig) => {
  */
 export const startMarketingCampaignWorker = () => {
   logger.log('[WORKER] Starting marketing campaign worker...');
-  
+
   // Safe wrapper to prevent crashes
   const processMarketingCampaignsSafe = async () => {
     try {

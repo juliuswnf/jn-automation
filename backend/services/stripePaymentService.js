@@ -1,4 +1,4 @@
-﻿import Stripe from 'stripe';
+import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import logger from '../utils/logger.js';
 import { PRICING_TIERS } from '../config/pricing.js';
@@ -26,9 +26,9 @@ class StripePaymentService {
       logger.error('? STRIPE_SECRET_KEY is not defined in environment variables');
       throw new Error('STRIPE_SECRET_KEY is required');
     }
-    
+
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    
+
     // Stripe Price IDs from .env
     this.priceIds = {
       starter: {

@@ -180,7 +180,7 @@ MarketingCampaignSchema.virtual('roi').get(function() {
   if (!this.stats.totalSent || this.stats.totalSent === 0) {
     return 0;
   }
-  const cost = this.stats.totalSent * 0.077; // â‚¬0.077 per SMS (Twilio cost)
+  const cost = this.stats.totalSent * 0.077; // Ã¢â€šÂ¬0.077 per SMS (Twilio cost)
   if (cost === 0) return 0;
   return ((this.stats.totalRevenue - cost) / cost * 100).toFixed(2);
 });
@@ -198,7 +198,7 @@ MarketingCampaignSchema.methods.shouldRunNow = function() {
   if (this.status !== 'active') return false;
   if (this.schedule.type === 'manual') return false;
   if (!this.stats.nextRunAt) return true;
-  
+
   return new Date() >= this.stats.nextRunAt;
 };
 
@@ -210,7 +210,7 @@ MarketingCampaignSchema.methods.calculateNextRun = function() {
 
   const now = new Date();
   const [hours, minutes] = this.schedule.time.split(':').map(Number);
-  
+
   let nextRun = new Date(now);
   nextRun.setHours(hours, minutes, 0, 0);
 
@@ -224,11 +224,11 @@ MarketingCampaignSchema.methods.calculateNextRun = function() {
     const targetDay = this.schedule.dayOfWeek;
     const currentDay = nextRun.getDay();
     let daysUntilTarget = targetDay - currentDay;
-    
+
     if (daysUntilTarget < 0 || (daysUntilTarget === 0 && nextRun <= now)) {
       daysUntilTarget += 7;
     }
-    
+
     nextRun.setDate(nextRun.getDate() + daysUntilTarget);
   }
 

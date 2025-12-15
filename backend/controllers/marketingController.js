@@ -209,7 +209,7 @@ export const deleteCampaign = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Campaign gelÃ¶scht'
+      message: 'Campaign gelÃƒÂ¶scht'
     });
   } catch (error) {
     logger.error('[ERROR] Delete campaign error:', error);
@@ -250,7 +250,7 @@ export const runCampaign = async (req, res) => {
 
     // Find target customers
     const targetCustomers = await findTargetCustomers(campaign, salon._id);
-    
+
     if (targetCustomers.length === 0) {
       return res.status(400).json({
         success: false,
@@ -402,7 +402,7 @@ export const getStats = async (req, res) => {
     }
 
     const campaigns = await MarketingCampaign.find({ salonId: salon._id });
-    
+
     const stats = {
       totalCampaigns: campaigns.length,
       activeCampaigns: campaigns.filter(c => c.status === 'active').length,
@@ -425,7 +425,7 @@ export const getStats = async (req, res) => {
     });
 
     stats.totalCost = (stats.totalSent * 0.077).toFixed(2);
-    stats.roi = stats.totalCost > 0 
+    stats.roi = stats.totalCost > 0
       ? (((stats.totalRevenue - stats.totalCost) / stats.totalCost) * 100).toFixed(2)
       : 0;
     stats.avgConversionRate = stats.totalSent > 0
@@ -538,10 +538,10 @@ async function findTargetCustomers(campaign, salonId) {
   let query = {};
 
   switch (campaign.type) {
-    case 'inactive_customers':
+    case 'inactive_customers': {
       const inactiveSince = new Date();
       inactiveSince.setDate(inactiveSince.getDate() - campaign.rules.inactiveDays);
-      
+
       const inactiveCustomerIds = await Booking.distinct('customerId', {
         salonId,
         date: { $lt: inactiveSince }
@@ -552,12 +552,12 @@ async function findTargetCustomers(campaign, salonId) {
         phoneNumber: { $exists: true, $ne: null }
       };
       break;
-
-    case 'birthday':
+    }
+    case 'birthday': {
       const today = new Date();
       const targetDate = new Date(today);
       targetDate.setDate(targetDate.getDate() + campaign.rules.birthdayDaysBefore);
-      
+
       query = {
         birthdate: {
           $exists: true,
@@ -566,8 +566,8 @@ async function findTargetCustomers(campaign, salonId) {
         phoneNumber: { $exists: true, $ne: null }
       };
       break;
-
-    case 'loyalty':
+    }
+    case 'loyalty': {
       const loyalCustomerIds = await Booking.aggregate([
         { $match: { salonId } },
         { $group: { _id: '$customerId', count: { $sum: 1 }, totalSpent: { $sum: '$totalPrice' } } },
@@ -579,7 +579,7 @@ async function findTargetCustomers(campaign, salonId) {
         phoneNumber: { $exists: true, $ne: null }
       };
       break;
-
+    }
     default:
       query = {
         phoneNumber: { $exists: true, $ne: null }
@@ -615,7 +615,7 @@ async function executeCampaign(campaign, targetCustomers, salon) {
     try {
       // Generate discount code
       const discountCode = await MarketingRecipient.generateDiscountCode(campaign.type.toUpperCase().substring(0, 3));
-      
+
       // Generate tracking link
       const trackingLink = await MarketingRecipient.generateTrackingLink();
 
@@ -690,7 +690,7 @@ function formatDiscount(messageConfig) {
   if (messageConfig.discountType === 'percentage') {
     return `${messageConfig.discountValue}%`;
   } else if (messageConfig.discountType === 'fixed_amount') {
-    return `${messageConfig.discountValue}â‚¬`;
+    return `${messageConfig.discountValue}Ã¢â€šÂ¬`;
   }
   return '';
 }

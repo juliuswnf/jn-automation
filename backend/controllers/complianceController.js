@@ -1,4 +1,4 @@
-﻿import BAA from '../models/BAA.js';
+import BAA from '../models/BAA.js';
 import cloudinary from '../utils/cloudinaryHelper.js';
 import logger from '../utils/logger.js';
 
@@ -246,7 +246,7 @@ export const getComplianceStatus = async (req, res) => {
       backupsEnabled: true,
       accessControlsEnabled: true,
       allBaasActive,
-      
+
       overallCompliance: allBaasActive && trainedStaff === totalStaff ? 'COMPLIANT' : 'NEEDS_ATTENTION'
     };
 

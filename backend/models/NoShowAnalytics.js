@@ -78,19 +78,19 @@ const noShowAnalyticsSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0,
-    comment: 'Total â‚¬ value of unconfirmed bookings'
+    comment: 'Total Ã¢â€šÂ¬ value of unconfirmed bookings'
   },
   revenueSaved: {
     type: Number,
     default: 0,
     min: 0,
-    comment: 'â‚¬ recovered by filling cancelled slots via waitlist'
+    comment: 'Ã¢â€šÂ¬ recovered by filling cancelled slots via waitlist'
   },
   revenueLost: {
     type: Number,
     default: 0,
     min: 0,
-    comment: 'â‚¬ lost due to no-shows and unfilled slots'
+    comment: 'Ã¢â€šÂ¬ lost due to no-shows and unfilled slots'
   },
   totalRevenue: {
     type: Number,
@@ -162,7 +162,7 @@ const noShowAnalyticsSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0,
-    comment: 'â‚¬ generated from waitlist bookings'
+    comment: 'Ã¢â€šÂ¬ generated from waitlist bookings'
   },
   avgWaitlistFillTimeHours: {
     type: Number,
@@ -197,7 +197,7 @@ const noShowAnalyticsSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0,
-    comment: 'â‚¬ spent on SMS this period'
+    comment: 'Ã¢â€šÂ¬ spent on SMS this period'
   },
 
   // Customer Reliability Tracking
@@ -275,7 +275,7 @@ const noShowAnalyticsSchema = new mongoose.Schema({
   // Comparison to Previous Period
   comparisonToPrevious: {
     noShowRateChange: Number,    // % change
-    revenueChange: Number,        // â‚¬ change
+    revenueChange: Number,        // Ã¢â€šÂ¬ change
     confirmationRateChange: Number,
     waitlistFillRateChange: Number
   }
@@ -312,49 +312,49 @@ noShowAnalyticsSchema.statics.generateForPeriod = async function(salonId, period
   const Booking = mongoose.model('Booking');
   const BookingConfirmation = mongoose.model('BookingConfirmation');
   const Waitlist = mongoose.model('Waitlist');
-  
+
   // Fetch all bookings in period
   const bookings = await Booking.find({
     salonId,
     bookingDate: { $gte: periodStart, $lte: periodEnd }
   }).populate('serviceId');
-  
+
   // Calculate metrics
   const totalBookings = bookings.length;
   const totalNoShows = bookings.filter(b => b.status === 'no-show').length;
   const totalCompleted = bookings.filter(b => b.status === 'completed').length;
   const totalCancelled = bookings.filter(b => b.status === 'cancelled').length;
-  
+
   const noShowRate = totalBookings > 0 ? (totalNoShows / totalBookings) * 100 : 0;
-  
+
   // Revenue calculations
   const revenueLost = bookings
     .filter(b => b.status === 'no-show')
     .reduce((sum, b) => sum + (b.price || 0), 0);
-  
+
   const totalRevenue = bookings
     .filter(b => b.status === 'completed')
     .reduce((sum, b) => sum + (b.price || 0), 0);
-  
+
   // Confirmation stats
   const confirmations = await BookingConfirmation.find({
     salonId,
     createdAt: { $gte: periodStart, $lte: periodEnd }
   });
-  
+
   const confirmationsSent = confirmations.length;
   const confirmationsReceived = confirmations.filter(c => c.confirmedAt).length;
   const confirmationRate = confirmationsSent > 0
     ? (confirmationsReceived / confirmationsSent) * 100
     : 0;
-  
+
   // Waitlist stats
   const waitlistMatches = await Waitlist.countDocuments({
     salonId,
     status: 'matched',
     matchedAt: { $gte: periodStart, $lte: periodEnd }
   });
-  
+
   // Create analytics record
   const analytics = new this({
     salonId,
@@ -373,7 +373,7 @@ noShowAnalyticsSchema.statics.generateForPeriod = async function(salonId, period
     confirmationRate: Math.round(confirmationRate * 10) / 10,
     waitlistMatches
   });
-  
+
   await analytics.save();
   return analytics;
 };
@@ -381,12 +381,12 @@ noShowAnalyticsSchema.statics.generateForPeriod = async function(salonId, period
 // Static: Get Dashboard Summary
 noShowAnalyticsSchema.statics.getDashboardSummary = async function(salonId, days = 30) {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-  
+
   const analytics = await this.find({
     salonId,
     periodStart: { $gte: since }
   }).sort({ periodStart: -1 });
-  
+
   if (analytics.length === 0) {
     return {
       noShowRate: 0,
@@ -397,7 +397,7 @@ noShowAnalyticsSchema.statics.getDashboardSummary = async function(salonId, days
       totalBookings: 0
     };
   }
-  
+
   // Aggregate across periods
   const summary = analytics.reduce((acc, a) => ({
     totalBookings: acc.totalBookings + a.totalBookings,
@@ -416,18 +416,18 @@ noShowAnalyticsSchema.statics.getDashboardSummary = async function(salonId, days
     confirmationsReceived: 0,
     waitlistMatches: 0
   });
-  
+
   return {
-    noShowRate: summary.totalBookings > 0 
-      ? (summary.totalNoShows / summary.totalBookings) * 100 
+    noShowRate: summary.totalBookings > 0
+      ? (summary.totalNoShows / summary.totalBookings) * 100
       : 0,
     revenueSaved: Math.round(summary.revenueSaved * 100) / 100,
     revenueLost: Math.round(summary.revenueLost * 100) / 100,
-    confirmationRate: summary.confirmationsSent > 0 
-      ? (summary.confirmationsReceived / summary.confirmationsSent) * 100 
+    confirmationRate: summary.confirmationsSent > 0
+      ? (summary.confirmationsReceived / summary.confirmationsSent) * 100
       : 0,
-    waitlistFillRate: summary.waitlistMatches > 0 
-      ? (summary.waitlistMatches / summary.totalNoShows) * 100 
+    waitlistFillRate: summary.waitlistMatches > 0
+      ? (summary.waitlistMatches / summary.totalNoShows) * 100
       : 0,
     totalBookings: summary.totalBookings
   };

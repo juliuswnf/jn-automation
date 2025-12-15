@@ -2,7 +2,6 @@ import TattooProject from '../models/TattooProject.js';
 import TattooSession from '../models/TattooSession.js';
 import Consent from '../models/Consent.js';
 import Customer from '../models/Customer.js';
-import Booking from '../models/Booking.js';
 import logger from '../utils/logger.js';
 
 /**

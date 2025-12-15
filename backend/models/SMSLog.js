@@ -69,7 +69,7 @@ const smsLogSchema = new mongoose.Schema({
   cost: {
     type: Number,
     min: 0,
-    comment: 'Cost in EUR cents (e.g., 7 = â‚¬0.07)'
+    comment: 'Cost in EUR cents (e.g., 7 = Ã¢â€šÂ¬0.07)'
   },
 
   // Error Handling
@@ -178,7 +178,7 @@ smsLogSchema.statics.getFailedNeedingRetry = function() {
 // Static: Get Delivery Rate
 smsLogSchema.statics.getDeliveryRate = async function(salonId, days = 7) {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-  
+
   const total = await this.countDocuments({
     salonId,
     createdAt: { $gte: since },

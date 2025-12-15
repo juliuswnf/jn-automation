@@ -1,6 +1,6 @@
 /**
  * Tier Recommendation Engine
- * 
+ *
  * Intelligenter Scoring-Algorithmus der basierend auf 6 Fragen
  * das optimale Subscription-Tier empfiehlt.
  */
@@ -19,7 +19,7 @@ const TIER_PRICING = {
 
 /**
  * Calculate tier recommendation based on user answers
- * 
+ *
  * @param {Object} answers - User answers from wizard
  * @returns {Object} recommendation with tier, score, reasoning
  */
@@ -100,7 +100,7 @@ export function calculateTierRecommendation(answers) {
 function calculateCustomerCountScore(customerCount) {
   switch (customerCount) {
     case '0-50':
-      return { score: 10, reason: 'Kleine Kundenbasis - perfekt fÃ¼r den Start' };
+      return { score: 10, reason: 'Kleine Kundenbasis - perfekt fÃƒÆ’Ã‚Â¼r den Start' };
     case '51-200':
       return { score: 20, reason: '150 Kunden - brauchst erweiterte Features' };
     case '201-500':
@@ -135,15 +135,15 @@ function calculateBookingsScore(bookingsPerWeek) {
  */
 function calculateLocationsScore(locations) {
   const count = parseInt(locations) || 1;
-  
+
   if (count === 1) {
     return { score: 5, reason: null };
   } else if (count === 2 || count === 3) {
     return { score: 15, reason: 'Multi-Location - zentrale Verwaltung wichtig' };
   } else if (count >= 4) {
-    return { score: 25, reason: `${count} Standorte - Enterprise-Features nÃ¶tig` };
+    return { score: 25, reason: `${count} Standorte - Enterprise-Features nÃƒÆ’Ã‚Â¶tig` };
   }
-  
+
   return { score: 5, reason: null };
 }
 
@@ -152,7 +152,7 @@ function calculateLocationsScore(locations) {
  */
 function calculateFeaturesScore(features) {
   const count = features.length;
-  
+
   // Score based on number of features
   let score = 0;
   let reason = '';
@@ -162,19 +162,19 @@ function calculateFeaturesScore(features) {
     reason = 'Wenige Features - Starter reicht';
   } else if (count >= 3 && count <= 5) {
     score = 15;
-    reason = `${count} Features gewÃ¼nscht - Professional empfohlen`;
+    reason = `${count} Features gewÃƒÆ’Ã‚Â¼nscht - Professional empfohlen`;
   } else if (count >= 6) {
     score = 20;
-    reason = `${count}+ Features - Enterprise fÃ¼r volle Power`;
+    reason = `${count}+ Features - Enterprise fÃƒÆ’Ã‚Â¼r volle Power`;
   }
 
   // Bonus for specific high-value features
   const enterpriseFeatures = ['white_label', 'api_access', 'custom_integrations', 'dedicated_support'];
   const hasEnterpriseFeature = features.some(f => enterpriseFeatures.includes(f));
-  
+
   if (hasEnterpriseFeature) {
     score += 10;
-    reason = 'Premium-Features benÃ¶tigt - Enterprise ideal';
+    reason = 'Premium-Features benÃƒÆ’Ã‚Â¶tigt - Enterprise ideal';
   }
 
   return { score, reason };
@@ -190,7 +190,7 @@ function calculateEmployeesScore(employees) {
     case '2-5':
       return { score: 15, reason: '2-5 Mitarbeiter - Team-Features wichtig' };
     case '6-10':
-      return { score: 20, reason: '6-10 Mitarbeiter - erweiterte Rechte nÃ¶tig' };
+      return { score: 20, reason: '6-10 Mitarbeiter - erweiterte Rechte nÃƒÆ’Ã‚Â¶tig' };
     case '10+':
       return { score: 25, reason: '10+ Mitarbeiter - Enterprise-Organisation essentiell' };
     default:
@@ -206,11 +206,11 @@ function calculateBudgetScore(budget) {
     case 'under-100':
       return { score: 5, reason: null };
     case '100-200':
-      return { score: 10, reason: 'â‚¬150 Budget - Professional in Reichweite' };
+      return { score: 10, reason: 'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬150 Budget - Professional in Reichweite' };
     case '200-500':
-      return { score: 12, reason: 'â‚¬350 Budget - Professional optimal' };
+      return { score: 12, reason: 'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬350 Budget - Professional optimal' };
     case '500+':
-      return { score: 15, reason: 'â‚¬500+ Budget - Enterprise fÃ¼r maximale Leistung' };
+      return { score: 15, reason: 'ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬500+ Budget - Enterprise fÃƒÆ’Ã‚Â¼r maximale Leistung' };
     default:
       return { score: 5, reason: null };
   }
@@ -228,7 +228,7 @@ function calculateIndustryBonus(industry, features) {
     reason = 'Tattoo + Multi-Session - Professional ideal';
   } else if (industry === 'medical_aesthetics' && features.includes('consents')) {
     score = 15;
-    reason = 'Medical + Consents - Professional/Enterprise fÃ¼r Compliance';
+    reason = 'Medical + Consents - Professional/Enterprise fÃƒÆ’Ã‚Â¼r Compliance';
   } else if (industry === 'spa_wellness' && features.includes('memberships')) {
     score = 10;
     reason = 'Spa + Memberships - Recurring Revenue Features wichtig';
@@ -253,23 +253,23 @@ function determineTier(score) {
 /**
  * Calculate alternative tiers with match percentage
  */
-function calculateAlternatives(score, recommendedTier, answers) {
+function calculateAlternatives(score, recommendedTier, _answers) {
   const alternatives = {};
-  
+
   // Calculate match for each tier
   Object.keys(TIER_THRESHOLDS).forEach(tier => {
     if (tier === recommendedTier) return;
-    
+
     const threshold = TIER_THRESHOLDS[tier];
     const midpoint = (threshold.min + threshold.max) / 2;
     const distance = Math.abs(score - midpoint);
     const maxDistance = 50; // Max distance for 0% match
     const match = Math.max(0, Math.round((1 - distance / maxDistance) * 100));
-    
+
     let reason = '';
-    
+
     if (tier === 'starter' && recommendedTier !== 'starter') {
-      reason = match < 30 ? 'Zu wenig Features fÃ¼r deine Anforderungen' : 'KÃ¶nnte knapp reichen, aber eng';
+      reason = match < 30 ? 'Zu wenig Features fÃƒÆ’Ã‚Â¼r deine Anforderungen' : 'KÃƒÆ’Ã‚Â¶nnte knapp reichen, aber eng';
     } else if (tier === 'professional') {
       if (recommendedTier === 'starter') {
         reason = 'Mehr Features als du aktuell brauchst';
@@ -277,12 +277,12 @@ function calculateAlternatives(score, recommendedTier, answers) {
         reason = 'Fast perfekt, aber Enterprise bietet mehr';
       }
     } else if (tier === 'enterprise' && recommendedTier !== 'enterprise') {
-      reason = match < 40 ? 'Overkill fÃ¼r deine GrÃ¶ÃŸe' : 'Nice-to-have, aber nicht nÃ¶tig';
+      reason = match < 40 ? 'Overkill fÃƒÆ’Ã‚Â¼r deine GrÃƒÆ’Ã‚Â¶ÃƒÆ’Ã…Â¸e' : 'Nice-to-have, aber nicht nÃƒÆ’Ã‚Â¶tig';
     }
-    
+
     alternatives[tier] = { match, reason, price: TIER_PRICING[tier] };
   });
-  
+
   return alternatives;
 }
 
@@ -291,35 +291,35 @@ function calculateAlternatives(score, recommendedTier, answers) {
  */
 function calculateROI(tier, answers) {
   const tierPrice = TIER_PRICING[tier];
-  
+
   // Estimate costs without system (manual work, no-shows, inefficiency)
   let estimatedCosts = 0;
-  
+
   // Time savings (manual booking management)
   const bookingsPerWeek = getBookingsPerWeekNumber(answers.bookingsPerWeek);
   const timePerBooking = 5; // minutes
   const totalMinutesPerWeek = bookingsPerWeek * timePerBooking;
-  const hourlyRate = 25; // â‚¬/hour
+  const hourlyRate = 25; // ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬/hour
   const timeCostPerMonth = (totalMinutesPerWeek / 60) * hourlyRate * 4;
   estimatedCosts += timeCostPerMonth;
-  
-  // No-show costs (average 15% no-show rate, â‚¬50 average booking value)
+
+  // No-show costs (average 15% no-show rate, ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬50 average booking value)
   const avgBookingValue = 50;
   const noShowRate = 0.15;
   const noShowCostPerMonth = bookingsPerWeek * 4 * noShowRate * avgBookingValue;
   estimatedCosts += noShowCostPerMonth;
-  
+
   // Marketing inefficiency (lost revenue from poor follow-up)
   const features = answers.features || [];
   if (features.includes('marketing') || features.includes('sms_reminders')) {
     estimatedCosts += 200; // Additional revenue opportunity
   }
-  
+
   const savings = Math.round(estimatedCosts - tierPrice);
-  const multiplier = estimatedCosts > tierPrice 
-    ? `${Math.round(estimatedCosts / tierPrice)}x` 
+  const multiplier = estimatedCosts > tierPrice
+    ? `${Math.round(estimatedCosts / tierPrice)}x`
     : '1x';
-  
+
   return {
     savings: Math.max(savings, 0),
     multiplier,
@@ -342,7 +342,7 @@ function calculateConfidence(score) {
   const midpoint = (threshold.min + threshold.max) / 2;
   const distance = Math.abs(score - midpoint);
   const maxDistance = (threshold.max - threshold.min) / 2;
-  
+
   const confidence = Math.round((1 - distance / maxDistance) * 100);
   return Math.max(60, Math.min(confidence, 95)); // Between 60-95%
 }
@@ -368,8 +368,8 @@ export function getTierDetails(tier) {
     starter: {
       name: 'Starter',
       price: 49,
-      icon: 'ðŸ¥‰',
-      tagline: 'Perfekt fÃ¼r den Start',
+      icon: 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã¢â‚¬Â°',
+      tagline: 'Perfekt fÃƒÆ’Ã‚Â¼r den Start',
       features: [
         'Unbegrenzte Buchungen',
         'Kunden-Datenbank',
@@ -387,8 +387,8 @@ export function getTierDetails(tier) {
     professional: {
       name: 'Professional',
       price: 199,
-      icon: 'ðŸ¥ˆ',
-      tagline: 'FÃ¼r etablierte Businesses',
+      icon: 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã‹â€ ',
+      tagline: 'FÃƒÆ’Ã‚Â¼r etablierte Businesses',
       features: [
         'Alles aus Starter',
         '1.000 SMS/Monat',
@@ -409,8 +409,8 @@ export function getTierDetails(tier) {
     enterprise: {
       name: 'Enterprise',
       price: 499,
-      icon: 'ðŸ¥‡',
-      tagline: 'Maximale Power fÃ¼r Profis',
+      icon: 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã¢â‚¬Â¡',
+      tagline: 'Maximale Power fÃƒÆ’Ã‚Â¼r Profis',
       features: [
         'Alles aus Professional',
         '5.000 SMS/Monat',
@@ -430,7 +430,7 @@ export function getTierDetails(tier) {
       }
     }
   };
-  
+
   return details[tier] || details.starter;
 }
 

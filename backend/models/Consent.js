@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 /**
  * Consent Model
- * 
+ *
  * Manages legal consent forms for tattoo studios.
  * Includes tattoo consent, medical consent, and photo release forms.
  */
@@ -273,10 +273,10 @@ PHOTO RELEASE CONSENT
 
 I hereby grant permission to the artist and studio to photograph my tattoo work and use these photographs for:
 
-â˜ Social media (Instagram, Facebook, etc.)
-â˜ Website portfolio
-â˜ Marketing materials
-â˜ Promotional use
+Ã¢ËœÂ Social media (Instagram, Facebook, etc.)
+Ã¢ËœÂ Website portfolio
+Ã¢ËœÂ Marketing materials
+Ã¢ËœÂ Promotional use
 
 I understand that:
 - My face may be visible in photos unless I request otherwise
