@@ -16,8 +16,7 @@ export const getSalonInfo = async (req, res) => {
     const salonId = req.params.salonId || req.user.salonId;
 
     const salon = await Salon.findById(salonId)
-      .populate('owner', 'name email').maxTimeMS(5000)
-      .populate('services');
+      .populate('owner', 'name email').maxTimeMS(5000);
 
     if (!salon) {
       return res.status(404).json({
@@ -234,8 +233,7 @@ export const getSalonDashboard = async (req, res) => {
 
     // Get salon info
     const salon = await Salon.findById(salonId)
-      .populate('owner', 'name email').maxTimeMS(5000)
-      .populate('services');
+      .populate('owner', 'name email').maxTimeMS(5000);
 
     if (!salon) {
       return res.status(404).json({
