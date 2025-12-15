@@ -2,7 +2,7 @@
   "name": "jn-automation-frontend",
   "version": "1.0.0",
   "type": "module",
-  "description": "JN Automation - Salon & Company Management System Frontend",
+  "description": "JN Business System - Salon & Company Management System Frontend",
   "author": "Julius & Niels",
   "license": "MIT",
   "scripts": {
@@ -23,6 +23,7 @@
     "@stripe/react-stripe-js": "^2.9.0",
     "@stripe/stripe-js": "^3.5.0",
     "axios": "^1.6.0",
+    "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
@@ -38,7 +39,7 @@
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.8.0",
     "react-signature-canvas": "^1.1.0-alpha.2",
-    "recharts": "^3.3.0"
+    "recharts": "^3.6.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

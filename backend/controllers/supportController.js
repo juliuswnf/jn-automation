@@ -75,7 +75,7 @@ export const createTicket = async (req, res) => {
           <p>${description}</p>
           <hr>
           <p>Sie können auf diese E-Mail antworten, um weitere Informationen hinzuzufügen.</p>
-          <p>Mit freundlichen Grüßen,<br>Ihr JN Automation Support-Team</p>
+          <p>Mit freundlichen Grüßen,<br>Ihr JN Business System Support-Team</p>
         `
       });
     } catch (emailError) {
@@ -85,7 +85,7 @@ export const createTicket = async (req, res) => {
     // Send notification to support team
     try {
       await emailService.sendEmail({
-        to: process.env.SUPPORT_EMAIL || 'support@jn-automation.de',
+        to: process.env.SUPPORT_EMAIL || 'support@jn-business-system.de',
         subject: `Neues Support-Ticket: ${ticket.ticketNumber} - ${subject}`,
         html: `
           <h2>Neues Support-Ticket</h2>
@@ -252,7 +252,7 @@ export const addMessage = async (req, res) => {
     // Notify support team
     try {
       await emailService.sendEmail({
-        to: process.env.SUPPORT_EMAIL || 'support@jn-automation.de',
+        to: process.env.SUPPORT_EMAIL || 'support@jn-business-system.de',
         subject: `Neue Nachricht zu Ticket ${ticket.ticketNumber}`,
         html: `
           <h2>Neue Nachricht zu Support-Ticket</h2>

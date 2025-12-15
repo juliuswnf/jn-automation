@@ -328,22 +328,22 @@ export default function Bookings() {
           className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Aktualisieren
+          <span className="hidden sm:inline">Aktualisieren</span>
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 sm:p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {/* Search */}
-          <div className="relative">
+          <div className="relative sm:col-span-2 md:col-span-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
             <input
               type="text"
               placeholder="Suchen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
 
@@ -399,26 +399,26 @@ export default function Bookings() {
             <p className="text-zinc-400">Keine Buchungen gefunden</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-zinc-800/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
                     Kunde
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider hidden sm:table-cell">
                     Service
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
                     Termin
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider hidden md:table-cell">
                     Bestätigung
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
                     Aktionen
                   </th>
                 </tr>
@@ -434,31 +434,31 @@ export default function Bookings() {
                       className="hover:bg-zinc-800/30 transition"
                     >
                       {/* Customer */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-                            <User className="w-5 h-5 text-blue-400" />
+                      <td className="px-3 sm:px-6 py-4">
+                        <div className="flex items-start gap-2 sm:gap-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
                           </div>
                           <div className="min-w-0">
-                            <div className="font-medium text-white truncate">
+                            <div className="font-medium text-white truncate text-sm sm:text-base">
                               {booking.customerName || 'Unbekannt'}
                             </div>
-                            <div className="flex items-center gap-2 mt-1 text-sm text-zinc-400">
+                            <div className="flex items-center gap-1 sm:gap-2 mt-1 text-xs sm:text-sm text-zinc-400">
                               <Phone className="w-3 h-3" />
-                              {booking.customerPhone || 'N/A'}
+                              <span className="truncate">{booking.customerPhone || 'N/A'}</span>
                             </div>
                             {booking.customerEmail && (
-                              <div className="flex items-center gap-2 mt-1 text-sm text-zinc-400">
+                              <div className="hidden sm:flex items-center gap-2 mt-1 text-sm text-zinc-400">
                                 <Mail className="w-3 h-3" />
-                                {booking.customerEmail}
+                                <span className="truncate">{booking.customerEmail}</span>
                               </div>
                             )}
                           </div>
                         </div>
                       </td>
 
-                      {/* Service */}
-                      <td className="px-6 py-4">
+                      {/* Service - Hidden on mobile */}
+                      <td className="px-3 sm:px-6 py-4 hidden sm:table-cell">
                         <div className="text-white font-medium">
                           {booking.serviceId?.name || 'N/A'}
                         </div>
@@ -470,12 +470,12 @@ export default function Bookings() {
                       </td>
 
                       {/* Date/Time */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-white">
-                          <Calendar className="w-4 h-4 text-zinc-400" />
-                          {new Date(booking.bookingDate).toLocaleDateString('de-DE')}
+                      <td className="px-3 sm:px-6 py-4">
+                        <div className="flex items-center gap-1 sm:gap-2 text-white text-xs sm:text-sm">
+                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-zinc-400" />
+                          <span className="truncate">{new Date(booking.bookingDate).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-zinc-400 mt-1">
+                        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 mt-1">
                           <Clock className="w-3 h-3" />
                           {new Date(booking.bookingDate).toLocaleTimeString('de-DE', {
                             hour: '2-digit',
@@ -485,32 +485,32 @@ export default function Bookings() {
                       </td>
 
                       {/* Status */}
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-6 py-4">
                         {getStatusBadge(booking.status)}
                       </td>
 
-                      {/* Confirmation Status */}
-                      <td className="px-6 py-4">
+                      {/* Confirmation Status - Hidden on mobile */}
+                      <td className="px-3 sm:px-6 py-4 hidden md:table-cell">
                         {getConfirmationBadge(booking)}
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-6 py-4">
                         {shouldShowSMSButton(booking) && (
                           <button
                             onClick={() => sendSMSConfirmation(booking)}
                             disabled={sendingConfirmation[booking._id]}
-                            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {sendingConfirmation[booking._id] ? (
                               <>
-                                <RefreshCw className="w-4 h-4 animate-spin" />
-                                Sende...
+                                <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                                <span className="hidden sm:inline">Sende...</span>
                               </>
                             ) : (
                               <>
-                                <MessageSquare className="w-4 h-4" />
-                                SMS senden
+                                <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">SMS senden</span>
                               </>
                             )}
                           </button>
@@ -533,7 +533,7 @@ export default function Bookings() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-sm text-zinc-400">
             Seite {page} von {totalPages}
           </div>

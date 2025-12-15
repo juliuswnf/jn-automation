@@ -353,7 +353,7 @@ export default function BrandingSettings() {
             <div>
               <h2 className="text-lg font-semibold text-white">White-Label</h2>
               <p className="text-sm text-gray-400 mt-1">
-                "Powered by JN Automation" ausblenden
+                "Powered by JN Business System" ausblenden
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -409,7 +409,7 @@ export default function BrandingSettings() {
               Mehr erfahren
             </button>
             {branding.showPoweredBy && (
-              <p className="text-xs text-gray-500 mt-4">Powered by JN Automation</p>
+              <p className="text-xs text-gray-500 mt-4">Powered by JN Business System</p>
             )}
           </div>
         </div>

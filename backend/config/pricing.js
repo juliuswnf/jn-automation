@@ -1,11 +1,11 @@
-﻿/**
- * Pricing Configuration for JN Automation
+/**
+ * Pricing Configuration for JN Business System
  * Updated: December 13, 2025
  *
  * Pricing Structure:
- * - Starter: �69/month (�690/year with 17% discount)
- * - Professional: �169/month (�1,690/year with 17% discount)
- * - Enterprise: �399/month (�3,990/year with 17% discount)
+ * - Starter: ?69/month (?690/year with 17% discount)
+ * - Professional: ?169/month (?1,690/year with 17% discount)
+ * - Enterprise: ?399/month (?3,990/year with 17% discount)
  */
 
 export const PRICING_TIERS = {
@@ -161,12 +161,12 @@ export const PRICING_TIERS = {
       overageTier1: {
         from: 501,
         to: 1000,
-        pricePerSMS: 0.05 // �0.05 per SMS
+        pricePerSMS: 0.05 // ?0.05 per SMS
       },
       overageTier2: {
         from: 1001,
         to: -1, // Unlimited
-        pricePerSMS: 0.045 // �0.045 per SMS (volume discount)
+        pricePerSMS: 0.045 // ?0.045 per SMS (volume discount)
       }
     },
 
@@ -375,13 +375,13 @@ export function calculateSMSOverageCost(tierSlug, smsUsed, smsLimit) {
   const pricing = tier.smsPricing;
   let cost = 0;
 
-  // Tier 1: 501-1000 (�0.05/SMS)
+  // Tier 1: 501-1000 (?0.05/SMS)
   const tier1SMS = Math.min(overage, pricing.overageTier1.to - smsLimit);
   if (tier1SMS > 0) {
     cost += tier1SMS * pricing.overageTier1.pricePerSMS;
   }
 
-  // Tier 2: 1001+ (�0.045/SMS)
+  // Tier 2: 1001+ (?0.045/SMS)
   const tier2SMS = Math.max(0, overage - tier1SMS);
   if (tier2SMS > 0) {
     cost += tier2SMS * pricing.overageTier2.pricePerSMS;

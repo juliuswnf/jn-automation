@@ -1,4 +1,4 @@
-# JN Automation - Salon Management System
+# JN Business System - Salon Management System
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Node](https://img.shields.io/badge/node-18%2B-green)

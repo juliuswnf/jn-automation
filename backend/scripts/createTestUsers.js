@@ -1,4 +1,4 @@
-﻿/* eslint-disable no-console */
+/* eslint-disable no-console */
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -11,12 +11,12 @@ const createTestUsers = async () => {
     const mongoUri = process.env.MONGODB_URI;
 
     if (!mongoUri) {
-      console.error('❌ MONGODB_URI not found in environment');
+      console.error('? MONGODB_URI not found in environment');
       process.exit(1);
     }
 
     await mongoose.connect(mongoUri);
-    console.log('✅ Database connected');
+    console.log('? Database connected');
 
     // Hash password function
     const hashPassword = async (password) => {
@@ -27,23 +27,23 @@ const createTestUsers = async () => {
     // ==================== 1. CEO USER ====================
     let ceo = await User.findOne({ role: 'ceo' });
     if (ceo) {
-      console.log(`✅ CEO already exists: ${ceo.email}`);
+      console.log(`? CEO already exists: ${ceo.email}`);
     } else {
       ceo = await User.create({
         name: 'Julius CEO',
-        email: 'julius@jn-automation.de',
+        email: 'julius@jn-business-system.de',
         password: await hashPassword('CEO@12345'),
         role: 'ceo',
         isActive: true,
         emailVerified: true
       });
-      console.log('✅ CEO created');
+      console.log('? CEO created');
     }
 
     // ==================== 2. BUSINESS USER (Admin) ====================
     let business = await User.findOne({ email: 'business@test.de' });
     if (business) {
-      console.log(`✅ Business user already exists: ${business.email}`);
+      console.log(`? Business user already exists: ${business.email}`);
     } else {
       business = await User.create({
         name: 'Test Business',
@@ -58,13 +58,13 @@ const createTestUsers = async () => {
         isActive: true,
         emailVerified: true
       });
-      console.log('✅ Business user created');
+      console.log('? Business user created');
     }
 
     // ==================== 3. CUSTOMER USER ====================
     let customer = await User.findOne({ email: 'kunde@test.de' });
     if (customer) {
-      console.log(`✅ Customer already exists: ${customer.email}`);
+      console.log(`? Customer already exists: ${customer.email}`);
     } else {
       customer = await User.create({
         name: 'Test Kunde',
@@ -77,7 +77,7 @@ const createTestUsers = async () => {
         isActive: true,
         emailVerified: true
       });
-      console.log('✅ Customer created');
+      console.log('? Customer created');
     }
 
     console.log('\n========================================');
@@ -85,7 +85,7 @@ const createTestUsers = async () => {
     console.log('========================================\n');
 
     console.log('?? CEO LOGIN (Ctrl+Shift+C oder /system/admin):');
-    console.log('   Email:    julius@jn-automation.de');
+    console.log('   Email:    julius@jn-business-system.de');
     console.log('   Passwort: (check script for default)\n');
 
     console.log('?? BUSINESS LOGIN (/login/business):');
@@ -99,10 +99,10 @@ const createTestUsers = async () => {
     console.log('========================================\n');
 
     await mongoose.disconnect();
-    console.log('✅ Database disconnected');
+    console.log('? Database disconnected');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('? Error:', error.message);
     process.exit(1);
   }
 };

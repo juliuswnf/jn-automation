@@ -1,4 +1,4 @@
-﻿import logger from '../utils/logger.js';
+import logger from '../utils/logger.js';
 import emailService from './emailService.js';
 
 /**
@@ -60,7 +60,7 @@ const sendAlert = async (alert) => {
   setCooldown(type);
 
   // Log the alert
-  logger.error(`🚨 ALERT [${severity.toUpperCase()}]: ${title}`, { type, message, details });
+  logger.error(`?? ALERT [${severity.toUpperCase()}]: ${title}`, { type, message, details });
 
   // Send email if configured
   if (process.env.ALERT_EMAIL) {
@@ -106,7 +106,7 @@ const sendEmailAlert = async (alert) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background: ${severityColor[severity] || '#6b7280'}; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0;">🚨 ${title}</h1>
+        <h1 style="margin: 0;">?? ${title}</h1>
         <p style="margin: 5px 0 0 0; opacity: 0.9;">Severity: ${severity.toUpperCase()} | Type: ${type}</p>
       </div>
       <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none;">
@@ -116,7 +116,7 @@ const sendEmailAlert = async (alert) => {
         <p style="color: #6b7280; font-size: 12px;">
           Environment: ${process.env.NODE_ENV || 'development'}<br>
           Timestamp: ${new Date().toISOString()}<br>
-          Server: ${process.env.SERVER_NAME || 'jn-automation'}
+          Server: ${process.env.SERVER_NAME || 'jn-business-system'}
         </p>
       </div>
     </div>
@@ -136,10 +136,10 @@ const sendSlackAlert = async (alert) => {
   const { severity, title, message, details, type } = alert;
 
   const severityEmoji = {
-    critical: '🔴',
-    high: '🟠',
-    medium: '🟡',
-    low: '🟢'
+    critical: '??',
+    high: '??',
+    medium: '??',
+    low: '??'
   };
 
   const payload = {
@@ -148,7 +148,7 @@ const sendSlackAlert = async (alert) => {
         type: 'header',
         text: {
           type: 'plain_text',
-          text: `${severityEmoji[severity] || '⚪'} ${title}`,
+          text: `${severityEmoji[severity] || '?'} ${title}`,
           emoji: true
         }
       },
@@ -201,7 +201,7 @@ const sendDiscordAlert = async (alert) => {
 
   const payload = {
     embeds: [{
-      title: `🚨 ${title}`,
+      title: `?? ${title}`,
       description: message,
       color: severityColor[severity] || 0x6b7280,
       fields: [
@@ -435,7 +435,7 @@ export const startHealthChecks = (getMetricsFn, intervalMs = 60000) => {
     }
   }, intervalMs);
 
-  logger.info(`🔔 Alerting service started (interval: ${intervalMs / 1000}s)`);
+  logger.info(`?? Alerting service started (interval: ${intervalMs / 1000}s)`);
 };
 
 export default {

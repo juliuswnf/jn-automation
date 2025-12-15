@@ -1,7 +1,7 @@
 {
-  "name": "jn-automation-backend",
+  "name": "jn-business-system-backend",
   "version": "1.0.0",
-  "description": "JN Automation Backend API - Salon Management System",
+  "description": "JN Business System Backend API - Salon Management System",
   "type": "module",
   "main": "server.js",
   "scripts": {

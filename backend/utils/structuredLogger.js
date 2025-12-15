@@ -25,7 +25,7 @@ const structuredLogger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: process.env.NODE_ENV === 'production' ? prodFormat : devFormat,
   defaultMeta: {
-    service: 'jn-automation-backend',
+    service: 'jn-business-system-backend',
     environment: process.env.NODE_ENV || 'development'
   },
   transports: [

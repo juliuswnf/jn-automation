@@ -158,7 +158,7 @@ Savings: €190/month = €2,280/year
 ### Before Production
 - [ ] Upgrade to paid account
 - [ ] Setup billing alerts (€50, €100, €200)
-- [ ] Configure sender ID ("JN-AUTOMATION" or salon name)
+- [ ] Configure sender ID ("jn-business-system" or salon name)
 - [ ] Load test (100 SMS in 1 minute)
 
 ---

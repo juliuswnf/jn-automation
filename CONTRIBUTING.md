@@ -1,6 +1,6 @@
-# Contributing to JN Automation
+# Contributing to JN Business System
 
-Vielen Dank, dass Sie zu JN Automation beitragen möchten!
+Vielen Dank, dass Sie zu JN Business System beitragen möchten!
 
 ## Code of Conduct
 

@@ -14,9 +14,9 @@
 
 // Company info for footer
 const COMPANY_INFO = {
-  name: 'JN Automation',
-  email: 'support@jn-automation.de',
-  website: 'https://jn-automation.de',
+  name: 'JN Business System',
+  email: 'support@jn-business-system.de',
+  website: 'https://jn-business-system.de',
   address: 'Deutschland'
 };
 
@@ -61,7 +61,7 @@ const generateHtmlEmail = (subject, body) => {
           <!-- Header -->
           <tr>
             <td style="padding: 32px 40px; background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">JN Automation</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">JN Business System</h1>
             </td>
           </tr>
           <!-- Content -->
@@ -103,18 +103,18 @@ export const getLifecycleEmailTemplate = (emailType, data) => {
   const {
     userName = 'Geschätzter Kunde',
     salonName = 'Ihr Studio',
-    dashboardUrl = 'https://app.jn-automation.de/admin',
-    pricingUrl = 'https://jn-automation.de/pricing',
-    supportEmail = 'support@jn-automation.de'
+    dashboardUrl = 'https://app.jn-business-system.de/admin',
+    pricingUrl = 'https://jn-business-system.de/pricing',
+    supportEmail = 'support@jn-business-system.de'
   } = data || {};
 
   const templates = {
     // ==================== DAY 1: WELCOME ====================
     welcome_day1: createEmailTemplate(
-      `🚀 Willkommen bei JN Automation, ${userName}!`,
+      `🚀 Willkommen bei JN Business System, ${userName}!`,
       `Hallo ${userName},
 
-herzlich willkommen bei JN Automation! 👋
+herzlich willkommen bei JN Business System! 👋
 
 Dein 30-Tage-Test für **${salonName}** ist jetzt aktiv. Hier sind deine nächsten Schritte:
 
@@ -140,7 +140,7 @@ Antworte einfach auf diese E-Mail oder schreibe an ${supportEmail}
 Viel Erfolg mit deinem Studio!
 
 Julius
-Gründer, JN Automation`
+Gründer, JN Business System`
     ),
 
     // ==================== DAY 3: ENGAGEMENT CHECK ====================
@@ -148,7 +148,7 @@ Gründer, JN Automation`
       `💡 ${userName}, hast du schon deinen ersten Termin erstellt?`,
       `Hallo ${userName},
 
-du bist jetzt seit 3 Tagen bei JN Automation dabei. Wie läuft's? 🎯
+du bist jetzt seit 3 Tagen bei JN Business System dabei. Wie läuft's? 🎯
 
 **Schnelle Frage:** Hast du schon...
 
@@ -179,7 +179,7 @@ eine Woche ist rum! Dein Test läuft noch **23 Tage**.
 
 **Wie kann ich dir helfen?**
 
-Ich möchte sicherstellen, dass du das Beste aus JN Automation herausholst. Hier sind die häufigsten Fragen:
+Ich möchte sicherstellen, dass du das Beste aus JN Business System herausholst. Hier sind die häufigsten Fragen:
 
 🎯 **"Wie integriere ich das Widget auf meiner Website?"**
 → Kopiere einfach den Code aus Dashboard > Widget
@@ -254,7 +254,7 @@ ${ctaButton('Jetzt upgraden →', pricingUrl)}
 **Nicht bereit?**
 Kein Problem! Deine Daten bleiben 30 Tage gespeichert. Du kannst jederzeit zurückkommen.
 
-Danke, dass du JN Automation ausprobiert hast!
+Danke, dass du JN Business System ausprobiert hast!
 
 Julius`
     ),
@@ -290,7 +290,7 @@ Julius`
       `👋 ${userName}, wir vermissen dich!`,
       `Hallo ${userName},
 
-es ist eine Weile her seit deinem Test bei JN Automation.
+es ist eine Weile her seit deinem Test bei JN Business System.
 
 **Was ist passiert?**
 - Nicht das Richtige für dich?
@@ -307,7 +307,7 @@ ${ctaButton('Kostenlosen Monat aktivieren →', `${pricingUrl}?promo=FREETRIAL`)
 Ansonsten: Alles Gute für dein Business!
 
 Julius
-JN Automation`
+JN Business System`
     )
   };
 

@@ -2,7 +2,7 @@
 
 **Date**: December 11, 2025  
 **Auditor**: Paranoid SRE (15 years experience)  
-**System**: JN Automation - Multi-Tenant Salon Booking Platform  
+**System**: JN Business System - Multi-Tenant Salon Booking Platform  
 **Severity Scale**: ✅ Safe | ⚠️ Needs Improvement | ❌ Production Blocker
 
 ---

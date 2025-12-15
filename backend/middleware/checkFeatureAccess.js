@@ -1,4 +1,4 @@
-﻿import { tierHasFeature, getRequiredTierForFeature, compareTiers } from '../config/pricing.js';
+import { tierHasFeature, getRequiredTierForFeature, compareTiers } from '../config/pricing.js';
 import Salon from '../models/Salon.js';
 import logger from '../utils/logger.js';
 
@@ -287,7 +287,7 @@ function getFeatureUnavailableMessage(featureName, currentTier, requiredTier) {
 
     multiLocation: `Multi-location support is available in Enterprise tier. Upgrade to manage multiple salons from one dashboard.`,
 
-    whiteLabel: `White-label branding is exclusive to Enterprise tier. Upgrade to remove JN Automation branding and use your own logo.`,
+    whiteLabel: `White-label branding is exclusive to Enterprise tier. Upgrade to remove JN Business System branding and use your own logo.`,
 
     customDomain: `Custom domains are available in Enterprise tier. Upgrade to use your own domain (e.g., bookings.yoursalon.com).`,
 

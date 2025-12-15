@@ -15,9 +15,9 @@
 - [ ] In `.env` eingetragen: `MESSAGEBIRD_API_KEY=test_YOUR_KEY`
 
 ### 2. Webhook Setup (Optional für Delivery-Status)
-- [ ] Railway URL notiert: `https://jn-automation-production.up.railway.app`
+- [ ] Railway URL notiert: `https://jn-business-system-production.up.railway.app`
 - [ ] MessageBird Dashboard → Webhooks → Add Webhook
-  - **URL:** `https://jn-automation-production.up.railway.app/api/webhooks/messagebird`
+  - **URL:** `https://jn-business-system-production.up.railway.app/api/webhooks/messagebird`
   - **Events:** `message.sent`, `message.delivered`, `message.failed`
   - **Secret:** Generieren und in Railway setzen: `MESSAGEBIRD_WEBHOOK_SECRET=...`
 
@@ -55,7 +55,7 @@ router.post('/test/sms', async (req, res) => {
   try {
     const result = await sendSMS(
       phoneNumber,
-      message || 'Test SMS von JN Automation 🚀',
+      message || 'Test SMS von JN Business System 🚀',
       'test-salon-id',
       'custom'
     );
@@ -158,7 +158,7 @@ Ihr Termin bei {businessName}:
 ✂️ {serviceName}
 
 ⚠️ WICHTIG: Bitte bestätigen Sie Ihren Termin innerhalb von 48h:
-https://jn-automation.app/confirm/{token}
+https://jn-business-system.app/confirm/{token}
 
 Ohne Bestätigung wird der Termin automatisch storniert.
 
@@ -417,7 +417,7 @@ Ein Termin ist frei geworden bei {businessName}:
 ✂️ {serviceName}
 
 ⏰ Schnell sein lohnt sich! Jetzt buchen:
-https://jn-automation.app/waitlist/accept/{suggestionId}
+https://jn-business-system.app/waitlist/accept/{suggestionId}
 
 Angebot gültig für 2 Stunden.
 

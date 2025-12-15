@@ -201,7 +201,7 @@ Repeat for: `Service.js`, `Payment.js`, `EmailLog.js`, etc.
 ### 4. Configure Log Rotation
 **Linux (logrotate)**:
 ```bash
-# /etc/logrotate.d/jn-automation
+# /etc/logrotate.d/jn-business-system
 /path/to/backend/logs/*.log {
     daily
     rotate 7
@@ -236,7 +236,7 @@ Add transport in `structuredLogger.js`:
 import WinstonCloudWatch from 'winston-cloudwatch';
 
 new WinstonCloudWatch({
-  logGroupName: 'jn-automation-backend',
+  logGroupName: 'jn-business-system-backend',
   logStreamName: process.env.NODE_ENV,
   awsRegion: 'eu-central-1'
 })

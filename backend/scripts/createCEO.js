@@ -19,7 +19,7 @@ const createCEO = async () => {
 
     const ceo = await User.create({
       name: 'Julius CEO',
-      email: 'julius@jn-automation.de',
+      email: 'julius@jn-business-system.de',
       password: 'CEO@12345',
       role: 'ceo',
       isActive: true,

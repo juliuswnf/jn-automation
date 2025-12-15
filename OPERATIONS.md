@@ -2,7 +2,7 @@
 
 ## Übersicht
 
-Dieses Dokument beschreibt Monitoring, Alerting und Operations für JN Automation in Production.
+Dieses Dokument beschreibt Monitoring, Alerting und Operations für JN Business System in Production.
 
 ---
 
@@ -164,7 +164,7 @@ railway logs --filter "ERROR" --since 10m
 
 # 2. Check Metrics
 curl -H "Authorization: Bearer $METRICS_SECRET" \
-  https://api.jn-automation.de/api/metrics
+  https://api.jn-business-system.de/api/metrics
 
 # 3. Check MongoDB
 # In Atlas Dashboard → Metrics prüfen
@@ -184,7 +184,7 @@ curl -H "Authorization: Bearer $METRICS_SECRET" \
 **Diagnose**:
 ```bash
 # Health Check
-curl https://api.jn-automation.de/health
+curl https://api.jn-business-system.de/health
 # → services.mongodb.status sollte "connected" sein
 ```
 
@@ -204,10 +204,10 @@ curl https://api.jn-automation.de/health
 ```bash
 # Top slow endpoints prüfen
 curl -H "Authorization: Bearer $METRICS_SECRET" \
-  https://api.jn-automation.de/api/metrics | jq '.topEndpoints'
+  https://api.jn-business-system.de/api/metrics | jq '.topEndpoints'
 
 # Memory prüfen
-curl https://api.jn-automation.de/health | jq '.services.memory'
+curl https://api.jn-business-system.de/health | jq '.services.memory'
 ```
 
 **Lösung**:

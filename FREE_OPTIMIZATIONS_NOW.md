@@ -205,7 +205,7 @@ verifyBackup();
 node backend/scripts/backup-database.js --output=test-backup.gz
 
 # 2. Create separate test database
-# MongoDB Atlas: Create cluster "jn-automation-test"
+# MongoDB Atlas: Create cluster "jn-business-system-test"
 
 # 3. Restore to test database
 $env:MONGODB_URI = "mongodb+srv://test-cluster..."

@@ -8,7 +8,7 @@
 
 ## 📋 Übersicht
 
-Vollständige Implementierung des Stripe Subscription Flows für JN Automation mit:
+Vollständige Implementierung des Stripe Subscription Flows für JN Business System mit:
 - Subscription Creation (Checkout)
 - Upgrade Flow mit Proration
 - Downgrade Flow mit Feature-Warnung

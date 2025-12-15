@@ -1,4 +1,4 @@
-﻿/* eslint-disable no-console */
+/* eslint-disable no-console */
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -9,13 +9,13 @@ dotenv.config();
 const testAndFixCEO = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ Connected to DB');
+    console.log('? Connected to DB');
 
     // Get CEO with password field
-    const ceo = await User.findOne({ email: 'julius@jn-automation.de' }).select('+password');
+    const ceo = await User.findOne({ email: 'julius@jn-business-system.de' }).select('+password');
 
     if (!ceo) {
-      console.log('❌ CEO not found');
+      console.log('? CEO not found');
       process.exit(1);
     }
 
@@ -33,7 +33,7 @@ const testAndFixCEO = async () => {
     console.log('   Match:', isMatch);
 
     if (!isMatch) {
-      console.log('\n🔧 Fixing password...');
+      console.log('\n?? Fixing password...');
 
       // Generate new hash
       const salt = await bcrypt.genSalt(10);
@@ -41,20 +41,20 @@ const testAndFixCEO = async () => {
 
       // Update directly in DB
       await User.updateOne(
-        { email: 'julius@jn-automation.de' },
+        { email: 'julius@jn-business-system.de' },
         { $set: { password: newHash } }
       );
 
       // Verify
-      const updated = await User.findOne({ email: 'julius@jn-automation.de' }).select('+password');
+      const updated = await User.findOne({ email: 'julius@jn-business-system.de' }).select('+password');
       const verifyMatch = await bcrypt.compare(testPassword, updated.password);
       console.log('   New password set:', verifyMatch);
     }
 
     await mongoose.disconnect();
-    console.log('\n✅ Done!');
+    console.log('\n? Done!');
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('? Error:', error);
     process.exit(1);
   }
 };

@@ -187,6 +187,46 @@ const bookingSchema = new mongoose.Schema(
       index: true
     },
 
+    // ==================== WORKFLOW INTEGRATION ====================
+    workflowProjectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'WorkflowProject',
+      default: null,
+      index: true
+    },
+
+    workflowSessionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'WorkflowSession',
+      default: null,
+      index: true
+    },
+
+    packageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Package',
+      default: null,
+      index: true
+    },
+
+    membershipId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Membership',
+      default: null,
+      index: true
+    },
+
+    isWorkflowSession: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+
+    sessionNumber: {
+      type: Number,
+      default: null
+    },
+
     // ==================== Booking Date & Time ====================
     bookingDate: {
       type: Date,
@@ -242,6 +282,23 @@ const bookingSchema = new mongoose.Schema(
       confirmation: { type: Boolean, default: false },
       reminder: { type: Boolean, default: false },
       review: { type: Boolean, default: false }
+    },
+
+    // ==================== Marketing Attribution ====================
+    discountCode: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true,
+      sparse: true,
+      comment: 'Marketing campaign discount code (e.g., SALON-ABC123)'
+    },
+
+    marketingCampaignId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'MarketingCampaign',
+      index: true,
+      comment: 'Source marketing campaign (if booked via marketing SMS)'
     },
 
     // ==================== Language ====================

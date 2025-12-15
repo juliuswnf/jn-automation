@@ -1,0 +1,376 @@
+/**
+ * SMS Templates für JN Business System
+ * 
+ * Branchen-spezifische SMS-Templates für verschiedene Workflows
+ */
+
+export const SMS_TEMPLATES = {
+  // ==================== STANDARD BOOKING ====================
+  booking_confirmation: {
+    name: 'Buchungsbestätigung',
+    text: `Hey {{customerName}}! 👋
+
+Dein Termin ist bestätigt:
+📅 {{date}} um {{time}}
+⏱️ Dauer: {{duration}} Min
+📍 {{salonName}}
+
+Bei Fragen: {{salonPhone}}
+
+Bis bald! 💪`
+  },
+
+  booking_reminder_24h: {
+    name: 'Erinnerung 24h vorher',
+    text: `Hey {{customerName}}! 🔔
+
+Morgen ist dein Termin:
+📅 {{date}} um {{time}}
+⏱️ {{duration}} Min
+📍 {{salonName}}
+
+Nicht vergessen! 😊`
+  },
+
+  booking_reminder_2h: {
+    name: 'Erinnerung 2h vorher',
+    text: `Hey {{customerName}}! ⏰
+
+In 2 Stunden ist dein Termin:
+📅 {{time}}
+📍 {{salonName}}
+
+Wir freuen uns auf dich! 💪`
+  },
+
+  // ==================== TATTOO STUDIO ====================
+  tattoo_session_reminder: {
+    name: 'Tattoo Session Erinnerung',
+    text: `Hey {{customerName}}! 🎨
+
+Morgen ist deine Tattoo-Session {{sessionNumber}}/{{totalSessions}}!
+
+📅 {{date}} um {{time}}
+⏱️ Dauer: {{duration}}h
+📍 {{salonName}}
+
+Bring bitte mit:
+{{checklist}}
+
+Wichtig:
+❌ Kein Alkohol 24h vorher
+❌ Keine Blutverdünner
+
+Bis morgen! 💪
+{{salonName}}`
+  },
+
+  tattoo_aftercare_reminder: {
+    name: 'Tattoo Nachsorge',
+    text: `Hey {{customerName}}! 🎨
+
+Wichtige Nachsorge für dein Tattoo:
+
+✅ 3x täglich waschen (pH-neutral)
+✅ Dünn eincremen (Panthenol)
+❌ Keine Sonneneinstrahlung
+❌ Keine Sauna/Schwimmen (2 Wochen)
+
+Bei Fragen: {{salonPhone}}
+
+{{salonName}}`
+  },
+
+  tattoo_followup_appointment: {
+    name: 'Tattoo Follow-up Termin',
+    text: `Hey {{customerName}}! 🎨
+
+Dein Tattoo sollte jetzt gut verheilt sein!
+
+Nächster Termin für Session {{nextSession}}/{{totalSessions}}:
+📅 In {{weeks}} Wochen empfohlen
+
+Jetzt buchen: {{bookingLink}}
+
+{{salonName}}`
+  },
+
+  // ==================== MEDICAL AESTHETICS ====================
+  treatment_follow_up: {
+    name: 'Behandlungs-Follow-up',
+    text: `Hey {{customerName}}! 💉
+
+Deine {{treatmentType}}-Behandlung wirkt bald aus.
+
+Empfohlener Nachtermin:
+⏰ In {{weeks}} Wochen
+
+Jetzt buchen: {{bookingLink}}
+
+Fragen? {{salonPhone}}
+
+{{salonName}}`
+  },
+
+  treatment_aftercare: {
+    name: 'Behandlungs-Nachsorge',
+    text: `Hey {{customerName}}! 💉
+
+Wichtige Nachsorge nach {{treatmentType}}:
+
+✅ Kühlen bei Schwellung (24h)
+✅ Nicht massieren (48h)
+❌ Keine Sauna/Sport (24h)
+❌ Kein Alkohol (24h)
+
+Bei Komplikationen sofort melden: {{salonPhone}}
+
+{{salonName}}`
+  },
+
+  treatment_confirmation: {
+    name: 'Behandlungs-Bestätigung',
+    text: `Hey {{customerName}}! 💉
+
+Deine {{treatmentType}}-Behandlung ist bestätigt:
+
+📅 {{date}} um {{time}}
+⏱️ ca. {{duration}} Min
+📍 {{salonName}}
+
+Bitte mitbringen:
+✅ Ausgefüllte Anamnesebogen
+✅ Personalausweis
+
+Bei Fragen: {{salonPhone}}
+
+Bis bald! 💪`
+  },
+
+  // ==================== SPA & WELLNESS ====================
+  package_reminder: {
+    name: 'Package Erinnerung',
+    text: `Hey {{customerName}}! 🎁
+
+Du hast noch {{creditsRemaining}} Credits übrig in deinem "{{packageName}}"!
+
+⚠️ Verfällt am {{expiryDate}}
+
+Jetzt buchen: {{bookingLink}}
+
+{{salonName}}`
+  },
+
+  package_expiring_soon: {
+    name: 'Package läuft ab',
+    text: `Hey {{customerName}}! ⏰
+
+Dein "{{packageName}}" läuft in {{daysLeft}} Tagen ab!
+
+Noch {{creditsRemaining}} Credits verfügbar.
+
+Schnell buchen: {{bookingLink}}
+
+{{salonName}}`
+  },
+
+  package_purchase_confirmation: {
+    name: 'Package Kauf bestätigt',
+    text: `Hey {{customerName}}! 🎁
+
+Danke für deinen Kauf!
+
+"{{packageName}}"
+✅ {{creditsTotal}} Credits
+📅 Gültig bis {{expiryDate}}
+
+Jetzt buchen: {{bookingLink}}
+
+{{salonName}}`
+  },
+
+  // ==================== MEMBERSHIP ====================
+  membership_welcome: {
+    name: 'Membership Willkommen',
+    text: `Hey {{customerName}}! 🎉
+
+Willkommen bei "{{membershipName}}"!
+
+Deine Benefits:
+{{benefits}}
+
+Nächste Abrechnung: {{nextBillingDate}}
+
+Jetzt buchen: {{bookingLink}}
+
+{{salonName}}`
+  },
+
+  membership_billing_reminder: {
+    name: 'Membership Abrechnung',
+    text: `Hey {{customerName}}! 💳
+
+Deine "{{membershipName}}"-Abrechnung steht an:
+
+📅 {{nextBillingDate}}
+💰 {{priceMonthly}}€
+
+Zahlungsmethode: {{paymentMethod}}
+
+{{salonName}}`
+  },
+
+  membership_credits_reset: {
+    name: 'Membership Credits erneuert',
+    text: `Hey {{customerName}}! 🔄
+
+Deine monatlichen Credits wurden erneuert!
+
+✅ {{creditsMonthly}} Credits verfügbar
+📅 Gültig bis {{nextReset}}
+
+Jetzt buchen: {{bookingLink}}
+
+{{salonName}}`
+  },
+
+  membership_paused: {
+    name: 'Membership pausiert',
+    text: `Hey {{customerName}}! ⏸️
+
+Deine "{{membershipName}}" wurde pausiert.
+
+Keine Abrechnung während der Pause.
+
+Fortsetzen: {{resumeLink}}
+
+{{salonName}}`
+  },
+
+  // ==================== WAITLIST ====================
+  waitlist_spot_available: {
+    name: 'Warteliste - Termin verfügbar',
+    text: `Hey {{customerName}}! 🎉
+
+Ein Termin ist frei geworden!
+
+📅 {{date}} um {{time}}
+⏱️ {{duration}} Min
+📍 {{salonName}}
+
+Schnell buchen: {{bookingLink}}
+
+Angebot gilt 2h!
+
+{{salonName}}`
+  },
+
+  // ==================== NO-SHOW PREVENTION ====================
+  booking_confirmation_required: {
+    name: 'Bestätigung erforderlich',
+    text: `Hey {{customerName}}! ⏰
+
+Bitte bestätige deinen Termin:
+📅 {{date}} um {{time}}
+
+Bestätigen: {{confirmLink}}
+Absagen: {{cancelLink}}
+
+Ohne Bestätigung wird der Termin storniert.
+
+{{salonName}}`
+  },
+
+  no_show_warning: {
+    name: 'No-Show Warnung',
+    text: `Hey {{customerName}}! ⚠️
+
+Du hast deinen letzten Termin verpasst.
+
+Bei 3 No-Shows müssen wir leider:
+- Vorauszahlung verlangen
+- Terminbuchung einschränken
+
+Verständnis? 🙏
+
+{{salonName}}`
+  }
+};
+
+/**
+ * Get template by key
+ */
+export function getTemplate(key) {
+  return SMS_TEMPLATES[key] || null;
+}
+
+/**
+ * Get all templates
+ */
+export function getAllTemplates() {
+  return Object.keys(SMS_TEMPLATES).map(key => ({
+    key,
+    name: SMS_TEMPLATES[key].name,
+    preview: SMS_TEMPLATES[key].text.substring(0, 100) + '...'
+  }));
+}
+
+/**
+ * Render template with variables
+ * 
+ * @param {string} templateKey - Template key (e.g., 'tattoo_session_reminder')
+ * @param {object} variables - Variables to replace (e.g., { customerName: 'Max' })
+ * @returns {string} Rendered message
+ */
+export function renderTemplate(templateKey, variables = {}) {
+  const template = getTemplate(templateKey);
+  
+  if (!template) {
+    throw new Error(`Template "${templateKey}" not found`);
+  }
+
+  let message = template.text;
+
+  // Replace all variables
+  Object.entries(variables).forEach(([key, value]) => {
+    const regex = new RegExp(`{{${key}}}`, 'g');
+    message = message.replace(regex, value || '');
+  });
+
+  return message.trim();
+}
+
+/**
+ * Get industry-specific templates
+ */
+export function getTemplatesByIndustry(industry) {
+  const industryTemplates = {
+    tattoo: [
+      'tattoo_session_reminder',
+      'tattoo_aftercare_reminder',
+      'tattoo_followup_appointment'
+    ],
+    medical_aesthetics: [
+      'treatment_follow_up',
+      'treatment_aftercare',
+      'treatment_confirmation'
+    ],
+    spa_wellness: [
+      'package_reminder',
+      'package_expiring_soon',
+      'package_purchase_confirmation',
+      'membership_welcome',
+      'membership_billing_reminder',
+      'membership_credits_reset'
+    ]
+  };
+
+  const keys = industryTemplates[industry] || [];
+  
+  return keys.map(key => ({
+    key,
+    ...SMS_TEMPLATES[key]
+  }));
+}
+
+export default SMS_TEMPLATES;

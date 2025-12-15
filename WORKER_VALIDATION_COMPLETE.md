@@ -30,7 +30,7 @@ All critical email worker issues have been **successfully fixed and validated** 
 01:32:02 info: 📤 Processing email: 693e00de91e3f10160d29f68 | Type: notification | To: test@example.com
 01:32:02 info: 📧 Direct email (no booking) - sending to: test@example.com
 01:32:02 info: ✅ Email sent to: test@example.com
-01:32:02 info: ✅ Email sent successfully: 693e00de91e3f10160d29f68 | MessageID: <4375c2d6-11ec-7268-c4c5-f2b83f0393df@jn-automation.de>
+01:32:02 info: ✅ Email sent successfully: 693e00de91e3f10160d29f68 | MessageID: <4375c2d6-11ec-7268-c4c5-f2b83f0393df@jn-business-system.de>
 01:32:02 info: ✅ Finished processing email queue - 1 emails processed
 ```
 
@@ -299,7 +299,7 @@ Worker now successfully processes emails without ValidationError crashes.
 📧 Processing 1 pending emails...
 📤 Processing email: 693e00de91e3f10160d29f68 | Type: notification | To: test@example.com
 ✅ Email sent to: test@example.com
-✅ Email sent successfully: 693e00de91e3f10160d29f68 | MessageID: <4375c2d6-11ec-7268-c4c5-f2b83f0393df@jn-automation.de>
+✅ Email sent successfully: 693e00de91e3f10160d29f68 | MessageID: <4375c2d6-11ec-7268-c4c5-f2b83f0393df@jn-business-system.de>
 ✅ Finished processing email queue - 1 emails processed
 ```
 

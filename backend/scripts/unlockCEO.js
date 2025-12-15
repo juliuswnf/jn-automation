@@ -1,4 +1,4 @@
-﻿/* eslint-disable no-console */
+/* eslint-disable no-console */
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -11,22 +11,22 @@ const unlockAndResetCEO = async () => {
     const mongoUri = process.env.MONGODB_URI;
 
     if (!mongoUri) {
-      console.error('❌ MONGODB_URI not found in environment');
+      console.error('? MONGODB_URI not found in environment');
       process.exit(1);
     }
 
     await mongoose.connect(mongoUri);
-    console.log('✅ Database connected');
+    console.log('? Database connected');
 
     // Find and unlock CEO
-    const ceo = await User.findOne({ email: 'julius@jn-automation.de' });
+    const ceo = await User.findOne({ email: 'julius@jn-business-system.de' });
 
     if (!ceo) {
-      console.log('❌ CEO not found');
+      console.log('? CEO not found');
       process.exit(1);
     }
 
-    console.log('✅ CEO found');
+    console.log('? CEO found');
     console.log('   Current loginAttempts:', ceo.loginAttempts);
     console.log('   Current lockUntil:', ceo.lockUntil);
 
@@ -42,14 +42,14 @@ const unlockAndResetCEO = async () => {
     await ceo.save();
 
     console.log('\n? CEO account unlocked and password reset!');
-    console.log('   Email: julius@jn-automation.de');
+    console.log('   Email: julius@jn-business-system.de');
     console.log('   Password: (check script for default)');
 
     await mongoose.disconnect();
-    console.log('\n✅ Done!');
+    console.log('\n? Done!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('? Error:', error.message);
     process.exit(1);
   }
 };

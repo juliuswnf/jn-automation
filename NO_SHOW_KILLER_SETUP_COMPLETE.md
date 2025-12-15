@@ -346,7 +346,7 @@ Confirmed Booking (23-25h away) → reminderWorker
 **MessageBird Support:** support@messagebird.com  
 **Documentation:** https://developers.messagebird.com/api/sms-messaging/
 
-**JN Automation Team:**
+**JN Business System Team:**
 - Backend: Julius Wagenfeldt
 - System Architecture: GitHub Copilot + Claude Sonnet 4.5
 

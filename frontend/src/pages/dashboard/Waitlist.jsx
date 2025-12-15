@@ -87,7 +87,7 @@ export default function Waitlist() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-zinc-900 p-4 rounded-lg border border-zinc-800">
           <div className="flex items-center gap-2 text-zinc-400 mb-1">
             <Users size={16} />

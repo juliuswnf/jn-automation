@@ -1,4 +1,4 @@
-Ôªøimport { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SubscriptionUpgrade from '../components/subscription/SubscriptionUpgrade';
@@ -57,7 +57,7 @@ const SubscriptionManagement = () => {
     setShowUpgrade(false);
     fetchSubscriptionStatus();
     // Show success notification
-    alert('‚úÖ Upgrade erfolgreich! Dein Plan wurde aktualisiert.');
+    alert('? Upgrade erfolgreich! Dein Plan wurde aktualisiert.');
   };
 
   const handleDowngradeClick = (tier) => {
@@ -68,13 +68,13 @@ const SubscriptionManagement = () => {
   const handleDowngradeSuccess = () => {
     setShowDowngrade(false);
     fetchSubscriptionStatus();
-    alert('‚úÖ Downgrade erfolgreich durchgef√ºhrt!');
+    alert('? Downgrade erfolgreich durchgef¸hrt!');
   };
 
   const handleCancelSubscription = async () => {
     if (
       !confirm(
-        'M√∂chtest du dein Abonnement wirklich k√ºndigen? Du beh√§ltst den Zugriff bis zum Ende der Abrechnungsperiode.'
+        'Mˆchtest du dein Abonnement wirklich k¸ndigen? Du beh‰ltst den Zugriff bis zum Ende der Abrechnungsperiode.'
       )
     ) {
       return;
@@ -91,12 +91,12 @@ const SubscriptionManagement = () => {
       );
 
       if (response.data.success) {
-        alert('‚úÖ Abonnement gek√ºndigt. Du beh√§ltst Zugriff bis zum Ende der Abrechnungsperiode.');
+        alert('? Abonnement gek¸ndigt. Du beh‰ltst Zugriff bis zum Ende der Abrechnungsperiode.');
         fetchSubscriptionStatus();
       }
     } catch (err) {
       console.error('Cancel error:', err);
-      alert('‚ùå K√ºndigung fehlgeschlagen: ' + (err.response?.data?.message || err.message));
+      alert('? K¸ndigung fehlgeschlagen: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -152,7 +152,7 @@ const SubscriptionManagement = () => {
             onClick={() => navigate('/')}
             className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
-            Zur√ºck zum Dashboard
+            Zur¸ck zum Dashboard
           </button>
         </div>
       </div>
@@ -196,10 +196,10 @@ const SubscriptionManagement = () => {
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Zur√ºck
+            Zur¸ck
           </button>
           <h1 className="text-4xl font-bold text-gray-900">Subscription Management</h1>
-          <p className="mt-2 text-gray-600">Verwalte deinen JN Automation Plan</p>
+          <p className="mt-2 text-gray-600">Verwalte deinen JN Business System Plan</p>
         </div>
 
         {/* Current Plan */}
@@ -219,13 +219,13 @@ const SubscriptionManagement = () => {
               <p className="mt-2 text-gray-600">
                 Abrechnungszyklus:{' '}
                 <span className="font-semibold">
-                  {subscription.billingCycle === 'yearly' ? 'J√§hrlich' : 'Monatlich'}
+                  {subscription.billingCycle === 'yearly' ? 'J‰hrlich' : 'Monatlich'}
                 </span>
               </p>
             </div>
             <div className="text-right">
               <div className="text-4xl font-bold text-indigo-600">
-                ‚Ç¨{subscription.price.current}
+                Ä{subscription.price.current}
               </div>
               <div className="text-sm text-gray-500">
                 {subscription.billingCycle === 'yearly' ? '/ Jahr' : '/ Monat'}
@@ -245,14 +245,14 @@ const SubscriptionManagement = () => {
               }`}
             >
               {subscription.status === 'active'
-                ? '‚úì Aktiv'
+                ? '? Aktiv'
                 : subscription.status === 'trial'
-                ? 'üéÅ Testphase'
+                ? '?? Testphase'
                 : subscription.status}
             </div>
             {subscription.cancelAtPeriodEnd && (
               <div className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
-                ‚ö†Ô∏è Endet am {new Date(subscription.currentPeriodEnd).toLocaleDateString('de-DE')}
+                ?? Endet am {new Date(subscription.currentPeriodEnd).toLocaleDateString('de-DE')}
               </div>
             )}
           </div>
@@ -260,7 +260,7 @@ const SubscriptionManagement = () => {
           {/* Billing Info */}
           <div className="grid md:grid-cols-2 gap-6 py-6 border-t border-gray-200">
             <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-2">N√§chste Abrechnung</h3>
+              <h3 className="text-sm font-medium text-gray-500 mb-2">N‰chste Abrechnung</h3>
               <p className="text-lg font-semibold text-gray-900">
                 {new Date(subscription.currentPeriodEnd).toLocaleDateString('de-DE', {
                   year: 'numeric',
@@ -273,11 +273,11 @@ const SubscriptionManagement = () => {
               <h3 className="text-sm font-medium text-gray-500 mb-2">Zahlungsmethode</h3>
               <p className="text-lg font-semibold text-gray-900 capitalize">
                 {subscription.paymentMethod === 'card'
-                  ? 'üí≥ Kreditkarte'
+                  ? '?? Kreditkarte'
                   : subscription.paymentMethod === 'sepa'
-                  ? 'üè¶ SEPA Lastschrift'
+                  ? '?? SEPA Lastschrift'
                   : subscription.paymentMethod === 'invoice'
-                  ? 'üìÑ Rechnung'
+                  ? '?? Rechnung'
                   : subscription.paymentMethod}
               </p>
             </div>
@@ -308,7 +308,7 @@ const SubscriptionManagement = () => {
                 <div className="ml-4 flex-1">
                   <h3 className="text-lg font-semibold text-gray-900">Upgrade</h3>
                   <p className="mt-1 text-sm text-gray-600">
-                    Erhalte mehr Features und h√∂here Limits
+                    Erhalte mehr Features und hˆhere Limits
                   </p>
                   <button
                     onClick={() => setShowUpgrade(true)}
@@ -342,7 +342,7 @@ const SubscriptionManagement = () => {
                 </div>
                 <div className="ml-4 flex-1">
                   <h3 className="text-lg font-semibold text-gray-900">Downgrade</h3>
-                  <p className="mt-1 text-sm text-gray-600">Wechsel zu einem g√ºnstigeren Plan</p>
+                  <p className="mt-1 text-sm text-gray-600">Wechsel zu einem g¸nstigeren Plan</p>
                   <div className="mt-4 space-x-2">
                     {availableDowngrades.map((tier) => (
                       <button
@@ -350,7 +350,7 @@ const SubscriptionManagement = () => {
                         onClick={() => handleDowngradeClick(tier)}
                         className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm"
                       >
-                        ‚Üí {tier.charAt(0).toUpperCase() + tier.slice(1)}
+                        ? {tier.charAt(0).toUpperCase() + tier.slice(1)}
                       </button>
                     ))}
                   </div>
@@ -363,16 +363,16 @@ const SubscriptionManagement = () => {
         {/* Cancel Subscription */}
         {!subscription.cancelAtPeriodEnd && (
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Abonnement k√ºndigen</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Abonnement k¸ndigen</h3>
             <p className="text-gray-600 mb-6">
-              Du kannst dein Abonnement jederzeit k√ºndigen. Du beh√§ltst den Zugriff bis zum Ende
+              Du kannst dein Abonnement jederzeit k¸ndigen. Du beh‰ltst den Zugriff bis zum Ende
               der aktuellen Abrechnungsperiode.
             </p>
             <button
               onClick={handleCancelSubscription}
               className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold"
             >
-              Abonnement k√ºndigen
+              Abonnement k¸ndigen
             </button>
           </div>
         )}
@@ -396,10 +396,10 @@ const SubscriptionManagement = () => {
               <p className="mt-1 text-sm text-blue-800">
                 Bei Fragen zu deinem Abonnement oder den Zahlungen kontaktiere uns unter{' '}
                 <a
-                  href="mailto:support@jn-automation.com"
+                  href="mailto:support@jn-business-system.com"
                   className="font-semibold underline hover:text-blue-900"
                 >
-                  support@jn-automation.com
+                  support@jn-business-system.com
                 </a>
               </p>
             </div>

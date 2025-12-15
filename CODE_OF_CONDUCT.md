@@ -32,7 +32,7 @@ Wir verpflichten uns, eine offene und einladende Umgebung zu schaffen.
 
 ## Durchsetzung
 
-Fälle können an support@jn-automation.de gemeldet werden.
+Fälle können an support@jn-business-system.de gemeldet werden.
 
 ## Zuschreibung
 

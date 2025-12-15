@@ -41,13 +41,13 @@ const EMAIL_CONFIG = {
   secure: (process.env.EMAIL_SECURE || process.env.SMTP_SECURE) === 'true',
   user: process.env.EMAIL_USER || process.env.SMTP_USER,
   pass: process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS,
-  from: process.env.EMAIL_FROM || process.env.SMTP_FROM || 'noreply@jn-automation.de'
+  from: process.env.EMAIL_FROM || process.env.SMTP_FROM || 'noreply@jn-business-system.de'
 };
 
 // Extract domain from FROM address
 const FROM_DOMAIN = EMAIL_CONFIG.from.includes('@')
   ? EMAIL_CONFIG.from.split('@')[1].replace('>', '')
-  : 'jn-automation.de';
+  : 'jn-business-system.de';
 
 // ==================== RESULTS TRACKING ====================
 const results = {
@@ -295,9 +295,9 @@ async function sendTestEmail(transporter, recipientEmail) {
   const mailOptions = {
     from: EMAIL_CONFIG.from,
     to: recipientEmail,
-    subject: `[JN Automation] E-Mail Deliverability Test - ${testId}`,
+    subject: `[JN Business System] E-Mail Deliverability Test - ${testId}`,
     text: `
-JN Automation - E-Mail Deliverability Test
+JN Business System - E-Mail Deliverability Test
 ==========================================
 
 Test ID: ${testId}
@@ -320,8 +320,8 @@ Technical Details:
 - Secure: ${EMAIL_CONFIG.secure}
 
 ---
-Gesendet von JN Automation
-https://jn-automation.de
+Gesendet von JN Business System
+https://jn-business-system.de
     `,
     html: `
 <!DOCTYPE html>
@@ -332,7 +332,7 @@ https://jn-automation.de
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
   <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px; border-radius: 12px 12px 0 0;">
-    <h1 style="color: white; margin: 0; font-size: 24px;">JN Automation</h1>
+    <h1 style="color: white; margin: 0; font-size: 24px;">JN Business System</h1>
     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">E-Mail Deliverability Test</p>
   </div>
 
@@ -369,8 +369,8 @@ https://jn-automation.de
     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
 
     <p style="color: #9ca3af; font-size: 12px; text-align: center;">
-      Gesendet von JN Automation<br>
-      <a href="https://jn-automation.de" style="color: #4f46e5;">jn-automation.de</a>
+      Gesendet von JN Business System<br>
+      <a href="https://jn-business-system.de" style="color: #4f46e5;">jn-business-system.de</a>
     </p>
   </div>
 </body>
@@ -378,7 +378,7 @@ https://jn-automation.de
     `,
     headers: {
       'X-Test-ID': testId,
-      'X-Mailer': 'JN Automation Deliverability Test',
+      'X-Mailer': 'JN Business System Deliverability Test',
       'List-Unsubscribe': `<mailto:unsubscribe@${FROM_DOMAIN}?subject=unsubscribe>`
     }
   };

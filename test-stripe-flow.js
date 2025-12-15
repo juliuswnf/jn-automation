@@ -214,7 +214,7 @@ function runTests() {
 ╔════════════════════════════════════════════════════════════════════╗
 ║                                                                    ║
 ║         STRIPE SUBSCRIPTION FLOW - CONFIGURATION TEST              ║
-║         JN Automation - Backend Integration                        ║
+║         JN Business System - Backend Integration                        ║
 ║                                                                    ║
 ╚════════════════════════════════════════════════════════════════════╝
   `);

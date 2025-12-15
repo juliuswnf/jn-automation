@@ -59,8 +59,27 @@ const CEOFeatureFlags = lazy(() => import('./pages/ceo/FeatureFlags'));
 const CEOBackups = lazy(() => import('./pages/ceo/Backups'));
 const EmployeeDashboard = lazy(() => import('./pages/employee/Dashboard'));
 
+// Marketing Automation
+const Marketing = lazy(() => import('./pages/dashboard/Marketing'));
+const CampaignEditor = lazy(() => import('./pages/dashboard/CampaignEditor'));
+const CampaignAnalytics = lazy(() => import('./pages/dashboard/CampaignAnalytics'));
+
+// Tattoo Studio
+const TattooProjects = lazy(() => import('./pages/dashboard/TattooProjects'));
+const TattooProjectEditor = lazy(() => import('./pages/dashboard/TattooProjectEditor'));
+const TattooProjectDetails = lazy(() => import('./pages/dashboard/TattooProjectDetails'));
+
+// Workflow System (Industry-Specific)
+const Workflows = lazy(() => import('./pages/dashboard/Workflows'));
+const WorkflowProjects = lazy(() => import('./pages/dashboard/WorkflowProjects'));
+const WorkflowProjectDetail = lazy(() => import('./pages/dashboard/WorkflowProjectDetail'));
+const PackagesMemberships = lazy(() => import('./pages/dashboard/PackagesMemberships'));
+
 // Onboarding
 const OnboardingWizard = lazy(() => import('./pages/onboarding/OnboardingWizard'));
+
+// Pricing Wizard
+const PricingWizard = lazy(() => import('./pages/onboarding/PricingWizard'));
 
 // Public Booking (no auth required)
 const PublicBooking = lazy(() => import('./pages/booking/PublicBooking'));
@@ -210,6 +229,16 @@ function App() {
             <ProtectedRoute allowedRoles={['salon_owner', 'admin']}>
               <LazyPage><OnboardingWizard /></LazyPage>
             </ProtectedRoute>
+          }
+        />
+        
+        {/* ==================== PRICING WIZARD (PUBLIC) ==================== */}
+        <Route
+          path="/onboarding/pricing-wizard"
+          element={
+            <AppLayout>
+              <LazyPage><PricingWizard /></LazyPage>
+            </AppLayout>
           }
         />
         
@@ -403,6 +432,122 @@ function App() {
             <ProtectedRoute allowedRoles={['salon_owner', 'employee', 'admin', 'ceo']}>
               <DashboardLayout>
                 <LazyPage><GettingStarted /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* ==================== MARKETING AUTOMATION ==================== */}
+        <Route
+          path="/dashboard/marketing"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
+              <DashboardLayout>
+                <LazyPage><Marketing /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/campaign-editor/:id"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
+              <DashboardLayout>
+                <LazyPage><CampaignEditor /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/campaign-analytics/:id"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo']}>
+              <DashboardLayout>
+                <LazyPage><CampaignAnalytics /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* ==================== TATTOO STUDIO ==================== */}
+        <Route
+          path="/dashboard/tattoo/projects"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><TattooProjects /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/tattoo/projects/new"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><TattooProjectEditor /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/tattoo/projects/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><TattooProjectEditor /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/tattoo/projects/:id"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><TattooProjectDetails /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ==================== WORKFLOW SYSTEM (MULTI-INDUSTRY) ==================== */}
+        <Route
+          path="/dashboard/workflows"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><Workflows /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/workflow-projects"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><WorkflowProjects /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/workflow-projects/:id"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><WorkflowProjectDetail /></LazyPage>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/packages-memberships"
+          element={
+            <ProtectedRoute allowedRoles={['salon_owner', 'admin', 'ceo', 'business']}>
+              <DashboardLayout>
+                <LazyPage><PackagesMemberships /></LazyPage>
               </DashboardLayout>
             </ProtectedRoute>
           }

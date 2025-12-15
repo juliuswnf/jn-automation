@@ -2,7 +2,7 @@
 
 ## Summary
 
-JN Automation has been prepared for production deployment through a comprehensive 5-phase optimization process.
+JN Business System has been prepared for production deployment through a comprehensive 5-phase optimization process.
 
 ---
 

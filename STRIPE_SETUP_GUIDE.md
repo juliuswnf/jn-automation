@@ -1,4 +1,4 @@
-# Stripe Setup Guide - JN Automation
+# Stripe Setup Guide - JN Business System
 
 Complete guide for setting up Stripe payment integration for subscription management.
 
@@ -23,7 +23,7 @@ Complete guide for setting up Stripe payment integration for subscription manage
 ### 1.2 Create Starter Plan
 
 **Product Information:**
-- **Name:** `JN Automation - Starter`
+- **Name:** `JN Business System - Starter`
 - **Description:** `Starter plan for small salons with basic booking features`
 - **Statement descriptor:** `JN Auto Starter`
 
@@ -48,7 +48,7 @@ features: booking,sms,calendar
 ### 1.3 Create Professional Plan
 
 **Product Information:**
-- **Name:** `JN Automation - Professional`
+- **Name:** `JN Business System - Professional`
 - **Description:** `Professional plan with advanced features for growing salons`
 - **Statement descriptor:** `JN Auto Pro`
 
@@ -67,7 +67,7 @@ features: booking,sms,calendar,analytics,team,api
 ### 1.4 Create Enterprise Plan
 
 **Product Information:**
-- **Name:** `JN Automation - Enterprise`
+- **Name:** `JN Business System - Enterprise`
 - **Description:** `Enterprise plan with SEPA, invoices, and priority support`
 - **Statement descriptor:** `JN Auto Ent`
 
@@ -115,7 +115,7 @@ STRIPE_PRICE_ENTERPRISE_YEARLY=price_xxxxxxxxxxxxx
 2. **Endpoint URL:**
    - **Development:** `https://your-dev-domain.com/api/subscriptions/webhook`
    - **Production:** `https://your-production-domain.com/api/subscriptions/webhook`
-3. **Description:** `JN Automation Subscription Events`
+3. **Description:** `JN Business System Subscription Events`
 4. **API version:** Latest (2023-10-16 or newer)
 
 ### 3.2 Select Events to Listen For
@@ -251,7 +251,7 @@ Use Stripe test cards for development:
 
 **Mandate:**
 - **Type:** Recurring
-- **Statement descriptor:** `JN Automation`
+- **Statement descriptor:** `JN Business System`
 - **Customer notification:** Email
 
 ---
@@ -279,8 +279,8 @@ Use Stripe test cards for development:
 Customize invoice template:
 1. Go to **Settings** → **Branding**
 2. Upload **Company logo**
-3. Set **Brand color:** `#4f46e5` (JN Automation brand)
-4. Add **Support email:** support@jn-automation.com
+3. Set **Brand color:** `#4f46e5` (JN Business System brand)
+4. Add **Support email:** support@jn-business-system.com
 
 ---
 
@@ -452,4 +452,4 @@ After completing Stripe setup:
 
 **Last Updated:** December 13, 2025  
 **Version:** 1.0.0  
-**Author:** JN Automation Team
+**Author:** JN Business System Team

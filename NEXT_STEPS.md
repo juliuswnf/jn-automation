@@ -173,7 +173,7 @@ You should receive an SMS within 10 seconds! 📱
 ### Step 1: Get Business Email
 Options:
 - Create business domain: `julius@jn-business.com`
-- Use Google Workspace: `julius@jn-automation.com`
+- Use Google Workspace: `julius@jn-business-system.com`
 - Use Proton Mail Business: `julius@no-show-killer.com`
 
 ### Step 2: Sign Up for MessageBird

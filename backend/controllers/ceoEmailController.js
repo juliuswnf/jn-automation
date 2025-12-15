@@ -1,4 +1,4 @@
-ï»¿import logger from '../utils/logger.js';
+import logger from '../utils/logger.js';
 /**
  * CEO Email Campaigns Controller
  * Broadcast emails, templates, and campaign management
@@ -330,9 +330,9 @@ export const getEmailTemplates = async (req, res) => {
       {
         id: 'welcome',
         name: 'Willkommen',
-        description: 'Willkommens-E-Mail fÃ¼r neue Kunden',
-        subject: 'Willkommen bei JN Automation!',
-        content: 'Hallo {name},\n\nwillkommen bei JN Automation...'
+        description: 'Willkommens-E-Mail für neue Kunden',
+        subject: 'Willkommen bei JN Business System!',
+        content: 'Hallo {name},\n\nwillkommen bei JN Business System...'
       },
       {
         id: 'trial_reminder',
@@ -343,7 +343,7 @@ export const getEmailTemplates = async (req, res) => {
       },
       {
         id: 'feature_announcement',
-        name: 'Feature AnkÃ¼ndigung',
+        name: 'Feature Ankündigung',
         description: 'Neue Features vorstellen',
         subject: 'Neu: {feature_name}',
         content: 'Hallo {name},\n\nwir haben ein neues Feature...'
@@ -352,14 +352,14 @@ export const getEmailTemplates = async (req, res) => {
         id: 'promotion',
         name: 'Promotion',
         description: 'Rabattaktionen und Angebote',
-        subject: 'Exklusives Angebot fÃ¼r Sie!',
-        content: 'Hallo {name},\n\nnur fÃ¼r kurze Zeit...'
+        subject: 'Exklusives Angebot für Sie!',
+        content: 'Hallo {name},\n\nnur für kurze Zeit...'
       },
       {
         id: 'newsletter',
         name: 'Newsletter',
         description: 'Monatlicher Newsletter',
-        subject: 'JN Automation Newsletter - {month}',
+        subject: 'JN Business System Newsletter - {month}',
         content: 'Hallo {name},\n\nhier sind die Neuigkeiten...'
       },
       {

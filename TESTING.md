@@ -1,15 +1,15 @@
-# 🧪 Test-Dokumentation - JN Automation
+# 🧪 Test-Dokumentation - JN Business System
 
 ## Überblick
 
-Diese Dokumentation beschreibt die automatisierten Tests für das JN Automation Salon-Buchungssystem.
+Diese Dokumentation beschreibt die automatisierten Tests für das JN Business System Salon-Buchungssystem.
 
 ---
 
 ## 📁 Test-Struktur
 
 ```
-jn-automation/
+jn-business-system/
 ├── backend/
 │   ├── jest.config.js           # Jest-Konfiguration
 │   └── tests/

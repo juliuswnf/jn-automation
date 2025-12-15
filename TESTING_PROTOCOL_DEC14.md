@@ -38,7 +38,7 @@
 ### 1.1 Backend Status ✅
 - **URL:** http://localhost:5000
 - **Status:** 200 OK
-- **MongoDB:** ✅ Connected (jn-automation.9lulzru.mongodb.net)
+- **MongoDB:** ✅ Connected (jn-business-system.9lulzru.mongodb.net)
 - **Stripe:** ✅ Initialized with all Price IDs
 - **Email Worker:** ✅ Active (checks every 60s)
 - **Lifecycle Emails:** ✅ Active (hourly)
@@ -50,7 +50,7 @@
 00:51:36 info: JN BUSINESS SYSTEM MVP v2.0.0 STARTED
 Environment: development
 Server: http://localhost:5000
-Database: jn-automation.9lulzru.mongodb.net
+Database: jn-business-system.9lulzru.mongodb.net
 API Version: 2.0.0 MVP
 Auth: JWT + Role-based Access Control
 Stripe: Subscriptions + Webhooks

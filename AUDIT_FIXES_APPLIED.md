@@ -132,7 +132,7 @@ if (!mongoURI.includes('@') && !mongoURI.includes('localhost')) {
   "salonId": "507f1f77bcf86cd799439012",
   "bookingId": "507f1f77bcf86cd799439013",
   "customerEmail": "[REDACTED]",
-  "service": "jn-automation-backend",
+  "service": "jn-business-system-backend",
   "environment": "production"
 }
 ```

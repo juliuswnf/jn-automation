@@ -1,8 +1,8 @@
-# 🚀 JN Automation - Skalierbarkeits-Roadmap
+# 🚀 JN Business System - Skalierbarkeits-Roadmap
 
 ## Status: Bereit für 50+ Studios
 
-Dieses Dokument fasst die implementierten Maßnahmen zusammen, um JN Automation für 50+ zahlende Studios skalierbar zu machen.
+Dieses Dokument fasst die implementierten Maßnahmen zusammen, um JN Business System für 50+ zahlende Studios skalierbar zu machen.
 
 ---
 

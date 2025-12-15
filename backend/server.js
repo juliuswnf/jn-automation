@@ -27,6 +27,10 @@ import { startAutoCancelWorker } from './workers/autoCancelWorker.js';
 import { startWaitlistMatcher } from './workers/waitlistMatcherWorker.js';
 import { startReminderWorker } from './workers/reminderWorker.js';
 
+// Marketing Automation Workers
+import { startMarketingCampaignWorker } from './workers/marketingCampaignWorker.js';
+import { startMarketingAnalyticsWorker } from './workers/marketingAnalyticsWorker.js';
+
 // Suppress iconv-lite encoding warning (UTF-8 is correctly used)
 process.env.ICONV_PURE = '1';
 
@@ -49,6 +53,9 @@ import systemRoutes from './routes/systemRoutes.js'; // ? MEDIUM FIX #13 & #14
 
 // Multi-Industry Routes - Phase 2
 import artistPortfolioRoutes from './routes/artistPortfolioRoutes.js';
+
+// Pricing Wizard Routes
+import pricingWizardRoutes from './routes/pricingWizardRoutes.js';
 import clinicalNoteRoutes from './routes/clinicalNoteRoutes.js';
 import consentFormRoutes from './routes/consentFormRoutes.js';
 import packageRoutes from './routes/packageRoutes.js';
@@ -76,6 +83,12 @@ import confirmationRoutes from './routes/confirmationRoutes.js';
 import waitlistRoutes from './routes/waitlistRoutes.js';
 import slotSuggestionRoutes from './routes/slotSuggestionRoutes.js';
 import webhookRoutes from './routes/webhookRoutes.js'; // MessageBird webhooks
+
+// Marketing Automation Routes
+import marketingRoutes from './routes/marketingRoutes.js';
+
+// Tattoo Studio Routes
+import tattooRoutes from './routes/tattoo.js';
 
 // Import Middleware
 import authMiddleware from './middleware/authMiddleware.js';
@@ -258,7 +271,18 @@ app.use('/api/locations', authMiddleware.protect, multiLocationRoutes); // Multi
 app.use('/api/sms-consent', smsConsentRoutes); // SMS GDPR Consent (Public + Protected)
 app.use('/api/confirmations', confirmationRoutes); // Booking Confirmations (Mixed: public confirm link)
 app.use('/api/waitlist', waitlistRoutes); // Waitlist Management (Public join + Protected admin)
+app.use('/api/marketing', marketingRoutes); // Marketing Automation (Protected)
 app.use('/api/slot-suggestions', slotSuggestionRoutes); // Slot Suggestions (Public accept/reject)
+
+// Tattoo Studio Routes
+app.use('/api/tattoo', tattooRoutes); // Tattoo Studio Features (Projects, Sessions, Consents, Portfolio)
+
+// Workflow System Routes (Industry-Specific Features)
+import workflowRoutes from './routes/workflows.js';
+app.use('/api/workflows', workflowRoutes); // Workflow Management (Multi-Industry)
+
+// Pricing Wizard Routes
+app.use('/api/pricing-wizard', pricingWizardRoutes); // Intelligent Tier Recommendation (Public + Analytics)
 
 // ==================== 404 HANDLER (BEFORE ERROR HANDLER) ====================
 app.use('*', (req, res, _next) => {
@@ -341,6 +365,16 @@ const connectDatabase = async () => {
 
     logger.info('? MongoDB Connected Successfully');
     logger.info(`?? Database: ${mongoose.connection.db.databaseName}`);
+    
+    // Seed Marketing Templates
+    try {
+      const MarketingTemplate = (await import('./models/MarketingTemplate.js')).default;
+      await MarketingTemplate.seedTemplates();
+      logger.info('[MARKETING] Templates seeded successfully');
+    } catch (error) {
+      logger.error('[MARKETING] Template seeding failed:', error.message);
+    }
+    
     return true;
   } catch (error) {
     logger.error('? MongoDB Connection Error:', error.message);
@@ -420,6 +454,23 @@ const startNoShowKillerWorkers = () => {
   }
 };
 
+// ==================== MARKETING AUTOMATION WORKERS ====================
+const startMarketingWorkers = () => {
+  try {
+    logger.info('[WORKER] Starting Marketing Automation workers...');
+    
+    // Start marketing workers
+    startMarketingCampaignWorker(); // Every 15 min
+    startMarketingAnalyticsWorker(); // Every 60 min
+    
+    logger.info('[WORKER] Marketing Automation workers started successfully');
+  } catch (error) {
+    logger.error('[ERROR] Marketing worker initialization error:', error.message || error);
+    logger.error('Error stack:', error.stack);
+    throw error;
+  }
+};
+
 // ==================== SERVER STARTUP ====================
 const startServer = async () => {
   try {
@@ -435,6 +486,7 @@ const startServer = async () => {
     startLifecycleWorker();
     startAlertingService();
     startNoShowKillerWorkers(); // 🔥 NO-SHOW-KILLER System
+    startMarketingWorkers(); // 📧 Marketing Automation
 
     server.listen(PORT, () => {
       logger.info('\n----------------------------------------');

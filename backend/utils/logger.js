@@ -24,7 +24,7 @@ const winstonLogger = winston.createLogger({
     winston.format.errors({ stack: true }),
     structuredFormat
   ),
-  defaultMeta: { service: 'jn-automation-api' },
+  defaultMeta: { service: 'jn-business-system-api' },
   transports: [
     // Console output (always)
     new winston.transports.Console({

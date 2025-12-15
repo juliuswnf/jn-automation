@@ -1,5 +1,5 @@
-﻿/**
- * Jest Configuration for JN Automation Backend
+/**
+ * Jest Configuration for JN Business System Backend
  * Node.js ES Modules support
  */
 

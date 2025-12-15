@@ -10,10 +10,10 @@
 
 ### Backend Startup mit allen Workers:
 ```
-01:12:54 info: 🔐 Stripe Payment Service initialized with Price IDs: {"service":"jn-automation-api","starter_monthly":"price_1Sa2FXCfgv8Lqc0aJEHE6Y5r",...}
-01:12:54 info: 🔗 Attempting MongoDB connection to: mongodb+srv://jn_automation_user:****@jn-automation.9lulzru.mongodb.net/jn-automation?retryWrites=true&w=majority&appName=jn-automation
+01:12:54 info: 🔐 Stripe Payment Service initialized with Price IDs: {"service":"jn-business-system-api","starter_monthly":"price_1Sa2FXCfgv8Lqc0aJEHE6Y5r",...}
+01:12:54 info: 🔗 Attempting MongoDB connection to: mongodb+srv://jn_automation_user:****@jn-business-system.9lulzru.mongodb.net/jn-business-system?retryWrites=true&w=majority&appName=jn-business-system
 01:12:54 info: ✅ MongoDB Connected Successfully
-01:12:54 info: 🗄️ Database: jn-automation
+01:12:54 info: 🗄️ Database: jn-business-system
 01:12:54 info: 🕐 Initializing Cron Jobs...
 01:12:54 info: ✅ All Cron Jobs initialized successfully
 01:12:54 info: ✅ Cron jobs initialized
@@ -31,7 +31,7 @@
 
 01:12:54 info: Environment: development
 01:12:54 info: Server: http://localhost:5000
-01:12:54 info: Database: jn-automation.9lulzru.mongodb.net/jn-automation?retryWrites=true&w=majority&appName=jn-automation
+01:12:54 info: Database: jn-business-system.9lulzru.mongodb.net/jn-business-system?retryWrites=true&w=majority&appName=jn-business-system
 01:12:54 info: API Version: 2.0.0 MVP
 01:12:54 info: Auth: JWT + Role-based Access Control
 01:12:54 info: Stripe: Subscriptions + Webhooks
@@ -152,7 +152,7 @@ const processEmailQueueSafe = async () => {
         "state": "connected",
         "responseTime": "9ms",
         "host": "ac-f5dmtm2-shard-00-02.9lulzru.mongodb.net",
-        "database": "jn-automation"
+        "database": "jn-business-system"
       }
     },
     "stripe": {
@@ -200,7 +200,7 @@ const processEmailQueueSafe = async () => {
 ```
 
 ### Railway Deployment Details:
-- **URL:** https://jn-automation-production.up.railway.app
+- **URL:** https://jn-business-system-production.up.railway.app
 - **Status Code:** 200 OK
 - **Latest Commit:** f6e1410 (Smoke Test Scripts)
 - **Uptime:** 6 minutes
@@ -236,7 +236,7 @@ http://localhost:3000/pricing
 
 **Railway Production Test:**
 ```
-URL: https://jn-automation-production.up.railway.app/api/pricing/plans
+URL: https://jn-business-system-production.up.railway.app/api/pricing/plans
 Status: ✅ Returns pricing data
 Stripe Integration: ✅ Configured (Live Mode)
 ```

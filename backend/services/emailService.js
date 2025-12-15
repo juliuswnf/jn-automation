@@ -40,7 +40,7 @@ export const sendEmail = async (emailData) => {
     const transporter = createTransporter();
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || process.env.SMTP_FROM || 'JN Automation <noreply@jn-automation.com>',
+      from: process.env.EMAIL_FROM || process.env.SMTP_FROM || 'JN Business System <noreply@jn-business-system.com>',
       to: emailData.to,
       subject: emailData.subject,
       text: emailData.body,
@@ -372,14 +372,14 @@ const replacePlaceholders = (text, data) => {
 
 export const sendWelcomeEmail = async (user, salon) => {
   try {
-    const dashboardUrl = process.env.FRONTEND_URL || 'https://app.jn-automation.de';
+    const dashboardUrl = process.env.FRONTEND_URL || 'https://app.jn-business-system.de';
     const firstName = user.name?.split(' ')[0] || user.name || 'dort';
 
     const emailData = {
       to: user.email,
-      subject: '🎉 Willkommen bei JN Automation - Deine nächsten Schritte',
+      subject: '🎉 Willkommen bei JN Business System - Deine nächsten Schritte',
       type: 'welcome',
-      body: `Willkommen bei JN Automation, ${firstName}!`,
+      body: `Willkommen bei JN Business System, ${firstName}!`,
       html: `
 <!DOCTYPE html>
 <html>
@@ -480,8 +480,8 @@ export const sendWelcomeEmail = async (user, salon) => {
         Unser Team ist für dich da — per Chat oder E-Mail.
       </p>
       <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-        <a href="mailto:support@jn-automation.de" style="color: #7c3aed; text-decoration: none; font-size: 14px;">
-          📧 support@jn-automation.de
+        <a href="mailto:support@jn-business-system.de" style="color: #7c3aed; text-decoration: none; font-size: 14px;">
+          📧 support@jn-business-system.de
         </a>
       </div>
     </div>
@@ -502,8 +502,8 @@ export const sendWelcomeEmail = async (user, salon) => {
       Bei Fragen antworte einfach auf diese E-Mail.
     </p>
     <p style="color: #6b7280; margin: 0; font-size: 12px;">
-      JN Automation • Das Buchungssystem für Salons & Studios<br>
-      <a href="${dashboardUrl}" style="color: #6b7280;">jn-automation.de</a>
+      JN Business System • Das Buchungssystem für Salons & Studios<br>
+      <a href="${dashboardUrl}" style="color: #6b7280;">jn-business-system.de</a>
     </p>
   </div>
 

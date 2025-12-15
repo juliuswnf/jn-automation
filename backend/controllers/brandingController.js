@@ -113,7 +113,7 @@ export const updateBranding = async (req, res) => {
     if (showPoweredBy === false && tier !== 'enterprise') {
       return res.status(403).json({
         success: false,
-        error: 'White-Label (ohne "Powered by JN Automation") ist nur im Enterprise-Tarif verfügbar.'
+        error: 'White-Label (ohne "Powered by JN Business System") ist nur im Enterprise-Tarif verfügbar.'
       });
     }
 

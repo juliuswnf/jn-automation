@@ -1,4 +1,4 @@
-ï»¿import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 const emailTemplateSchema = new mongoose.Schema({
   subject: {
@@ -328,7 +328,7 @@ const salonSchema = new mongoose.Schema({
     showPoweredBy: {
       type: Boolean,
       default: true,
-      comment: 'Show "Powered by JN Automation" (false for Enterprise white-label)'
+      comment: 'Show "Powered by JN Business System" (false for Enterprise white-label)'
     }
   },
 
@@ -572,10 +572,10 @@ salonSchema.methods.initializeDefaultTemplates = function() {
   this.emailTemplates = {
     confirmation: {
       de: {
-        subject: 'BuchungsbestÃ¤tigung - {{salon_name}}',
+        subject: 'Buchungsbestätigung - {{salon_name}}',
         body: `Hallo {{customer_name}},
 
-Ihre Buchung wurde erfolgreich bestÃ¤tigt!
+Ihre Buchung wurde erfolgreich bestätigt!
 
 Details:
 - Service: {{service_name}}
@@ -592,7 +592,7 @@ Telefon: {{salon_phone}}
 
 Wir freuen uns auf Ihren Besuch!
 
-Mit freundlichen GrÃ¼ÃŸen,
+Mit freundlichen Grüßen,
 {{salon_name}}`,
         language: 'de'
       },
@@ -665,9 +665,9 @@ We look forward to seeing you!
         subject: 'Wie war Ihr Besuch bei {{salon_name}}?',
         body: `Hallo {{customer_name}},
 
-vielen Dank fÃ¼r Ihren Besuch bei uns!
+vielen Dank für Ihren Besuch bei uns!
 
-Wir wÃ¼rden uns sehr Ã¼ber Ihr Feedback freuen. Ihre Meinung hilft uns, unseren Service kontinuierlich zu verbessern.
+Wir würden uns sehr über Ihr Feedback freuen. Ihre Meinung hilft uns, unseren Service kontinuierlich zu verbessern.
 
 Bitte teilen Sie Ihre Erfahrung auf Google:
 {{google_review_url}}

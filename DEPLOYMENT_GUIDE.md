@@ -1,8 +1,8 @@
-# 🚀 JN Automation - Deployment Guide
+# 🚀 JN Business System - Deployment Guide
 
 ## Übersicht
 
-Diese Anleitung zeigt dir, wie du JN Automation live schaltest:
+Diese Anleitung zeigt dir, wie du JN Business System live schaltest:
 
 | Komponente | Hosting | Kosten |
 |------------|---------|--------|
@@ -26,7 +26,7 @@ Diese Anleitung zeigt dir, wie du JN Automation live schaltest:
 
 ```bash
 # Im Hauptordner des Projekts
-cd "c:\Users\juliu\Documents\JN Automation\jn-automation"
+cd "c:\Users\juliu\Documents\JN Business System\jn-business-system"
 
 # Git initialisieren (falls noch nicht geschehen)
 git init
@@ -35,11 +35,11 @@ git init
 git add .
 
 # Commit erstellen
-git commit -m "Initial commit - JN Automation MVP"
+git commit -m "Initial commit - JN Business System MVP"
 
 # GitHub Repository erstellen (auf github.com)
 # Dann:
-git remote add origin https://github.com/DEIN-USERNAME/jn-automation.git
+git remote add origin https://github.com/DEIN-USERNAME/jn-business-system.git
 git branch -M main
 git push -u origin main
 ```
@@ -56,7 +56,7 @@ git push -u origin main
 ### 2.2 Neues Projekt erstellen
 1. Klicke **"New Project"**
 2. Wähle **"Deploy from GitHub repo"**
-3. Wähle dein Repository **jn-automation**
+3. Wähle dein Repository **jn-business-system**
 4. Wähle den Ordner **backend** (oder Root wenn nur Backend)
 
 ### 2.3 Environment Variables setzen
@@ -65,7 +65,7 @@ git push -u origin main
 3. Füge diese Variablen hinzu:
 
 ```
-MONGODB_URI=mongodb+srv://jn_automation_user:Julius123@jn-automation.9lulzru.mongodb.net/jn-automation?retryWrites=true&w=majority&appName=jn-automation
+MONGODB_URI=mongodb+srv://jn_automation_user:Julius123@jn-business-system.9lulzru.mongodb.net/jn-business-system?retryWrites=true&w=majority&appName=jn-business-system
 
 JWT_SECRET=dein-super-geheimer-schluessel-hier-aendern
 
@@ -88,7 +88,7 @@ STRIPE_SECRET_KEY=sk_live_...
 ### 2.4 Domain notieren
 1. Gehe zu **"Settings"** Tab
 2. Unter **"Domains"** siehst du deine URL
-3. Beispiel: `jn-automation-backend.railway.app`
+3. Beispiel: `jn-business-system-backend.railway.app`
 4. **KOPIERE DIESE URL!** Du brauchst sie für das Frontend.
 
 ---
@@ -103,7 +103,7 @@ STRIPE_SECRET_KEY=sk_live_...
 ### 3.2 Projekt importieren
 1. Klicke **"Add New..."** → **"Project"**
 2. Wähle **"Import Git Repository"**
-3. Wähle dein Repository **jn-automation**
+3. Wähle dein Repository **jn-business-system**
 
 ### 3.3 Build Settings konfigurieren
 1. **Framework Preset**: Vite
@@ -121,7 +121,7 @@ VITE_API_URL=https://DEINE-RAILWAY-URL.railway.app/api
 
 **Beispiel:**
 ```
-VITE_API_URL=https://jn-automation-backend.railway.app/api
+VITE_API_URL=https://jn-business-system-backend.railway.app/api
 ```
 
 ### 3.5 Deploy klicken
@@ -150,7 +150,7 @@ CORS_ORIGIN=https://deine-app.vercel.app
 
 ## Schritt 5: Testen
 
-1. Öffne deine Vercel-URL (z.B. `https://jn-automation.vercel.app`)
+1. Öffne deine Vercel-URL (z.B. `https://jn-business-system.vercel.app`)
 2. Teste den Login
 3. Teste das CEO Dashboard
 4. Teste das Booking Widget
@@ -177,12 +177,12 @@ CORS_ORIGIN=https://deine-app.vercel.app
 
 ### Für Vercel (Frontend):
 1. Gehe zu Project Settings → Domains
-2. Füge `app.jn-automation.de` hinzu
+2. Füge `app.jn-business-system.de` hinzu
 3. Konfiguriere DNS bei deinem Domain-Anbieter
 
 ### Für Railway (Backend):
 1. Gehe zu Settings → Domains
-2. Füge `api.jn-automation.de` hinzu
+2. Füge `api.jn-business-system.de` hinzu
 3. Konfiguriere DNS bei deinem Domain-Anbieter
 
 ---

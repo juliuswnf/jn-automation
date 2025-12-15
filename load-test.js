@@ -1,4 +1,4 @@
-// JN Automation - k6 Load Test Script
+// JN Business System - k6 Load Test Script
 // Tests booking system under various load conditions
 
 import http from 'k6/http';
@@ -136,7 +136,7 @@ export default function () {
 export function teardown(data) {
   console.log('');
   console.log('╔══════════════════════════════════════════════════════════╗');
-  console.log('║           JN Automation Load Test Complete              ║');
+  console.log('║           JN Business System Load Test Complete              ║');
   console.log('╚══════════════════════════════════════════════════════════╝');
   console.log('');
   console.log('📊 Check the summary above for detailed metrics.');

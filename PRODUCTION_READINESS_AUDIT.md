@@ -1,4 +1,4 @@
-# 🚨 PRODUCTION READINESS AUDIT - JN Automation
+# 🚨 PRODUCTION READINESS AUDIT - JN Business System
 
 **Date:** 2025-01-28  
 **Target:** 50+ Salons Go-Live  
@@ -147,7 +147,7 @@ export const updateBooking = async (req, res) => {
 **PoC Exploit:**
 ```bash
 # Salon A (salonId: 111) authenticated als Salon Owner
-curl -X PUT https://api.jn-automation.de/api/bookings/xyz \
+curl -X PUT https://api.jn-business-system.de/api/bookings/xyz \
   -H "Authorization: Bearer $SALON_A_TOKEN" \
   -d '{"status": "cancelled"}'
 

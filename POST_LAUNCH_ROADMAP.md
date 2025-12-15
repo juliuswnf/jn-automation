@@ -8,7 +8,7 @@
 
 ## 🎯 Übersicht
 
-Die JN Automation Platform ist **jetzt launch-ready** (95%). Die verbleibenden 5% sind **keine Launch-Blocker**, sondern Optimierungen für Scale und Enterprise-Betrieb.
+Die JN Business System Platform ist **jetzt launch-ready** (95%). Die verbleibenden 5% sind **keine Launch-Blocker**, sondern Optimierungen für Scale und Enterprise-Betrieb.
 
 **Wann angehen?**
 - ✅ Nach 10 Salons onboarded
@@ -386,7 +386,7 @@ metrics:
           password: ${GRAFANA_API_KEY}
 
   configs:
-    - name: jn-automation
+    - name: jn-business-system
       scrape_configs:
         - job_name: 'jn-backend'
           static_configs:
@@ -513,7 +513,7 @@ function MaintenanceBanner() {
 # Option A: MongoDB Atlas Point-in-Time Restore
 # 1. Go to Atlas Console → Backups
 # 2. Select snapshot (e.g., 1 hour ago)
-# 3. Restore to new cluster: jn-automation-recovery
+# 3. Restore to new cluster: jn-business-system-recovery
 # 4. Update connection string
 
 # Option B: Manual restore from backup script
@@ -946,8 +946,8 @@ railway up --region eu-west-1  # Primary
 railway up --region us-east-1  # Secondary
 
 # Update DNS
-# EU users  → jn-automation-eu.railway.app
-# US users  → jn-automation-us.railway.app
+# EU users  → jn-business-system-eu.railway.app
+# US users  → jn-business-system-us.railway.app
 ```
 
 Option B: Cloudflare Workers + Smart Routing (Advanced)
@@ -960,11 +960,11 @@ export default {
     // Route to nearest backend
     let backend;
     if (['US', 'CA', 'MX', 'BR'].includes(country)) {
-      backend = 'https://jn-automation-us.railway.app';
+      backend = 'https://jn-business-system-us.railway.app';
     } else if (['JP', 'SG', 'AU', 'IN'].includes(country)) {
-      backend = 'https://jn-automation-asia.railway.app';
+      backend = 'https://jn-business-system-asia.railway.app';
     } else {
-      backend = 'https://jn-automation-eu.railway.app';
+      backend = 'https://jn-business-system-eu.railway.app';
     }
     
     return fetch(backend + new URL(request.url).pathname, request);
@@ -990,7 +990,7 @@ export default {
 
 // Deploy to Cloudflare Pages (Global CDN)
 npm run build
-wrangler pages publish dist --project-name=jn-automation
+wrangler pages publish dist --project-name=jn-business-system
 
 // Result: Static assets served from 200+ edge locations
 ```

@@ -18,12 +18,12 @@ import Salon from '../models/Salon.js';
  */
 export const getSalonBranding = async (salonId) => {
   const defaultBranding = {
-    companyName: 'JN Automation',
+    companyName: 'JN Business System',
     logo: null,
     primaryColor: '#EF4444',
     showPoweredBy: true,
-    emailSignature: 'JN Automation Team',
-    footerText: 'JN Automation • Das Buchungssystem für Salons & Studios'
+    emailSignature: 'JN Business System Team',
+    footerText: 'JN Business System • Das Buchungssystem für Salons & Studios'
   };
 
   if (!salonId) {
@@ -55,7 +55,7 @@ export const getSalonBranding = async (salonId) => {
       };
     }
 
-    // Non-white-label: Use JN Automation branding with custom colors
+    // Non-white-label: Use JN Business System branding with custom colors
     return {
       ...defaultBranding,
       logo: salon.branding?.logo || null,
@@ -87,11 +87,11 @@ export const getEmailFooter = async (salonId) => {
     `;
   }
 
-  // Standard footer with JN Automation branding
+  // Standard footer with JN Business System branding
   return `
     <div style="text-align: center; padding: 20px; border-top: 1px solid #e5e5e5; margin-top: 30px;">
       <p style="color: #666; font-size: 12px; margin: 0;">
-        ${branding.salonName ? `${branding.salonName} • Powered by ` : ''}JN Automation
+        ${branding.salonName ? `${branding.salonName} • Powered by ` : ''}JN Business System
       </p>
       <p style="color: #999; font-size: 11px; margin: 5px 0 0 0;">
         Das Buchungssystem für Salons & Studios
